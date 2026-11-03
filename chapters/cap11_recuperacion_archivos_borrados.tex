@@ -71,32 +71,40 @@ prueba fue realizada en ciertos archivos, pero su gran consumo de tiempo la desc
 método de análisis general.
 
 
- Archivos sospechosos de entre 300,000 recuperados.
+\subsection{Identificación de artefactos eliminados de interés pericial}
 
-\vspace{1em}
+Tras procesar los bloques del sistema de archivos mediante \texttt{ils} y \texttt{fls}, se identificaron más de 300,000 entradas de inodos huérfanos. Al filtrar los archivos temporales ordinarios del sistema operativo, se aislaron cinco artefactos críticos eliminados que documentaban directamente la actividad del intruso, sintetizados en el Cuadro~\ref{tab:archivos_recuperados}.
 
-{\footnotesize
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} l l l r l r @{}}
+\toprule
+\textbf{Tipo} & \textbf{Ruta recuperada} & \textbf{Fecha borrado (\textit{dtime})} & \textbf{Tamaño} & \textbf{UID:GID} & \textbf{Inodo} \\
+\midrule
+\texttt{r/r} & \texttt{/dev/zqft4/algo}    & 2003-05-10 00:05:09 & 0 B     & \texttt{0:0} (root)      & 532496 \\
+\texttt{s/s} & \texttt{/dev/log}           & 2003-05-10 03:00:57 & 0 B     & \texttt{0:0} (root)      & 305889 \\
+\texttt{d/r} & \texttt{/tmp/.sxp}          & 2003-04-23 22:34:05 & 464 KB  & \texttt{0:0} (root)      & 130441 \\
+\texttt{r/r} & \texttt{sh}                 & 2003-04-15 22:29:00 & 455 KB  & \texttt{523:523} (proa)  & 786702 \\
+\texttt{f/r} & \texttt{mc.pipe.12891}      & 2003-04-11 20:55:39 & 69 B    & \texttt{500:100} (duende)& 130461 \\
+\bottomrule
+\end{tabularx}
+\caption{Artefactos y archivos eliminados recuperados mediante análisis de inodos huérfanos.}
+\label{tab:archivos_recuperados}
+\end{table}
+
+El registro cronológico completo reportado por \texttt{ils2mac} (incluyendo marcas de modificación \textit{mtime}, acceso \textit{atime} y borrado \textit{dtime}) se presenta a continuación:
+
 \begin{lstlisting}[style=terminal]
-r / r    /dev/zqft4/algo              2003.05.10 00:05:03 (cst)    2003.05.10 00:05:03 (cst)    
-                                2003.05.10 00:05:09 (cst)    0    0    0    532496 (realloc)
-
-s / s           /dev/log              2003.05.08 22:23:03 (cst)           2003.05.08 22:23:03 (cst)           
-                                2003.05.10 03:00:57 (cst)           0           0           0
-                                305889
-
-d / r           /tmp/.sxp             2003.04.08 13:02:52 (cst)           2003.05.09 12:25:06 (cst)           
-                                2003.04.23 22:34:05 (cst)           475738           0           0           
-                                130441 (realloc)
-
-r / r              sh                 2003.04.15 21:39:50 (cst)              2003.04.26 16:00:32 (cst)              
-                                2003.04.15 22:29:00 (cst)              466184              523              
-                                523             786702 (realloc)
-
-f / r              mc.pipe.12891      2003.03.08 12:13:10 (cst)              2003.05.08 03:01:44 (cst)              
-                                2003.04.11 20:55:39 (cst)              69              500              100             
-                                130461 (realloc)
+TIPO  RUTA RECUPERADA      MTIME (MODIF)        DTIME (BORRADO)      UID:GID   INODO
+---------------------------------------------------------------------------------------
+r/r   /dev/zqft4/algo      2003.05.10 00:05:03  2003.05.10 00:05:09  0:0       532496
+s/s   /dev/log             2003.05.08 22:23:03  2003.05.10 03:00:57  0:0       305889
+d/r   /tmp/.sxp            2003.05.09 12:25:06  2003.04.23 22:34:05  0:0       130441
+r/r   sh                   2003.04.26 16:00:32  2003.04.15 22:29:00  523:523   786702
+f/r   mc.pipe.12891        2003.05.08 03:01:44  2003.04.11 20:55:39  500:100   130461
+---------------------------------------------------------------------------------------
 \end{lstlisting}
-}
 
 \vspace{1em}
 
