@@ -201,16 +201,23 @@ bit. Si los números coinciden para dos archivos, estos son iguales.
 
 
 
- Los dos archivos son el mismo.
- 
- En este programa existen líneas que explican el origen de varios
-archivos estudiados. También se ve que una de sus funciones es ocultar
-procesos automáticamente y que llama a un programa de nombre
-\texttt{/sbin/init!} entre otras características. Otra función más es hacer invisibles
-a los archivos con \texttt{!} al final de su nombre.
+ Los dos archivos son idénticos a nivel binario. El cotejo del valor hash MD5 (\texttt{4237949f8b00fc64feb9b575a5f6e1dc}) confirma que el binario de inicio del sistema operativo (\texttt{/sbin/init}) fue reemplazado exactamente por una copia del programa malicioso \texttt{/dev/zqft4/sk}.
 
- Se buscaron otros archivos ocultos con el signo de admiración al
-final de su nombre y se encontraron los siguientes:
+\begin{notaforense}[Disección del Rootkit Suckit v1.3b y Evasión vía /dev/kmem]
+El análisis forense de cadenas y estructuras binarias identifica de manera categórica al artefacto \texttt{sk} como el célebre \textbf{Suckit Rootkit versión 1.3b} (diseñado por el investigador \textit{sd} y publicado en la revista \textit{Phrack} \#58 en diciembre de 2001). 
+
+A diferencia de los rootkits tradicionales de la época (como \textit{Knark} o \textit{Adore}), que dependían de la carga de módulos del núcleo (\textit{LKM}) y requerían que el kernel compilara la opción \texttt{CONFIG_MODULES=y}, \textbf{Suckit fue pionero en prescindir por completo de LKMs}:
+\begin{enumerate}
+    \item \textbf{Inyección directa en memoria física:} Abre el archivo de dispositivo especial \texttt{/dev/kmem} en modo lectura/escritura con privilegios de \texttt{root}.
+    \item \textbf{Localización de la IDT y Syscall Table:} Lee la Tabla de Descriptores de Interrupción (\textit{IDT}) para calcular la dirección base del kernel en memoria y extraer el puntero al vector \texttt{sys_call_table[]}.
+    \item \textbf{Reserva de memoria en kernelspace:} Localiza la función del núcleo \texttt{kmalloc()} e invoca su ejecución forzada para asignar un búfer residente en el espacio protegido del kernel.
+    \item \textbf{Enganche de llamadas al sistema (\textit{Syscall Hooking}):} Redirige llamadas críticas como \texttt{sys_getdents64} (listado de directorios), \texttt{sys_read} y \texttt{sys_kill} hacia sus propias rutinas encubiertas.
+    \item \textbf{Regla del sufijo de exclamación (\texttt{!})}: Todo archivo, directorio o proceso cuyo nombre finalice con el carácter \texttt{!} es filtrado automáticamente de las respuestas del kernel, volviéndolo completamente invisible para \texttt{ls}, \texttt{find}, \texttt{ps} y cualquier explorador de archivos.
+    \item \textbf{Persistencia en el arranque (\textit{Boot Persistence}):} Al sobrescribir \texttt{/sbin/init} (el proceso madre con PID 1) y renombrar el init legítimo a \texttt{/sbin/init!}, Suckit garantiza que en cada reinicio del equipo el kernel sea reparcheado en memoria antes de ejecutar el init original.
+\end{enumerate}
+\end{notaforense}
+
+Se buscaron sistemáticamente en el almacenamiento los archivos ocultos que hicieran uso del sufijo de invisibilidad \texttt{!} configurado por Suckit, identificándose los siguientes componentes:
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -437,4 +444,12 @@ directamente desde la línea de comandos o desde un \textit{script} para que fun
 Es muy común que los atacantes no sepan que esos programas están instalados 
 pues están ocultos por el sistema y ni ellos se percatan de su existencia si 
 no conocen de antemano el kit usado.
+
+\begin{retoforense}[Análisis Forense de Limpiadores de Registros (Log Cleaners)]
+El binario \texttt{clean!} (\textit{HideMe}) analiza y reescribe los registros binarios \texttt{wtmp} y \texttt{utmp} para extirpar entradas de una IP o usuario específico. Dado que este programa reescribe el archivo generando un temporal (\texttt{wtmp.hm}) y reemplazándolo mediante \texttt{mv}, ¿qué marcas de tiempo en el inodo de \texttt{/var/log/wtmp} se ven afectadas de manera anómala y cómo delatan la manipulación ante una línea de tiempo pericial (\textit{mactime})?
+\end{retoforense}
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: Blindaje de Kernel y Eliminación de /dev/kmem]
+En la época del incidente (kernels Linux 2.2 y 2.4), el archivo de dispositivo especial \texttt{/dev/kmem} permitía a cualquier proceso con privilegios de superusuario escribir directamente en cualquier dirección de la memoria física o virtual del núcleo. Esta vulnerabilidad arquitectónica habilitó la proliferación de rootkits como Suckit. En los núcleos contemporáneos, esta vía ha sido completamente erradicada: la opción \texttt{CONFIG_DEVKMEM} está obsoleta y deshabilitada, \texttt{CONFIG_STRICT_DEVMEM} restringe el acceso a memoria, y mecanismos modernos de hardware y software como \textit{Lockdown Mode}, \textit{Kernel Address Space Layout Randomization (KASLR)}, \textit{Control Flow Integrity (CFI)} y la firma obligatoria de módulos impiden la manipulación no autorizada del espacio del núcleo.
+\end{perspectiva20}
 

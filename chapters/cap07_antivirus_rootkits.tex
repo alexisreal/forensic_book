@@ -48,6 +48,15 @@ Tiempo total:       55 min 33 s
 
 A partir de esta prospección pericial, se constató que cerca de 900 programas y bibliotecas del sistema operativo se encontraban infectados con el gusano \textit{Unix/RST.A}, un parásito binario que infecta ejecutables ELF inyectando código en el punto de entrada (\textit{entry point}) para abrir conexiones de red encubiertas y habilitar el control remoto del equipo. 
 
+\begin{notaforense}[Anatomía y Comportamiento del Virus Parásito Unix/RST.A]
+Descubierto originalmente en septiembre de 2001, \textbf{Unix/RST.A} representó uno de los primeros virus parásitos directos para arquitecturas Linux ELF de 32 bits. Su funcionamiento técnico se desglosa en:
+\begin{itemize}
+    \item \textbf{Infección de la cabecera ELF:} Agrega una sección parasitaria al final del ejecutable y modifica el punto de entrada (\textit{e_entry}) de la cabecera ELF para desviar la ejecución inicial hacia su propio código inyectado.
+    \item \textbf{Propagación local:} Al ejecutarse cualquier binario infectado bajo la cuenta \texttt{root}, el virus recorre los directorios ejecutables estándar (\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}) infectando sistemáticamente todos los programas en los que tenga permisos de escritura.
+    \item \textbf{Puerta trasera oculta:} Abre un socket crudo (\textit{raw socket}) a la escucha de paquetes ICMP o UDP específicamente estructurados, permitiendo al atacante activar una shell remota con privilegios de superusuario sin abrir ningún puerto TCP tradicional en el sistema.
+\end{itemize}
+\end{notaforense}
+
 Asimismo, se detectaron 115 programas infectados dentro del directorio personal del usuario \texttt{duende}, principalmente en carpetas que simulaban almacenar código fuente de investigación académica. Es relevante señalar que las fechas de modificación de estos binarios correspondían al 24 de abril, mientras que los archivos fuente asociados presentaban marcas temporales de 2001. La alteración de binarios críticos en directorios del sistema (\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}) demostró una manipulación intencional que demandó el uso efectivo de privilegios de superusuario (\texttt{root}). En contraste, la misma prueba ejecutada sobre el sistema de control del laboratorio no arrojó ninguna alerta de infección.
 
 \section{Persistencia Mediante Atributos Inmutables de Ext2 (\texttt{chattr +i})}
@@ -78,3 +87,11 @@ Uno de los mecanismos de evasión más sofisticados observados durante la perici
 En el sistema de archivos Linux Ext2/Ext3, el atributo inmutable (\texttt{+i}) instruye al controlador del kernel para denegar cualquier operación de escritura, truncamiento, renombramiento o supresión de enlace (\textit{unlink}), bloqueando incluso las órdenes emitidas por el superusuario \texttt{root}. Para modificar o suprimir un archivo marcado con este atributo, el administrador está obligado a deshabilitar previamente la bandera mediante el comando \texttt{chattr -i}. 
 
 Por su parte, el atributo \texttt{+a} restringe la apertura del archivo únicamente al modo de adición (\textit{append-only}), impidiendo que su contenido previo sea alterado o vaciado. La presencia coordinada de estos atributos en utilidades de captura de red (como \texttt{dsniff.services}) y en binarios ocultos bajo \texttt{/dev} y \texttt{/var/lib/.identd} evidencia una técnica destinada a garantizar la permanencia del \textit{rootkit} y entorpecer los intentos convencionales de desinfección administrativa.
+
+\begin{retoforense}[Banderas de Inodo en Sistemas de Archivos Ext2]
+En el listado del Cuadro~\ref{lst:lsattr_output}, los archivos presentan la combinación de atributos extendidos \texttt{-u--ia}. Explique qué efecto pericial tiene el atributo \texttt{u} (\textit{undeletable}) a nivel de inodo y por qué un perito forense debe auditar las banderas extendidas antes de intentar eliminar o trasladar archivos sospechosos en una copia de trabajo.
+\end{retoforense}
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: Inmutabilidad como Defensa ante Ransomware]
+Resulta una ironía histórica que la misma técnica utilizada por los atacantes en 2004 (\texttt{chattr +i}) para impedir que los administradores borraran su malware sea hoy una de las defensas más sólidas frente a los ataques de \textit{ransomware}. Los repositorios modernos de respaldos inmutables (como AWS S3 Object Lock en modo \textit{Compliance}, o sistemas ZFS/Ceph con instantáneas WORM: \textit{Write Once, Read Many}) impiden criptográficamente que un actor hostil con credenciales de administrador pueda encriptar o destruir los respaldos antes de detonar su carga destructiva.
+\end{perspectiva20}

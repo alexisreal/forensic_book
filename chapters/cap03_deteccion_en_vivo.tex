@@ -12,18 +12,11 @@ A mediados del mes de abril la administración de cómputo descubrió
 que el equipo estudiado tenía sembrados programas con permisos de
 root no autorizados. Se procedió a hacer una búsqueda de todos los
 programas cuyo propietario fuera root, y también los que tuvieran el
-bit \textbf{SUID} y/o \textbf{SGID} en todo el disco duro. Esta búsqueda
+bit \textbf{SUID} y/o \textbf{SGID} en todo el disco duro mediante la orden \texttt{find / -type f \( -perm -4000 -o -perm -2000 \) -ls}. Esta búsqueda
 dio como resultado que el usuario duende \footnote{En todo el
 informe, serán utilizados los nombres de login tal como aparecen en
 los archivos de registro de las máquinas, y nunca los nombres reales
-de los usuarios.} tenía guardados programas que a primera vista no
-necesitaban esta característica para funcionar. Se procedió entonces
-a cambiar los permisos adicionales de estos programas a los permisos
-normales, pero como el hecho mostraban características sospechosas se
-hizo un análisis completo del sistema. Los programas con los bits
-\textbf{SUID} y/o \textbf{SGID}, son programas que corren con el
-identificador del usuario que los creó, no como el que los ejecutó,
-entre otras funciones particulares.
+de los usuarios.} mantenía en sus directorios privados ejecutables con permisos especiales indebidos. En la arquitectura de seguridad Unix, un archivo binario con el bit \textbf{SUID} (\textit{Set User ID}, modo octal 4000) o \textbf{SGID} (\textit{Set Group ID}, modo octal 2000) adquiere en tiempo de ejecución los privilegios efectivos (\textit{effective UID / GID}) del \textbf{propietario del archivo en disco}, y no los del usuario interactivo que lo invoca. Por consiguiente, si un binario pertenece a \texttt{root} y tiene activo el bit SUID (\texttt{-rwsr-xr-x}), cualquier usuario común puede ejecutarlo y ejecutar instrucciones con plenos privilegios de superusuario en el sistema.
 
 Los resultados de búsqueda de archivos \textbf{SUID} y \textbf{SGID} fuera de lo común en toda la máquina
 son los siguientes:

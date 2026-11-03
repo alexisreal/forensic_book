@@ -2,6 +2,14 @@
 
 Las aplicaciones de acceso a correo web en la década del 2000, desarrolladas con frecuencia como \textit{scripts} CGI en Perl o PHP sin suficiente validación de entradas ni protección contra sesiones concurrentes, representaban una superficie de ataque sumamente vulnerable. El servidor de correo departamental fue analizado minuciosamente para determinar si las intrusiones involucraron la interceptación de correspondencia electrónica.
 
+\begin{notaforense}[Evidencia en Servidores de Correo: De Cabeceras RFC 2822 a Bitácoras CGI]
+El peritaje sobre plataformas de correo combina el análisis en dos niveles:
+\begin{itemize}
+    \item \textbf{Capa de transporte (MTA / POP3 / IMAP):} Registros en \texttt{maillog} y \texttt{authlog} que asocian identificadores únicos de mensaje (\texttt{Message-ID}) con la dirección IP y el puerto del cliente emisor o receptor.
+    \item \textbf{Capa de aplicación web (\textit{OpenWebMail}):} Al operar como un script CGI en Perl, cada acción del usuario (lectura, apertura de adjuntos, eliminación hacia la papelera \texttt{mail-trash}) queda registrada con la marca de tiempo exacta, la cookie de sesión y el identificador del mensaje manipulado, permitiendo demostrar si un buzón fue efectivamente espiado.
+\end{itemize}
+\end{notaforense}
+
 \section{Auditoría de Servicios de Correo Electrónico (POP3 y SMTP)}
  
 
@@ -358,4 +366,12 @@ registro del origen y destino del correo además la posibilidad de
 revisar su contenido, pero esto no tiene importancia para este caso, solo
 se necesitan los tiempos de acceso y origen de la conexión para poder
 correlacionar los eventos.
+
+\begin{retoforense}[Trazabilidad de Sesiones Webmail y Privacidad]
+En las bitácoras de OpenWebMail se aprecian identificadores de sesión (\texttt{duende-session-0.269443440091894}) y comandos de movimiento de mensajes (\texttt{movemsg}). ¿Qué precauciones procesales y de cadena de custodia debe observar un perito informático antes de inspeccionar el contenido de correos electrónicos privados para no vulnerar el secreto de las comunicaciones ni invalidar la prueba judicialmente?
+\end{retoforense}
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: Auditoría de Correo en la Nube Empresarial]
+En 2004, los buzones de correo residían en archivos mbox planos en \texttt{/var/mail/} o directorios Maildir en FreeBSD, y las acciones de webmail se auditaban en archivos de texto locales. En la actualidad, con plataformas como Microsoft 365 Exchange Online o Google Workspace, el peritaje de correo exige extraer bitácoras unificadas de auditoría (\textit{Unified Audit Log} - UAL) mediante PowerShell o Graph API. Eventos críticos como \texttt{MailItemsAccessed} permiten certificar con precisión qué mensajes específicos fueron sincronizados o visualizados por un atacante que hubiera vulnerado una cuenta mediante ataques de fatiga de MFA o robo de tokens de sesión.
+\end{perspectiva20}
 

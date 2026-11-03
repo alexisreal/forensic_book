@@ -34,9 +34,60 @@ Sistema operativo base & GNU/Linux Debian 3.0-r1 (\textit{Woody}) \\
 
 \section{Ubicación Física y Topología de Red}
 
-El equipo analizado se encontraba físicamente instalado en el centro de cómputo departamental del edificio central del campus universitario. La interconexión física hacia la infraestructura general de la institución se realizaba a través de una tarjeta de interfaz de red Fast Ethernet (100~Mbps) conectada directamente a un conmutador (\textit{switch}) central mediante cableado estructurado en topología de estrella.
+El equipo analizado se encontraba físicamente instalado en el centro de cómputo departamental del edificio central del campus universitario. La interconexión física hacia la infraestructura general de la institución se realizaba a través de una tarjeta de interfaz de red Fast Ethernet (100~Mbps) conectada directamente a un conmutador (\textit{switch}) central mediante cableado estructurado en topología de estrella, conforme al esquema presentado en la Figura~\ref{fig:topologia_red}.
 
-Desde el punto de vista funcional y de almacenamiento, el servidor mantenía montajes de red compartidos vía NFS (\textit{Network File System}) y Samba con el servidor secundario \texttt{atlas} (\texttt{192.0.2.20}), permitiendo a profesores, investigadores y estudiantes el acceso interactivo a sus directorios personales tanto a través de sesiones remotas de consola (mediante SSH y Telnet/FTP tradicional) como mediante terminales gráficas remotas vía XDMCP. Esta concentración de servicios y privilegios convertía a la máquina en un objetivo prioritario dentro de la infraestructura departamental.
+\begin{figure}[htbp]
+\centering
+\begin{lstlisting}[style=terminal]
+                   Internet / Red Dorsal Universitaria
+                                   |
+                         [Enrutador Perimetral]
+                           192.0.2.1 (Gateway)
+                                   |
+         ================== Dorsal Fast Ethernet ==================
+                 |                         |                |
+          +--------------+          +--------------+   [Estaciones]
+          |    helios    |          |    atlas     |   192.0.2.29 (X11)
+          |  192.0.2.10  |          |  192.0.2.20  |   192.0.2.30 (Lab)
+          | Debian Woody |          | Debian Woody |   192.0.2.67 (Lab)
+          +--------------+          +--------------+   192.0.2.89 (Admin)
+                 |                         |
+                 +----- NFS / NIS / SMB ---+
+\end{lstlisting}
+\caption{Topología de interconexión y direccionamiento de la red departamental.}
+\label{fig:topologia_red}
+\end{figure}
+
+Desde el punto de vista funcional y de almacenamiento, el servidor mantenía montajes de red compartidos vía NFS (\textit{Network File System}) y Samba con el servidor secundario \texttt{atlas} (\texttt{192.0.2.20}), permitiendo a profesores, investigadores y estudiantes el acceso interactivo a sus directorios personales tanto a través de sesiones remotas de consola (mediante SSH y Telnet/FTP tradicional) como mediante terminales gráficas remotas vía XDMCP. 
+
+\section{Matriz de Servicios Expuestos y Superficie de Ataque}
+
+La convergencia de servicios heterogéneos sobre un único host central constituía una práctica habitual de ahorro presupuestario en los centros universitarios de la época, pero multiplicaba exponencialmente los vectores de compromiso lateral, como se resume en el Cuadro~\ref{tab:servicios_expuestos}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{llll}
+\toprule
+\textbf{Puerto / Protocolo} & \textbf{Servicio Daemon} & \textbf{Finalidad Operativa} & \textbf{Vector de Riesgo Evaluado} \\
+\midrule
+\texttt{21/tcp} & ProFTPD 1.2 & Transferencia de archivos & Fuerza bruta contra usuarios locales \\
+\texttt{22/tcp} & OpenSSH 3.4p1 & Acceso de administración & Exposición de sesiones interactivas \\
+\texttt{23/tcp} & in.telnetd & Terminales de laboratorio & Tráfico en texto claro, interceptable \\
+\texttt{25/tcp} & Sendmail 8.12 & Relevo de correo institucional & Vulnerabilidades en procesamiento MIME \\
+\texttt{110/tcp} & Qpopper / UW-IMAP & Descarga de correspondencia & Cuentas con claves débiles de diccionario \\
+\texttt{139, 445/tcp} & Samba smbd & Compartición con clientes Windows & Autenticación basada en hash LANMAN \\
+\texttt{177/udp} & XDMCP (X Display) & Sesiones gráficas remotas & Conexión sin cifrado a escritorios X11 \\
+\texttt{2049/tcp,udp} & NFS (knfsd) & Montaje de \texttt{/home} entre nodos & Relación de confianza de UID en red \\
+\bottomrule
+\end{tabular}
+\caption{Matriz de puertos y servicios de red activos en \texttt{helios}.}
+\label{tab:servicios_expuestos}
+\end{table}
+
+\begin{retoforense}[Evaluación de la Superficie de Ataque]
+A partir de la matriz de servicios expuestos en el Cuadro~\ref{tab:servicios_expuestos}, identifique qué protocolos transmitían credenciales en texto plano a través del segmento Ethernet compartido y deduzca qué impacto tenía esta debilidad frente a un atacante que hubiera obtenido acceso con privilegios de usuario regular sobre cualquier estación de trabajo del laboratorio.
+\end{retoforense}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: Topología y Perímetro]
 En 2004, era una práctica habitual conectar servidores de cómputo directamente con direcciones IP públicas sin capas de inspección profunda de paquetes ni arquitecturas de confianza cero (\textit{Zero Trust}). Actualmente, un sistema análogo operaría dentro de una nube privada virtual (VPC), aislado tras pasarelas seguras (\textit{bastion hosts}), balanceadores de carga con WAF, segmentación por microperímetros y autenticación reforzada mediante llaves criptográficas basadas en hardware (FIDO2/WebAuthn).

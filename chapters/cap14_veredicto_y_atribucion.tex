@@ -4,7 +4,25 @@ La fase final de toda investigación pericial consiste en integrar la totalidad 
 
 \section{Doble Vector de Intrusión y Perfil de los Atacantes}
 
-El análisis forense integral demuestra con certeza pericial la convergencia de \textbf{dos intrusiones de naturaleza e intencionalidad claramente diferenciadas}:
+El análisis forense integral demuestra con certeza pericial la convergencia de \textbf{dos intrusiones de naturaleza e intencionalidad claramente diferenciadas}, comparadas en el Cuadro~\ref{tab:comparativa_intrusiones}:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lp{6.5cm}p{6.5cm}}
+\toprule
+\textbf{Dimensión Pericial} & \textbf{Intrusión 1: Oportunista Externa} & \textbf{Intrusión 2: Espionaje Interno} \\
+\midrule
+\textbf{Vector de Entrada} & Fuerza bruta FTP / Cuentas con claves débiles (\texttt{cgarcia}, \texttt{alopez}) & Acceso a consola local / Aprovechamiento del desconcierto \\
+\textbf{Móvil Principal} & Apropiación de ancho de banda y CPU para bots IRC (\textit{psyBNC}, \textit{Eggdrop}) & Espionaje de contraseñas de \texttt{root}, intercepción de correo y control nodal \\
+\textbf{Herramientas Clave} & \texttt{in.ftpd}, \texttt{emech}, \texttt{psybnc}, scripts de retransmisión & Rootkit Suckit (\texttt{sk}, \texttt{init!}), sniffer \texttt{in.telnetd}, \texttt{clean!} \\
+\textbf{Evasión Empleada} & Directorios ocultos (\texttt{...}, \texttt{.king}) & Parcheo de kernel vía \texttt{/dev/kmem}, atributos \texttt{chattr +i}, sufijo \texttt{!} \\
+\textbf{Perfil Técnico} & Automatizado, oportunista, dispersión geográfica internacional & Usuario con acceso físico al edificio, conocimiento de topología, torpeza operativa \\
+\bottomrule
+\end{tabular}
+\caption{Matriz comparativa de los dos vectores de intrusión convergentes.}
+\label{tab:comparativa_intrusiones}
+\end{table}
 
 \begin{enumerate}
     \item \textbf{La intrusión oportunista externa (servicios parásitos):}
@@ -30,6 +48,14 @@ La investigación de los servidores bajo administración departamental demostró
 
 El patrón de actividad registrado en la cuenta \texttt{duende} evidencia un conocimiento directo del compromiso del sistema y la tenencia de múltiples herramientas ofensivas empleadas en el ataque. La ejecución de estos binarios, la inspección no autorizada de correspondencia electrónica en el servidor de correo y el intento deliberado de ocultar la evidencia modificando la propiedad de los archivos de \texttt{duende} a \texttt{root} comprometen formalmente la responsabilidad de dicha cuenta.
 
+\begin{notaforense}[El Estándar Jurídico de la Atribución: Cuenta vs. Persona Física]
+En el derecho procesal y la práctica forense judicial, existe una distinción capital entre demostrar la autoría de una \textbf{cuenta digital} y atribuir el hecho a una \textbf{persona física}:
+\begin{itemize}
+    \item La evidencia pericial sobre \texttt{helios}, \texttt{atlas} e \texttt{io} demostró de manera directa e irrefutable que las acciones maliciosas fueron ejecutadas por la cuenta \texttt{duende} y desde direcciones IP asignadas a conexiones locales de Morelia.
+    \item Para trasladar la responsabilidad pericial hacia la persona titular de la cuenta en un proceso judicial, el perito debe respaldarse en la \textit{prueba indiciaria concurrente}: correlación de horarios de presencia física en el laboratorio, titularidad de la línea telefónica del ISP certificada por orden judicial, testimonios y ausencia de indicios de usurpación o malware en el equipo personal del sospechoso.
+\end{itemize}
+\end{notaforense}
+
 \section{Medidas de Contención, Remediación y Cierre Pericial}
 
 Como parte de la estrategia de contención y saneamiento:
@@ -40,3 +66,7 @@ Como parte de la estrategia de contención y saneamiento:
 \end{itemize}
 
 Con este dictamen, la Administración del Centro de Cómputo del Instituto de Física y Matemáticas de la UMSNH dio por concluidas las indagatorias formales del incidente, tras acumular más de 180 horas de trabajo pericial de campo y análisis documental exhaustivo.
+
+\begin{retoforense}[Defensa del Dictamen Pericial en Juicio Oral]
+Si la defensa legal del sospechoso alegara en sede judicial que un intruso externo desconocido vulneró la cuenta \texttt{duende} mediante un troyano para incriminarlo falsamente (\textit{the Trojan Horse defense}), ¿qué elementos técnicos recabados en este peritaje (correlación de accesos locales, archivos de configuración de Midnight Commander, atributos de inmutabilidad erróneos y accesos simultáneos) sustentan de forma sólida la hipótesis pericial del informe?
+\end{retoforense}

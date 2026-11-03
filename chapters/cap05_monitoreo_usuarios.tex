@@ -2,6 +2,10 @@
 
 Una vez descubiertos los artefactos sin que el atacante advirtiera la intervención pericial, se tomó la decisión estratégica de establecer un monitoreo encubierto. A través de la supervisión de las sesiones interactivas asociadas a la cuenta sospechosa \texttt{duende}, el equipo de investigación pudo registrar en tiempo real las tácticas, técnicas y procedimientos (TTP) del intruso.
 
+\begin{notaforense}[El Dilema Táctico: Contención Inmediata vs. Monitoreo Activo]
+En la respuesta pericial a incidentes, los investigadores enfrentan frecuentemente la disyuntiva entre desconectar el sistema de inmediato para detener el ataque o mantenerlo bajo observación controlada. La contención prematura alerta al atacante, quien puede destruir evidencias o activar rutinas de autodestrucción. Por el contrario, la supervisión en vivo permite documentar la identidad operativa, interceptar credenciales en vuelo y mapear la totalidad de la red comprometida. Esta táctica únicamente debe sostenerse si el equipo pericial puede garantizar que no se comprometerá la confidencialidad de datos de terceros ni se utilizará el servidor para vulnerar infraestructuras externas.
+\end{notaforense}
+
 \section{Supervisión Activa y Registro de Conexiones}
 
 Se procedió a monitorear la actividad del usuario duende. La lista de
@@ -875,4 +879,12 @@ Esto quiere decir, que pueden existir archivos que no se ven con el sistema
 funcionando si esta corriendo el LKM. Se sospechaba de antemano de la presencia 
 de un LKM pues había una referencia a \texttt{/sbin/init!} el que no aparece en los
 listados que se obtuvieron.
+
+\begin{retoforense}[Discrepancia entre /proc y llamadas de ps]
+La alerta de \texttt{chkrootkit} (\textit{You have 11 process hidden for ps command}) se genera contrastando las entradas devueltas por la llamada al sistema \texttt{sys_getdents()} sobre el sistema de archivos \texttt{/proc} frente a las salidas de \texttt{ps}. Si un intruso modifica la tabla del kernel pero olvida ocultar los subdirectorios numéricos en \texttt{/proc}, ¿cómo puede un analista listar los PIDs reales mediante un script de consola que no dependa de binarios del sistema?
+\end{retoforense}
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: EDR y Registro de Telemetría]
+En 2004, la supervisión de intrusos en vivo dependía de utilidades de espionaje en terminales virtuales (\texttt{ttysnoop}), comandos \texttt{w} recurrentes e inspección manual de \texttt{/var/log/wtmp}. En la actualidad, las soluciones de detección y respuesta en terminales (\textit{Endpoint Detection and Response} - EDR) como CrowdStrike Falcon, SentinelOne o Microsoft Defender for Endpoint recopilan telemetría continua a nivel de kernel mediante \textit{eBPF} en Linux o \textit{Kernel Patch Protection (PatchGuard)} en Windows, registrando cada árbol de procesos hijos, llamadas al sistema, conexiones de red y modificaciones de memoria sin interferir con la sesión interactiva del operador.
+\end{perspectiva20}
 

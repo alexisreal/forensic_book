@@ -2,6 +2,10 @@
 
 Las bitácoras de auditoría del sistema operativo (\texttt{/var/log/messages}, \texttt{secure}, \texttt{wtmp}, \texttt{xferlog}) ofrecen el testimonio cronológico de autenticaciones, conexiones externas y comandos privilegiados. En este capítulo se analizan las secuencias de eventos registradas, desentrañando además los intentos del atacante por limpiar y manipular los archivos de registro.
 
+\begin{notaforense}[Arquitectura de Auditoría Syslog y Vulnerabilidad Local]
+El servicio estándar de registro (\texttt{syslogd} / RFC 3164) clasifica los eventos por origen (\textit{facility}: \texttt{auth}, \texttt{authpriv}, \texttt{daemon}, \texttt{kern}, \texttt{mail}) y nivel de severidad (\textit{severity}: \texttt{info}, \texttt{warning}, \texttt{err}, \texttt{alert}). En servidores aislados de la época sin reenvío remoto de registros (\textit{syslog forwarding} sobre UDP 514), el almacenamiento de las bitácoras residía exclusivamente en texto plano bajo \texttt{/var/log/}. En consecuencia, en cuanto un intruso adquiría privilegios de superusuario (\texttt{root}), podía alterar, truncar o reescribir selectivamente las bitácoras para borrar sus huellas (como se comprobó con la utilidad \texttt{clean!}). Por esta razón, el perito debe contrastar siempre las bitácoras en disco contra las líneas de tiempo de inodos (\textit{mactime}) y los registros binarios de contabilidad (\textit{accounting}).
+\end{notaforense}
+
 \section{Auditoría de Bitácoras del Sistema (\texttt{syslog}, \texttt{secure} y \texttt{xferlog})}
 
 Las salidas están resumidas a lo mas esencial, algunas líneas se
@@ -863,4 +867,12 @@ persona, pero duende se conecta inexplicablemente siempre desde
 atlas cuando puede hacerlo sin ningún obstáculo directamente hasta
 helios. Muchas veces se repite el patrón así que se piensa que no
 es casual.
+
+\begin{retoforense}[Correlación Temporal entre Cuentas Concomitantes]
+A partir del extracto de conexiones del 15 de abril, analice la secuencia de tiempos entre \texttt{proa} (conectado desde el proveedor externo Telemedia) y \texttt{duende} (conectado internamente desde \texttt{atlas}). ¿Qué hipótesis pericial explica que un operador alterne entre una conexión externa y un pivoteo interno sobre la red local? ¿Cómo verificaría si se trataba de dos personas coordinadas o de un único operador controlando dos sesiones de terminal?
+\end{retoforense}
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: De Syslog Local a SIEM y Almacenamiento Inmutable]
+En 2004, la minería de bitácoras exigía filtrar manualmente gigabytes de texto plano mediante cadenas de \texttt{grep}, \texttt{awk} y \texttt{sed} sobre archivos locales altamente expuestos al borrado malicioso. Hoy en día, los centros de operaciones de seguridad (SOC) recopilan eventos en tiempo real mediante sistemas de gestión de eventos e información de seguridad (\textit{SIEM}) como Splunk, Microsoft Sentinel o Elastic Security. Los registros son reenviados instantáneamente mediante agentes cifrados con mTLS hacia lagos de datos (\textit{data lakes}) inmutables y analizados automáticamente mediante modelos de detección de anomalías y correlación de identidades (\textit{UEBA - User and Entity Behavior Analytics}).
+\end{perspectiva20}
 

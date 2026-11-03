@@ -2,6 +2,18 @@
 
 Cuando un intruso advierte la posibilidad de ser detectado o concluye una fase de su ataque, suele ejecutar comandos de borrado (\texttt{rm -rf}) para suprimir sus herramientas y bitácoras intermedias. Sin embargo, en el sistema de archivos Ext2/Ext3, la eliminación de un archivo desasocia el inodo del directorio pero mantiene intactos los bloques de datos en el disco magnético hasta que son reutilizados por nuevas operaciones de escritura.
 
+\begin{notaforense}[Mecánica Forense de Eliminación en Ext2: Inodos Huérfanos y Carving]
+Cuando en un sistema Linux Ext2 se ejecuta la llamada al sistema \texttt{unlink()}:
+\begin{enumerate}
+    \item La entrada de directorio (\textit{dentry}) desasocia el nombre del archivo y el inodo.
+    \item El contador de enlaces del inodo (\texttt{i_links_count}) disminuye a 0.
+    \item Se registra la marca de tiempo de borrado (\texttt{i_dtime}) con el tiempo Epoch actual.
+    \item Los mapas de bits de inodos y de bloques marcan esas estructuras como disponibles para el sistema operativo.
+    \item \textbf{Los bloques de datos físicos NO se destruyen}: permanecen íntegros en los sectores del disco magnético (\textit{unallocated clusters}) hasta que otro archivo los sobrescribe.
+\end{enumerate}
+Mediante herramientas forenses como \texttt{ils} (para listar inodos desasociados con tiempo de borrado), \texttt{icat} (para volcar directamente los bloques asociados a un inodo huérfano) y técnicas de tallado de datos (\textit{file carving} por firmas de cabecera y pie), el perito puede resucitar archivos eliminados meses atrás si el bloque no fue reutilizado.
+\end{notaforense}
+
 \section{Recuperación de Inodos Huérfanos y Datos No Asignados (\textit{Carving})}
 
 
@@ -52,13 +64,12 @@ f / r  	    	mc.pipe.12891      2003.03.08 12:13:10 (cst)  	    	2003.05.08 03:0
  Los archivos anteriores son logs del sistema y ejecutables de \textbf{IRC}. Lo
 que es de destacar es la existencia de un archivo llamado \texttt{algo}.
 Parece ser que \texttt{algo} fue una prueba de control. La palabra \texttt{algo}
-esta en español por lo que podemos decir que la instalación fue hecha
-por un hispano parlante. \texttt{/tmp.sxp} fue recuperado pero parece ser que
-esta ligado al \textit{exploit} completo del \texttt{sendmail} en el directorio \texttt{/ex}.\\
+está en español por lo que podemos decir que la instalación fue realizada
+por un hispanoparlante. El archivo \texttt{/tmp/.sxp} fue recuperado e identificado
+como parte del paquete de explotación contra el servicio \texttt{sendmail} en el directorio \texttt{/ex}.\\
  
 
- \texttt{mc.pipe.1281} es un archivo temporal propiedad del usuario duende y
-contiene referencias de un \textit{script} ejecutado desde mc por el mismo usuario.\\
+ \texttt{mc.pipe.12891} es un archivo de tubería temporal creado por el administrador de archivos \textit{Midnight Commander} (\texttt{mc}), propiedad del usuario \texttt{duende}, y contiene referencias de un \textit{script} ejecutado desde la interfaz de dicho usuario.\\
 
  Su contenido es el siguiente:
  
@@ -82,8 +93,16 @@ ecko
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Esto muestra claramente que el el 11 de abril, el usuario duende
-ejecutó desde el \texttt{midnight commander} varios de los programas que
+ Esto demuestra de manera incontrovertible que el 11 de abril, el usuario \texttt{duende}
+ejecutó desde \texttt{Midnight Commander} varios de los programas maliciosos que
 estamos estudiando. Recordemos que estos son archivos eliminados y
-recuperados para esta investigación.
+recuperados pericialmente para esta investigación.
+
+\begin{retoforense}[Recuperación de Archivos Temporales de Aplicaciones]
+El archivo \texttt{mc.pipe.12891} documentó la lista de procesos simulados del malware. ¿Por qué utilidades interactivas de consola como \texttt{mc}, \texttt{screen} o editores como \texttt{vim} dejan artefactos residuales en \texttt{/tmp} o \texttt{/var/tmp} y de qué manera un perito forense puede utilizarlos para reconstruir la interacción del usuario cuando el atacante ha eliminado su archivo \texttt{.bash_history}?
+\end{retoforense}
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: File Carving en Discos SSD Modernos y TRIM]
+En 2004, la recuperación de archivos borrados sobre discos magnéticos IDE/SCSI era una técnica pericial con altísima tasa de éxito, debido a que los bloques permanecían físicamente intactos hasta su sobreescritura accidental. En la actualidad, con el predominio absoluto de las unidades de estado sólido (SSD NVMe) y el comando \textit{TRIM / Deallocate}, cuando el sistema operativo borra un archivo, el controlador del SSD pone a cero inmediatamente los bloques lógicos para optimizar los ciclos de escritura. En dispositivos modernos con TRIM activo, el \textit{file carving} estático devuelve únicamente ceros (\texttt{0x00}), obligando a la disciplina forense contemporánea a priorizar la captura de memoria RAM volátil y copias de seguridad en la nube.
+\end{perspectiva20}
 
