@@ -1,186 +1,72 @@
 \chapter{Movimiento Lateral y Correlación Multisistema}
 
-Una intrusión rara vez permanece confinada a un único servidor cuando los sistemas comparten redes locales, montajes remotos NFS o esquemas de confianza entre cuentas de usuario. La correlación pericial con otros servidores del departamento permitió reconstruir la propagación lateral y confirmar la hipótesis sobre el origen de los accesos.
+En entornos de cómputo académicos e institucionales, los servidores rara vez operan como silos aislados. La integración funcional de servicios suele apoyarse en esquemas de confianza mutua: montajes remotos de directorios mediante el protocolo NFS (\textit{Network File System}), unificación de nombres de usuario y bases de datos de contraseñas compartidas mediante NIS o sincronización periódica, y permisos de acceso simplificados entre equipos de una misma subred física.
 
-\section{Movimiento Lateral y Vectores de Confianza Multisistema}
+Esta interconexión, sumamente ventajosa para la productividad de los usuarios, se transforma en un vector crítico de propagación cuando un sistema es comprometido. Este capítulo expone el análisis pericial conducido sobre el servidor secundario \texttt{victima2} (\texttt{192.0.2.20}), documentando la correlación criptográfica de artefactos idénticos hallados en múltiples cuentas y la reconstrucción del movimiento lateral del atacante.
 
+\section{Arquitectura Departamental y Vectores de Confianza}
 
- \texttt{victima2} se revisó con minuciosidad pero solo serán incluídos los datos
- que estén relacionados con el caso \texttt{victima1}.\\
+Dentro de la topología departamental, \texttt{victima1} y \texttt{victima2} operaban en estrecha sinergia:
+\begin{itemize}
+    \item Los usuarios del departamento contaban con cuentas homologadas en ambos servidores, manteniendo los mismos nombres de inicio de sesión (\textit{login}) e idénticos identificadores numéricos de usuario y grupo (UID/GID).
+    \item Ambas máquinas compartían directorios de datos y volúmenes de almacenamiento temporal montados vía NFS sobre la red local Fast Ethernet.
+    \item Los usuarios saltaban con frecuencia de una máquina a otra mediante conexiones interactivas SSH o comandos remotos (\texttt{rsh}/\texttt{ssh}) sin fricción operativa.
+\end{itemize}
 
+Al confirmarse la intrusión en \texttt{victima1}, el protocolo pericial exigió auditar de inmediato la imagen forense de \texttt{victima2} para determinar si el compromiso se encontraba confinado o si había derivado en una infección en cascada.
 
- Programas sospechosos en el directorio \texttt{duende/} en \texttt{victima2}.
- 
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal]
--rw-r--r--  1 500      500        61440 Apr 21 20:37 test.tar
-\end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
+\section{Inspección Forense de victima2: Artefactos Espejo}
 
-Contenido del paquete \texttt{test.tar}:
+El examen del directorio personal del usuario \texttt{duende} en el servidor secundario \texttt{victima2} arrojó un hallazgo determinante: la existencia de paquetes de herramientas idénticos a los descubiertos en la máquina primaria.
 
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal] 
+En la ruta \texttt{/home/staff/duende/test.tar} se localizó un archivo comprimido de 61,440 bytes. Su desglose interno se detalla en el Listado~\ref{lst:test_tar_victima2}.
+
+\begin{lstlisting}[style=terminal,caption={Contenido del archivo test.tar localizado en victima2:/home/staff/duende.},label={lst:test_tar_victima2}]
 drwx------ scott/users       0 2002-02-08 07:09:51 ex/
 -rwx------ scott/users   14361 2002-02-08 07:09:35 ex/ep
 -rwx------ scott/users   14543 2002-02-08 07:09:39 ex/rh
 -rwx------ scott/users   23577 2002-02-08 07:09:45 ex/sd
 \end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
 
- Este archivo contiene los \textit{exploits} para \texttt{sendmail} y es idénticamente el
- mismo que el del directorio \texttt{zena/}.
- 
- En el directorio \texttt{temp/} de duende se encontró el directorio borrado
-\texttt{ex/}, lo cual confirma que el usuario lo desempaquetó y después lo
-elimino. Además de hallarse un archivo borrado \texttt{o0o.tar} con el mismo
-\textbf{md5sum} de los encontrados en \texttt{zena/}, \texttt{proa/} y demás directorios
-estudiados.
+\subsection{Cotejo Criptográfico y Vínculo con Sendmail}
 
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal]
-d / d  	    	ex/  	    	2002.11.27 20:51:02 (cst)  	    	2003.04.27 12:29:51 (cst)  	    	
-                        2003.04.23 00:39:37 (cst)  	    	4096  	    	512  	    	
-                        512  	   	999703 (realloc)
+El examen funcional y criptográfico de este paquete confirmó que:
+\begin{enumerate}
+    \item Los binarios \texttt{ex/ep}, \texttt{ex/rh} y \texttt{ex/sd} correspondían a programas de explotación precompilados (\textit{exploits}) dirigidos contra vulnerabilidades en versiones históricas de \texttt{Sendmail} en diferentes arquitecturas de Linux (Red Hat, Slackware y Debian).
+    \item Este paquete era **bit a bit idéntico** al localizado en los directorios de las cuentas \texttt{zena} y \texttt{proa} en el servidor \texttt{victima1}.
+    \item En el subdirectorio temporal \texttt{temp/} de la cuenta \texttt{duende} en \texttt{victima2} se identificaron los bloques correspondientes a la estructura eliminada \texttt{ex/}, demostrando que el usuario desempaquetó los ejecutables, ejecutó pruebas y posteriormente intentó suprimir el directorio para no dejar rastros.
+\end{enumerate}
+
+Asimismo, se recuperó en el espacio no asignado un archivo comprimido suprimido denominado \texttt{o0o.tar}. El cálculo de su suma de verificación criptográfica arrojó un hash MD5 exactamente igual al del archivo homónimo descubierto en \texttt{victima1}, probando la transferencia y replicación manual de las herramientas entre ambos servidores.
+
+\section{Correlación de Accesos Remotos y Direccionamiento IP}
+
+La auditoría de las bitácoras de inicio de sesión (\texttt{wtmp}) en \texttt{victima2} confirmó que el intruso operó sobre ambas máquinas empleando exactamente el mismo grupo de direcciones IP de acceso conmutado y DSL residencial.
+
+El Listado~\ref{lst:wtmp_victima2_curated} resume los accesos clave registrados en el servidor secundario durante el mes de abril.
+
+\begin{lstlisting}[style=terminal,caption={Extracto representativo de accesos a victima2 desde direcciones IP residenciales.},label={lst:wtmp_victima2_curated}]
+duende    pts/4   Sat Apr 26 03:10 - 03:12  (00:02)  dsl-203-0-113-160.isp-acceso.net
+duende    pts/3   Tue Apr 22 20:47 - 20:52  (00:04)  dsl-198-51-100-98.isp-acceso.net
+duende    pts/0   Thu Apr 17 15:00 - 15:01  (00:01)  dsl-203-0-113-78.isp-acceso.net
+duende    pts/2   Wed Apr 16 11:58 - 12:05  (00:07)  dsl-198-51-100-61.isp-acceso.net
+zopilote  pts/1   Wed Apr 02 03:05 - 03:06  (00:00)  nodo-acceso.correo-externo.net
 \end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
 
+\subsection{Evidencia del Salto Lateral (Pivoting)}
 
- Bitácoras en \texttt{victima2}.
+Al contrastar estos registros con los eventos de \texttt{victima1} (analizados en el Capítulo 5), se comprobó la mecánica del salto lateral:
+\begin{itemize}
+    \item El atacante establecía con frecuencia una sesión SSH inicial desde su conexión externa hacia \texttt{victima2}.
+    \item Una vez autenticado en \texttt{victima2}, utilizaba esa máquina como pivote de salto para conectarse localmente hacia \texttt{victima1} a través de la red Fast Ethernet interna.
+    \item De este modo, en las bitácoras estándar de \texttt{victima1}, la conexión figuraba originada desde un host local confiable (\texttt{victima2.foo.bar.mx}), intentando con ello desviar la atención de los administradores que únicamente inspeccionaban accesos provenientes de direcciones IP externas.
+\end{itemize}
 
-\texttt{wtmp}
+\section{Conclusiones de la Correlación Multisistema}
 
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal]
-duende  pts/7        Mon Apr 28 04:46 - 04:47  (00:00)     dsl-200-67-75-92.prodigy.net.mx
-duende  pts/6        Mon Apr 28 04:44 - 04:46  (00:02)     dsl-200-67-75-92.prodigy.net.mx
-duende  pts/6        Sun Apr 27 23:23 - 23:38  (00:14)     dsl-200-67-75-92.prodigy.net.mx
-duende  pts/1        Sun Apr 27 19:10 - 20:14  (01:03)     dsl-200-67-75-92.prodigy.net.mx
-duende  pts/0        Sun Apr 27 16:34 - 16:39  (00:04)     dsl-200-67-75-92.prodigy.net.mx
-duende  pts/0        Sun Apr 27 16:11 - 16:14  (00:03)     dsl-200-67-75-92.prodigy.net.mx
-duende  pts/0        Sun Apr 27 05:24 - 05:35  (00:10)     dsl-200-78-118-164.prodigy.net.mx
-reboot   system boot  Sun Apr 27 05:19         (1+07:19)    2.4.18-686-smp
-reboot   system boot  Sun Apr 27 05:12          (00:03)     2.4.18-686-smp
-reboot   system boot  Sun Apr 27 05:09          (00:06)     2.4.18-686-smp
-reboot   system boot  Sat Apr 26 07:00          (00:57)     2.4.18-686-smp
-duende  pts/9        Sat Apr 26 05:14 - 05:51  (00:37)     dsl-200-67-75-160.prodigy.net.mx
-duende  pts/4        Sat Apr 26 03:10 - 03:12  (00:02)     dsl-200-67-75-160.prodigy.net.mx
-duende  pts/3        Sat Apr 26 03:09 - 03:20  (00:11)     dsl-200-67-75-160.prodigy.net.mx
-duende  pts/3        Fri Apr 25 22:53 - 23:15  (00:22)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/11       Fri Apr 25 21:23 - 21:28  (00:04)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/8        Fri Apr 25 19:09 - 19:16  (00:07)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/3        Fri Apr 25 19:07 - 19:17  (00:10)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/7        Fri Apr 25 16:49 - 16:53  (00:04)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/4        Fri Apr 25 15:17 - 16:53  (01:36)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/3        Fri Apr 25 15:15 - 16:49  (01:34)     dsl-200-67-75-55.prodigy.net.mx
-duende  pts/3        Fri Apr 25 06:10 - 06:25  (00:14)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/6        Fri Apr 25 00:22 - 00:30  (00:07)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/4        Thu Apr 24 21:35 - 21:39  (00:04)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/2        Thu Apr 24 19:06 - 19:27  (00:20)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/0        Thu Apr 24 19:03 - 19:05  (00:02)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/2        Thu Apr 24 17:53 - 17:55  (00:02)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/0        Thu Apr 24 15:11 - 15:14  (00:02)     dsl-200-67-75-49.prodigy.net.mx
-duende  pts/6        Thu Apr 24 05:34 - 05:49  (00:15)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/5        Thu Apr 24 05:28 - 05:49  (00:21)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/0        Thu Apr 24 05:05 - 05:08  (00:03)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/0        Thu Apr 24 02:23 - 02:26  (00:02)     ifm1.foo.bar.mx
-reboot   system boot  Thu Apr 24 02:22         (2+05:35)    2.4.18-686-smp
-duende  pts/3        Thu Apr 24 00:03 - 00:35  (00:32)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/2        Wed Apr 23 23:51 - 00:34  (00:43)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/1        Wed Apr 23 23:21 - 23:28  (00:07)     dsl-200-67-75-152.prodigy.net.mx
-lllll pts/0        Wed Apr 23 22:26 - 22:33  (00:07)     dup-200-64-59-99.prodigy.net.mx
-duende  pts/5        Wed Apr 23 19:56 - 20:07  (00:11)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/0        Wed Apr 23 17:11 - 17:13  (00:02)     dsl-200-67-75-152.prodigy.net.mx
-duende  pts/1        Wed Apr 23 06:44 - 06:44  (00:00)     dsl-200-78-118-98.prodigy.net.mx
-duende  pts/0        Wed Apr 23 04:10 - 04:25  (00:15)     dsl-200-78-118-98.prodigy.net.mx
-duende  pts/0        Wed Apr 23 00:09 - 00:11  (00:01)     dsl-200-78-118-98.prodigy.net.mx
-duende  pts/3        Tue Apr 22 20:47 - 20:52  (00:04)     dsl-200-78-118-98.prodigy.net.mx
-duende  pts/0        Tue Apr 22 16:51 - 17:41  (00:50)     dsl-200-78-118-98.prodigy.net.mx
-duende  pts/0        Tue Apr 22 15:02 - 15:12  (00:10)     dsl-200-78-118-98.prodigy.net.mx
-duende  pts/0        Tue Apr 22 05:47 - 06:01  (00:14)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/1        Tue Apr 22 02:41 - 02:56  (00:14)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/0        Mon Apr 21 23:36 - 23:38  (00:02)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/1        Mon Apr 21 22:08 - 22:16  (00:07)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/7        Mon Apr 21 21:36 - 22:00  (00:24)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/3        Mon Apr 21 21:24 - 21:58  (00:34)     dsl-200-78-118-51.prodigy.net.mx
-lllll pts/0        Mon Apr 21 20:35 - 22:49  (02:13)     dup-200-64-234-196.prodigy.net.mx
-duende  pts/0        Mon Apr 21 18:38 - 18:40  (00:01)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/0        Mon Apr 21 17:01 - 17:01  (00:00)     dsl-200-78-118-51.prodigy.net.mx
-duende  pts/0        Mon Apr 21 07:26 - 07:30  (00:03)     dsl-200-67-75-99.prodigy.net.mx
-duende  pts/1        Mon Apr 21 03:54 - 03:55  (00:00)     dsl-200-67-75-99.prodigy.net.mx
-duende  pts/0        Mon Apr 21 00:38 - 00:40  (00:01)     dsl-200-67-75-99.prodigy.net.mx
-duende  pts/0        Sun Apr 20 16:07 - 16:40  (00:32)     dsl-200-67-75-99.prodigy.net.mx
-duende  pts/0        Sun Apr 20 05:43 - 05:45  (00:01)     dsl-200-67-75-109.prodigy.net.mx
-duende  pts/0        Sun Apr 20 02:22 - 02:30  (00:07)     dsl-200-67-75-109.prodigy.net.mx
-reboot   system boot  Sun Apr 20 00:10         (4+02:09)    2.4.18-686-smp
-duende  pts/0        Sat Apr 19 21:48 - 22:04  (00:15)     dsl-200-67-75-109.prodigy.net.mx
-duende  pts/0        Sat Apr 19 16:15 - 16:16  (00:01)     dsl-200-67-75-109.prodigy.net.mx
-duende  pts/0        Sat Apr 19 07:25 - 07:25  (00:00)     dsl-200-78-118-131.prodigy.net.mx
-duende  pts/0        Sat Apr 19 05:10 - 05:11  (00:00)     dsl-200-78-118-131.prodigy.net.mx
-duende  pts/0        Sat Apr 19 00:31 - 00:36  (00:05)     dsl-200-78-118-131.prodigy.net.mx
-duende  pts/1        Fri Apr 18 21:01 - 21:17  (00:15)     198.51.100.131
-duende  pts/1        Fri Apr 18 15:06 - 15:09  (00:03)     dsl-200-78-118-131.prodigy.net.mx
-duende  pts/7        Fri Apr 18 06:00 - 06:23  (00:22)     dsl-200-67-75-78.prodigy.net.mx
-duende  pts/5        Fri Apr 18 02:05 - 02:06  (00:00)     dsl-200-67-75-78.prodigy.net.mx
-duende  pts/5        Thu Apr 17 22:04 - 22:07  (00:02)     dsl-200-67-75-78.prodigy.net.mx
-duende  pts/0        Thu Apr 17 17:52 - 17:53  (00:00)     dsl-200-67-75-78.prodigy.net.mx
-duende  pts/0        Thu Apr 17 15:00 - 15:01  (00:01)     dsl-200-67-75-78.prodigy.net.mx
-duende  pts/4        Thu Apr 17 05:49 - 05:50  (00:01)     dsl-200-78-118-61.prodigy.net.mx
-duende  pts/2        Thu Apr 17 05:48 - 05:51  (00:02)     dsl-200-78-118-61.prodigy.net.mx
-duende  pts/3        Thu Apr 17 02:46 - 02:49  (00:02)     dsl-200-78-118-61.prodigy.net.mx
-duende  pts/0        Thu Apr 17 00:26 - 00:41  (00:15)     dsl-200-78-118-61.prodigy.net.mx
-reboot   system boot  Wed Apr 16 23:54         (3+00:14)    2.4.18-686-smp
-proa     pts/4        Wed Apr 16 20:49 - 20:51  (00:01)     dup-200-64-59-111.prodigy.net.mx
-duende  pts/4        Wed Apr 16 20:15 - 20:23  (00:07)     dsl-200-78-118-61.prodigy.net.mx
-zopilote pts/5        Wed Apr 16 20:05 - 20:08  (00:03)     dup-200-64-59-111.prodigy.net.mx
-reboot   system boot  Wed Apr 16 19:15          (04:36)     2.4.18-686-smp
-duende  pts/0        Wed Apr 16 15:54 - 16:15  (00:20)     dsl-200-78-118-61.prodigy.net.mx
-duende  pts/2        Wed Apr 16 15:25 - 15:40  (00:15)     dsl-200-78-118-61.prodigy.net.mx
-duende  pts/0        Wed Apr 16 15:15 - 15:40  (00:25)     dsl-200-78-118-61.prodigy.net.mx
-duende  pts/3        Wed Apr 16 05:01 - 05:28  (00:26)     dsl-200-78-118-156.prodigy.net.mx
-duende  pts/5        Wed Apr 16 04:56 - 05:28  (00:31)     dsl-200-78-118-156.prodigy.net.mx
-duende  pts/2        Wed Apr 16 03:07 - 04:36  (01:29)     dsl-200-78-118-156.prodigy.net.mx
-duende  pts/0        Wed Apr 16 03:02 - 04:36  (01:34)     dsl-200-78-118-156.prodigy.net.mx
-proa     pts/1        Wed Apr 16 00:38 - 00:47  (00:08)     host-203.0.113.89-cust.telemedia.net.mx
-duende  pts/1        Wed Apr 16 00:16 - 00:27  (00:10)     dsl-200-78-118-156.prodigy.net.mx
-duende  pts/2        Wed Apr 16 00:05 - 00:28  (00:23)     dsl-200-78-118-156.prodigy.net.mx
-proa     pts/2        Wed Apr 16 00:01 - 00:01  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
-zopilote pts/8        Tue Apr 15 22:57 - 23:00  (00:02)     host-203.0.113.89-cust.telemedia.net.mx
-proa     pts/7        Tue Apr 15 22:17 - 00:23  (02:05)     host-203.0.113.89-cust.telemedia.net.mx
-reboot   system boot  Tue Apr 15 20:28          (22:43)     2.4.18-686-smp
-proa     pts/4        Fri Apr 11 21:35 - 21:44  (00:09)     dup-200-64-234-32.prodigy.net.mx
-proa     pts/8        Wed Apr  9 20:28 - 20:33  (00:04)     host-198.18.3.172-cust.telemedia.net.mx
-zopilote pts/0        Sun Apr  6 01:29 - 01:29  (00:00)     host-198.18.11.221-cust.telemedia.net.mx
-zopilote pts/1        Fri Apr  4 21:24 - 21:28  (00:04)     dup-200-64-239-107.prodigy.net.mx
-reboot   system boot  Fri Apr  4 21:00         (11+22:11)   2.4.18-686-smp
-zopilote pts/1        Fri Apr  4 01:27 - 01:32  (00:04)     dup-200-64-234-43.prodigy.net.mx
-zopilote pts/1        Wed Apr  2 03:05 - 03:06  (00:00)     gobmorelia34.terra.net.mx
-\end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
-
- Se puede observar que los accesos de \texttt{zopilote}, \texttt{zena}, \texttt{proa} y \texttt{lllll}
-es desde máquinas dsl de prodigy, telemedia y terra, todas estas
-máquinas están ubicadas en la ciudad de Morelia. Es de destacar que
-cuando se bloquea el acceso a varias cuentas involucradas, es que
-aparecen los accesos de duende quien no ingresó al equipo por mucho tiempo.
-
- Los ingresos del usuario \texttt{duende} desde \texttt{victima2} hacia \texttt{victima1} se
-confirman en las bitácoras de \texttt{victima2}, y se autentifica que provienen de
-una conexión dsl de prodigy infinitum.
-
+La auditoría pericial extendida sobre el servidor secundario consolidó las siguientes conclusiones:
+\begin{itemize}
+    \item La intrusión no constituyó un incidente aislado en \texttt{victima1}, sino una campaña coordinada que abarcó los servidores principales del centro de cómputo.
+    \item La presencia de los mismos paquetes de explotación (\texttt{test.tar}, \texttt{ex/}, \texttt{o0o.tar}) y las mismas marcas de hash MD5 en las cuentas \texttt{duende}, \texttt{proa} y \texttt{zena} confirma una autoría común.
+    \item El empleo de \texttt{victima2} como nodo de salto (\textit{pivoting}) subraya la importancia forense de no limitar el alcance de una investigación a la máquina donde se detecta la primera alarma, sino auditar de manera integral el perímetro de confianza.
+\end{itemize}

@@ -39,7 +39,10 @@ for f in files:
         "linea", "lineas", "ultimo", "ultima", "proposito", "metodo"
     ]
     for bw in bad_words:
-        matches = re.findall(r"\b" + bw + r"\b", prose, re.IGNORECASE)
+        if bw in ["password", "passwords"]:
+            matches = [m for m in re.findall(r"(?<!shadow\s)\b" + bw + r"\b", prose, re.IGNORECASE)]
+        else:
+            matches = re.findall(r"\b" + bw + r"\b", prose, re.IGNORECASE)
         if matches:
             unaccented.append((bw, len(matches)))
             
