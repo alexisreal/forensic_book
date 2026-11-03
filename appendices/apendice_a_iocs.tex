@@ -1,0 +1,31 @@
+\chapter{Catálogo de Indicadores de Compromiso (IoCs)}
+
+En este apéndice se compendian los artefactos maliciosos, rutas sospechosas y atributos de persistencia identificados durante la investigación pericial en el servidor \texttt{victima1}.
+
+\section{Rutas y Binarios Clave Identificados}
+
+\begin{table}[h!]
+\centering
+\footnotesize
+\begin{tabular}{lll}
+\toprule
+\textbf{Ruta del Artefacto} & \textbf{Propietario / Permisos} & \textbf{Descripción / Función Detectada} \\
+\midrule
+\texttt{/dev/ptyp} & \texttt{root:root (drwxr-xr-x)} & Directorio oculto de depósito y scripts \\
+\texttt{/dev/ptyp/energyb} & \texttt{root:root (rwxr-xr-x)} & Bot IRC con soporte DCC y retransmisión \\
+\texttt{/dev/ptyp/psybnc} & \texttt{root:root (rwxr-xr-x)} & Bouncer IRC para encubrimiento de conexiones \\
+\texttt{/usr/lib/popclean} & \texttt{root:root (-u--ia-----)} & Binario modificado con atributo inmutable \\
+\texttt{/usr/local/lib/dsniff.services} & \texttt{root:root (-u--ia-----)} & Capturador y analizador de credenciales de red \\
+\texttt{/tmp/...} & \texttt{duende:duende (drwxrwxrwx)} & Directorio temporal de desempaque de malware \\
+\bottomrule
+\end{tabular}
+\caption{Artefactos y ejecutables sospechosos identificados en el sistema comprometido.}
+\end{table}
+
+\section{Atributos Especiales de Archivos del Sistema}
+
+Varios de los ejecutables troyanizados fueron fijados con atributos especiales de Ext2 para evitar su eliminación o modificación incluso por el usuario \texttt{root}:
+\begin{itemize}
+    \item \textbf{Atributo inmutable (\texttt{+i}):} Impide que el archivo sea modificado, renombrado, eliminado o sobreescrito. Solo puede removerse restableciendo explícitamente el atributo con el comando \texttt{chattr -i}.
+    \item \textbf{Atributo de adición únicamente (\texttt{+a}):} Restringe la apertura del archivo únicamente para agregar información al final, bloqueando el truncamiento o borrado.
+\end{itemize}

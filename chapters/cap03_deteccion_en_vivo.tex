@@ -1,0 +1,725 @@
+\chapter{Detección Temprana y Artefactos en Vivo}
+
+La detección inicial de una intrusión suele manifestarse a través de discrepancias sutiles en la operación cotidiana del sistema. A mediados de abril de 2004, la administración de cómputo identificó la presencia de archivos con permisos especiales y propietarios no autorizados en ubicaciones reservadas al sistema. Este capítulo documenta las primeras acciones de respuesta en vivo y el inventario preliminar de artefactos anómalos.
+
+\begin{notaforense}[Uso de /dev como Ocultamiento Tradicional]
+El directorio \texttt{/dev} fue históricamente el refugio predilecto de los intrusos en sistemas Unix/Linux. Dado que alberga cientos de archivos especiales de bloques y caracteres, los atacantes solían crear subdirectorios camuflados con nombres de dispositivos virtuales (como \texttt{/dev/ptyp} o \texttt{/dev/...}) para almacenar herramientas de compilación, sniffers y ejecutables con bit SUID activado.
+\end{notaforense}
+
+\section*{Reporte}
+
+A mediados del mes de abril la administración de cómputo descubrió
+que el equipo estudiado tenía sembrados programas con permisos de
+root no autorizados. Se procedió a hacer una búsqueda de todos los
+programas cuyo propietario fuera root, y también los que tuvieran el
+bit \textbf{SUID} y/o \textbf{SGID} en todo el disco duro. Esta búsqueda
+dió como resultado que el usuario duende \footnote{En todo el
+informe, serán utilizados los nombres de login tal como aparecen en
+los archivos de registro de las máquinas, y nunca los nombres reales
+de los usuarios.} tenía guardados programas que a primera vista no
+necesitaban esta característica para funcionar. Se procedió entonces
+a cambiar los permisos adicionales de estos programas a los permisos
+normales, mas como el hecho mostraban características sospechosas se
+hizo un análisis completo del sistema. Los programas con los bits
+\textbf{SUID} y/o \textbf{SGID}, son programas que corren con el
+identificador del usuario que los creo no como el que los ejecutó,
+entre otras funciones particulares.
+
+Los resultados de búsqueda de archivos \textbf{SUID} y \textbf{SGID} fuera de lo común en toda la máquina
+son los siguientes:
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{alltt}
+702242   92 -rwsr-sr-x   1 root     root        88531 Feb 11  1999 /home/staff/duende/prog/bin/registro
+620791   20 -rwsrwsr-x   1 root     root        18256 Jan  9  2000 /home/staff/duende/prog/gtk/registros
+\end{alltt}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+Hasta este momento no se sospechaba en particular del usuario duende o 500, que
+para la máquina y nosotros son y serán idénticamente el mismo.\footnote{
+Usaremos indistintamente el número de identificación del sistema (id) o el
+nombre del usuario según sea el resultado de cada tipo de búsqueda o
+estudio.} 
+
+En seguida se hizo una búsqueda de archivos que pertenecieran a
+usuarios distintos de root o 0 (que son idénticamente el mismo) y que
+estuvieran guardados en sitios impropios, como los directorios de
+sistema.
+
+Los archivos no pertenecientes a root que se encuentran en los árboles
+de directorios del sistema son los siguientes:
+\vspace{3mm}
+
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+501289   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:18 ./usr/bin/top
+501292   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:19 ./usr/bin/pstree
+388613   24 -rwxr-xr-x   1 500      users       20705 Apr 11 16:24 ./usr/bin/getty
+227367  392 -rwxr-xr-x   1 500      users      395235 Apr 15 20:23 ./usr/lib/popclean
+227360    4 -rwxr-xr-x   1 500      users        1013 Apr 15 20:23 ./usr/local/lib/dsniff.services
+227358    4 -rwxr-xr-x   1 500      users         236 Apr 15 20:23 ./etc/cron.daily/dnsquery
+501288   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/ps
+388620   32 -rwxrwxr-x   1 500      users       29220 Mar 18  2002 ./bin/kevent
+469100    4 -rwxr-xr-x   1 500      users         475 Nov 14  2002 ./bin/endl
+501291   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/netstat
+227355  708 -rwxr-xr-x   1 500      users      718863 Apr 11 16:13 ./bin/sysinit
+324280    4 -rwxr-xr-x   1 501      users         240 Oct  1  2002 ./bin/weit
+227351    4 -rwxr-xr-x   1 500      users         627 Mar  8 06:14 ./dev/rd/c2d3b2
+227352    4 -rwxr-xr-x   1 500      users         531 Nov 14  2002 ./dev/rd/c6d0b2
+227353    4 -rwxr-xr-x   1 500      users         512 Nov 14  2002 ./dev/rd/c6d3b2
+130454    4 -rwxr-xr-x   1 500      users          36 Nov 14  2002 ./dev/.libn
+130456    4 -rwxr-xr-x   1 500      users          66 Mar  8 06:12 ./dev/.libpt
+130461    4 -rwxr-xr-x   1 500      users          69 Mar  8 06:13 ./dev/.libtr
+130458    4 -rwxr-xr-x   1 500      users          65 Mar  8 06:12 ./dev/.libtp
+533480    4 drwxr-xr-x   2 500      users        4096 May  9 19:05 ./dev/zqft4
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{3mm}
+
+Ninguno de los programas que aparecen en la lista debe de pertenecer a alguno de
+esos usuarios.
+
+Los archivos:
+
+\vspace{1em}
+\centerline {$------------------------------------------------------------------------------------------------------------------------------------$}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+501289   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:18 ./usr/bin/top
+501292   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:19 ./usr/bin/pstree
+388613   24 -rwxr-xr-x   1 500      users       20705 Apr 11 16:24 ./usr/bin/getty
+501288   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/ps
+388620   32 -rwxrwxr-x   1 500      users       29220 Mar 18  2002 ./bin/kevent
+469100    4 -rwxr-xr-x   1 500      users         475 Nov 14  2002 ./bin/endl
+501291   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/netstat
+227355  708 -rwxr-xr-x   1 500      users      718863 Apr 11 16:13 ./bin/sysinit
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+son archivos muy importantes para el sistema que tienen
+la función de mostrar los procesos y programas que se están ejecutando
+en la máquina, así como las conexiones por red que mantiene el equipo
+en un momento determinado.
+ 
+ Los archivos:
+
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+130454    4 -rwxr-xr-x   1 500      users          36 Nov 14  2002 ./dev/.libn
+130456    4 -rwxr-xr-x   1 500      users          66 Mar  8 06:12 ./dev/.libpt
+130461    4 -rwxr-xr-x   1 500      users          69 Mar  8 06:13 ./dev/.libtr
+130458    4 -rwxr-xr-x   1 500      users          65 Mar  8 06:12 ./dev/.libtp
+533480    4 drwxr-xr-x   2 500      users        4096 May  9 19:05 ./dev/zqft4
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+no deberían existir en un sistema normal, y el punto antes del nombre
+indica que el archivo es oculto.\\
+
+ Los archivos:
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+227367  392 -rwxr-xr-x   1 500      users      395235 Apr 15 20:23 ./usr/lib/popclean
+227360    4 -rwxr-xr-x   1 500      users        1013 Apr 15 20:23 ./usr/local/lib/dsniff.services
+227358    4 -rwxr-xr-x   1 500      users         236 Apr 15 20:23 ./etc/cron.daily/dnsquery
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+son muy sospechosos y serán analizados con detalle pues están
+relacionados entre si.
+
+ Se observa que la gran mayoría de los archivos extraños pertenecen al
+usuario 500 o duende, por lo tanto sera investigado de manera
+particular pero no exclusiva como se vera mas adelante.\\
+ 
+
+La búsqueda de archivos cuyo dueño es el usuario 500 según el comando find
+dió como resultado solo los archivos arriba listados y los de su
+directorio: \verb+/home/staff/duende+. Los otros números de usuario no dan
+ninguna otra salida además de las normales.
+
+ 
+Se procedió a ver el contenido de los registros de la cuenta
+duende por medio de los archivos history y \verb+.bash_history+. Estos
+archivos guardan la lista de comandos ejecutados por los usuarios
+durante los accesos a la máquina. Un usuario normal y que no esta
+ocultando nada, tiene todos los comandos que se ejecutaron desde que
+se abrió la cuenta o se reinstaló el sistema, hasta la última vez que
+accedió al servidor. La limpieza de bitácoras es el primer rastro que
+se intenta eliminar en un ataque informático.
+
+ La revisión de las bitácoras del usuario dió:\\
+  
+ \verb+.bash_history+ esta vacío. Quizá el usuario no usa \verb+bash+ como \textbf{shell}.
+ 
+ \verb+.history+ es la bitácora del \textbf{shell} \verb+tcsh+, y nos muestra comandos
+normales pero antiguos y escasos.  Quizá se limpio intencionalmente.
+
+ Como estos archivos no nos dan información actual de la actividad del
+usuario, se procedió a revisar bitácoras existentes poco conocidas por
+los administradores, y por lo tanto pocas veces limpiadas en una
+intrusión.  Una de estas bitácoras es manejada por el navegador de
+directorios \textbf{Midnight Commander} (mc) del cual pocas personas saben que
+hace registro de su actividad. Los registros de \textbf{mc} se actualizan
+periódicamente; esto es, que cada cierto tiempo se limpia el archivo
+\verb+history+ de \textbf{mc}, y no podemos decir que los comandos ahí almacenados son
+muy antiguos.\\
+
+
+Los resultados de revisar la bitácora \verb+history+ en el directorio \verb+.mc+ es
+la siguiente:
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+[Dir Hist Directorio Personal]
+0=/home/staff/duende/.gnome-desktop/Directorio Personal
+
+[Dir Hist duende]
+0=/home/staff/duende/.gnome-desktop/duende
+1=/home/staff/duende/.gnome-desktop/duende/doc
+2=/home/staff/duende/.gnome-desktop/duende
+3=/home/staff/duende/.gnome-desktop/duende/doc
+4=/home/staff/duende/.gnome-desktop/duende
+5=/home
+6=/usr/local/netscape
+
+[name]
+
+56=.bash_history
+57=pop.log
+59=test*
+
+[Dir Hist New Left Panel]
+0=/etc
+1=/
+2=/root
+3=/root/chkrootkit-0.40
+4=/root
+5=/root/victima1-rh
+6=/root
+
+27=/root
+28=/root/archivos
+29=/root
+30=/root/pine
+31=/root
+32=/
+33=/sbin
+34=/
+35=/tmp
+36=/
+37=/etc
+38=/etc/cron.d
+39=/etc
+40=/etc/cron.daily
+41=/etc
+42=/
+43=/usr
+44=/usr/lib
+45=/usr
+46=/home/staff/duende
+47=/home/staff
+48=/home/staff/duende
+49=/home/staff/duende/xm
+50=/home/staff/duende
+51=/home/staff/duende/o0o.tar#utar
+52=/home/staff/duende/o0o.tar#utar/s8exp
+53=/home/staff/duende/o0o.tar#utar
+54=/home/staff/duende
+55=/home/staff
+56=/var/mail
+57=/var
+58=/home/staff/duende
+59=/var/log
+
+[Dir Hist New Right Panel]
+
+23=/home/est/proa
+24=/home/staff/duende
+25=/home/est/zopilote
+26=/home/est/proa
+27=/home/est/zopilote
+28=/tmp
+29=/home/est/zena
+30=/home/staff/duende
+31=/home/est/zena
+32=/tmp
+33=/tmp/.sxp
+34=/tmp
+35=/home/est/zena
+36=/home/staff/duende
+37=/tmp
+38=/tmp/.sxp
+39=/tmp
+40=/
+41=/temporal
+42=/
+43=/home/staff/duende
+44=/home/staff/duende/prog/c/lc
+45=/home/staff/duende
+46=/home/staff/duende/prog/c/uno
+47=/dev
+48=/dev/zqft4
+49=/home/staff/duende/prog/c/uno
+50=/home/staff/duende/prog/c
+51=/home/staff/duende
+52=/home/staff/duende/xm
+53=/home/staff/duende
+54=/dev
+55=/dev/zqft4
+56=/dev
+57=/home/staff/duende
+58=/home/staff
+59=/home/staff/duende
+
+[cmdline]
+3=ee ladiva.rgb 
+9=cd temp
+10=make
+11=make -f makefile.linux
+12=vi makefile.linux 
+13=make -f makefile.linux
+14=sh fixunix.sh 
+15=cp Makefile.unx Makefile
+16=make
+17=cd
+18=cd bajar
+19=cd
+20=cd /usr/local/include
+21=cd bajar
+22=[6~[6~[6~
+23=cd
+24=cd /tmp
+25=ls -lF
+26=more sm 
+27=less sm 
+28=ls -lF
+29=cd /home/est/proa
+30=[21~0
+31=cd /tmp
+32=qdate
+33=date
+34=[21~0
+35=cd /home/est/zena
+36=cd /tmp
+37=cd /home/est/zena
+38=cd /tmp
+39=du -h
+40=w
+41=cd /home/staff
+42=cd /tmp
+43=cd /etc
+44=less shadow
+45=cd /var/log
+46=cd /dev
+47=ls -lFa dnsquery 
+48=cd /etc
+49=chown root.root dnsquery 
+50=cd /home/staff/duende/
+51=cd /dev
+52=cd
+53=ld -lFa dnsquery 
+54=ls -lFa dnsquery 
+55=cd
+56=date
+57=cd /var/mail
+58=ls -lFa .bash_history 
+59=cd /var/log
+
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ 
+ La última fecha de modificación de este archivo es el 27 de abril,
+esto indica que el programa fue usado hasta el ultimo día que estuvo
+activo el servidor.
+ 
+ \vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+-rw-------    1 500      500          7676 Apr 27 04:29 .mc/history
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Este archivo nos brinda una gran cantidad de evidencia que muestra
+que el usuario duende accesaba y leía los archivos impropios que
+están a su nombre en la máquina, y también a los que no lo están pero
+son objeto de investigación. Las líneas bajo un campo \verb+Dir+ indican
+acceso a directorios en alguno de los dos paneles del
+navegador. \verb+cmndline+ muestra los comandos ejecutados por el usuario.
+
+ Es de notar el acceso a \verb+/root+, el directorio del superusuario, este
+es un directorio donde ningún usuario tiene que acceder y menos
+revisar el contenido de los directorios restringidos que ahí están
+alojados.
+
+ Una línea muestra que se trato de leer el contenido de \verb+/etc/shadow+ el
+archivo de passwords, el cual solo el superusuario tiene la capacidad
+de leer, y un atacante solo puede verlo si tiene acceso a la cuenta
+restringida root. Cabe mencionar que el usuario duende no es root del
+sistema y no tiene ninguna función administrativa, así que el acceso a
+esos archivos es una actividad prohibida, teniendo además que
+mencionar que esta es una cuenta de alguien que ya no pertenece a la institución.
+
+Otra línea mas, muestra que se trato de cambiar el dueño de \verb+dnsquery+,
+que tiene asignado el propietario duende, por el de
+root. Esta línea es señal inequívoca de que usuario tenía acceso a la
+cuenta root, pues solo root puede hacer este tipo de cambios.
+
+
+A continuación, se comentarán algunas líneas importantes en esta
+bitácora:
+ 
+
+ Se accesó al archivo .bash\_history.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	56=.bash_history
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}	
+ Se accesó al archivo pop.log.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	57=pop.log
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se accesó a los archivos test.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	59=test*
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se accesó al directorio root.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	2=/root
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se revisó el contenido de un directorio instalado para auditar el
+sistema, y cuya función sera explicada mas adelante.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	3=/root/chkrootkit-0.40
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ 
+ Se accesó a otros directorios en \verb+/root+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	5=/root/victima1-rh
+	28=/root/archivos
+	29=/root
+	30=/root/pine
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se accesó a \verb+/sbin+ y \verb+/tmp+, después se vera el porque.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	33=/sbin
+	35=/tmp
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se ingresó al directorio \verb+/etc/cron.d+ y \verb+/etc/cron.daily+, estos son
+directorios donde se alojan las tareas programadas para ejecutarse periódicamente, en este caso
+a diario.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	38=/etc/cron.d
+	40=/etc/cron.daily
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se ingresó a \verb+/usr/lib+, donde se alojan las bibliotecas de
+ programación.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]	
+	44=/usr/lib
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se accesó al directorio \verb+xm+ en su home, directorio que se estudiará
+ más adelante.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]	
+	49=/home/staff/duende/xm
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}	
+ Se desempaquetó \verb+o0o.tar+.	
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	51=/home/staff/duende/o0o.tar#utar
+	52=/home/staff/duende/o0o.tar#utar/s8exp
+	53=/home/staff/duende/o0o.tar#utar
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Accesó a \verb+/var/mail+, el directorio del correo, quizá con la intención
+de leer correo ajeno o buscar información escondida ahí, como se vera
+después.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	56=/var/mail
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}	
+Se accesó a \verb+/var/log+, el directorio donde se registra la actividad de
+la máquina, quizá con la intención de revisar las bitácoras o eliminar
+información almacenada ahí.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]	
+	59=/var/log
+
+[Dir Hist New Right Panel]
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+Se accesó a los directorios de proa, zena y zopilote.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+
+	23=/home/est/proa
+	25=/home/est/zopilote
+	26=/home/est/proa
+	27=/home/est/zopilote
+	29=/home/est/zena
+	31=/home/est/zena
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+Se ejecutó un programa oculto en \verb+/tmp+, directorio donde la máquina
+pone archivos temporales que son eliminados siempre que reinicia el
+equipo.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	32=/tmp
+	33=/tmp/.sxp
+	35=/home/est/zena
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}	
+ Se accesó al directorio \verb+prog/c/lc+, donde supuestamente hay programas
+que sirven para el análisis de secuencias genéticas y programas
+hechos por el propio usuario duende.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	44=/home/staff/duende/prog/c/lc
+	46=/home/staff/duende/prog/c/uno
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+Se accesó al directorio \verb+/dev/zqft4+, directorio sospechoso y que no
+debería de existir en ese lugar.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	48=/dev/zqft4
+	
+
+[cmdline]
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se trato de ver una imagen que pertenece al usuario brenton, y por
+consiguiente debió de ser sustraída de sus documentos.
+ \vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	3=ee ladiva.rgb 
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+En estas líneas se editó y compilo un programa en \verb+/tmp+, después se
+corrió el script \verb+fixunix.sh+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	9=cd temp
+	10=make
+	11=make -f makefile.linux
+	12=vi makefile.linux 
+	13=make -f makefile.linux
+	14=sh fixunix.sh 
+	15=cp Makefile.unx Makefile
+	16=make
+
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se ingresó al directorio \verb+bajar+ dentro de \verb+/home/staff/duende+, y de ahí
+de regreso a \verb+/tmp+, parece que el usuario se hallaba muy nervioso pues se
+equivoca con mucha frecuencia. Continua el patrón anterior de ingresos
+a directorios. Se obtuvo información del sistema como la fecha, uso
+del disco y usuarios conectados.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	18=cd bajar
+	20=cd /usr/local/include
+	21=cd bajar
+	22=[6~[6~[6~
+	23=cd
+	24=cd /tmp
+	25=ls -lF
+	26=more sm 
+	27=less sm 
+	28=ls -lF
+	29=cd /home/est/proa
+	30=[21~0
+	31=cd /tmp
+	32=qdate
+	33=date
+	34=[21~0
+	35=cd /home/est/zena
+	36=cd /tmp
+	37=cd /home/est/zena
+	38=cd /tmp
+	39=du -h
+	40=w
+	41=cd /home/staff
+	42=cd /tmp
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ En estas líneas se leyó el contenido de \verb+/etc/shadow+, el archivo de
+contraseñas. Esto es signo de que el usuario tenía acceso a funciones
+de root. Luego se fue a \verb+/var/log+ para revisar los registros del
+sistema.
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	43=cd /etc
+	44=less shadow
+	45=cd /var/log
+	46=cd /dev
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ Se listó el archivo \verb+dnsquery+, y luego se intentó cambiar el
+propietario de ese archivo de duende a root. Lo anterior es muestra
+de los atributos de root de este usuario. Estas líneas muestran el
+innegable intento por parte del usuario de ocultar y eliminar
+evidencias.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	47=ls -lFa dnsquery 
+	48=cd /etc
+	49=chown root.root dnsquery 
+	50=cd /home/staff/duende/
+	51=cd /dev
+	52=cd
+	53=ld -lFa dnsquery 
+	54=ls -lFa dnsquery 
+	55=cd
+	56=date
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+Se revisó el directorio \verb+/var/mail+, y se listó el archivo \verb+.bash\_history+
+dentro de el, este archivo no debería estar ahí y es por demás
+sospechoso.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+	57=cd /var/mail
+	58=ls -lFa .bash_history 
+	59=cd /var/log
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+

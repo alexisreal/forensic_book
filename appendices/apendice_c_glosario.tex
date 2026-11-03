@@ -1,0 +1,15 @@
+\chapter{Glosario de Términos y Herramientas Clásicas}
+
+\begin{description}
+    \item[Atributos Ext2 (chattr / lsattr):] Banderas extendidas del sistema de archivos Linux Ext2/Ext3 que permiten fijar políticas de inmutabilidad (\texttt{+i}) o escritura append-only (\texttt{+a}) a nivel del controlador de disco, inaccesibles a las llamadas estándar de permisos POSIX.
+    \item[Eggdrop:] Uno de los bots IRC más populares y longevos de la historia de Internet, creado originalmente en 1993 por Robey Pointer. Escrito en C y extensible mediante scripts en Tcl, solía ser empleado para mantener presencia en canales IRC.
+    \item[Grave-robber:] Herramienta modular de recolección de evidencia pericial perteneciente al paquete \textit{The Coroner's Toolkit} (TCT), diseñada para recopilar información volátil y estática de un sistema Unix de manera forense.
+    \item[Inodo (Inode):] Estructura de datos fundamental en sistemas de archivos Unix que almacena todos los metadatos de un archivo (propietario, grupo, permisos, tamaño, marcas de tiempo y punteros a bloques de datos) excepto su nombre y el contenido mismo de los datos.
+    \item[mactime:] Utilidad de correlación temporal que toma la salida de herramientas de inspección de inodos (como \texttt{ils} o \texttt{fls}) y genera una línea de tiempo ordenada cronológicamente de todas las modificaciones, accesos y cambios en los metadatos de los archivos.
+    \item[psyBNC:] Servidor proxy / bouncer para IRC multiusuario que permite a los clientes ocultar su dirección IP real al conectarse a redes IRC y mantener conexiones persistentes aun cuando el cliente desconecte su equipo.
+    \item[Rootkit:] Conjunto de herramientas y binarios maliciosos diseñados para ocultar la presencia de un intruso y garantizar su acceso continuo con privilegios de administrador (\texttt{root}) evadiendo los mecanismos ordinarios de detección del sistema operativo.
+    \item[SUID (Set User ID):] Bit de permiso especial en sistemas Unix que instruye al sistema operativo a ejecutar un programa con los privilegios del propietario del archivo (frecuentemente \texttt{root}) en lugar de los privilegios del usuario que lo invoca.
+    \item[The Coroner's Toolkit (TCT):] Colección pionera de programas para análisis forense digital y respuesta a incidentes en sistemas Unix, concebida por Dan Farmer y Wietse Venema en 1999.
+    \item[The Sleuth Kit (TSK):] Biblioteca y conjunto de utilidades forenses de línea de comandos desarrollada por Brian Carrier como sucesora y evolución de TCT, base del entorno gráfico \textit{Autopsy}.
+    \item[unrm:] Herramienta especializada en la recuperación de datos no asignados en sistemas de archivos Unix, capaz de examinar los bloques del disco marcados como libres y extraer su contenido antes de que sea sobreescrito.
+\end{description}

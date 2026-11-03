@@ -1,0 +1,471 @@
+\chapter{Análisis Diferencial con el Sistema de Referencia}
+
+El método de análisis forense comparativo consiste en contrastar el estado del sistema investigado contra una instalación limpia e idéntica montada en el laboratorio de referencia. En entornos GNU/Linux basados en RPM (Red Hat Package Manager), el comando \texttt{rpm -V} permite contrastar los tamaños de archivo, fechas de modificación, atributos y sumas de verificación MD5 respecto a la base de datos oficial del distribuidor.
+
+-- chkpro                                                  
+
+-- chkproc                                                  
+
+-- chkwtmp                                                  
+
+-- ifpromisc                                                
+
+-- snif                                                     
+
+-- last
+
+\end{verbatim}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+
+
+ Primero se revisaron los programas reportados por \verb+chkrootkit+ como
+troyanizados. En total se estudiaron 1999 programas
+en el árbol de directorios del sistema.\\
+
+ \verb+/bin/ps+\\
+ 
+ Análisis de cadenas de texto:
+ 
+ 
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+/lib/ld-linux.so.2
+libc.so.6
+strcpy
+fgets
+system
+feof
+malloc
+__deregister_frame_info
+setgid
+strcmp
+sprintf
+fclose
+fopen
+_IO_stdin_used
+__libc_start_main
+strlen
+setuid
+__register_frame_info
+__gmon_start__
+GLIBC_2.1
+GLIBC_2.0
+PTRh
+$Id: ps.c,v 1.11 2001/09/03  Exp $
+[1;33m%s
+/bin/su -
+/dev/.libpt
+egrep
+%s|%s
+%sps
+%s %s
+/dev/.pst
+%s%s | /bin/egrep -v "%s"
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ De estas cadenas lo sobresaliente es que el programa lee \verb+/dev/.libpt+
+y luego con egrep filtra los procesos que lee en ese
+archivo. Definitivamente estos programas están troyanizados con el fin de
+ocultar la información que se le indique a voluntad o de forma
+automática.
+
+
+\verb+/bin/netstat+
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+/bin/su -
+/dev/.libn
+egrep
+%s|%s
+%sps
+%s %s
+/dev/.nst
+%s%s | /bin/egrep -v "%s"
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ El anterior programa lee \verb+/dev/.nst+ y oculta el estado de la red según
+ se le ordene.
+ 
+
+\verb+/usr/bin/pstree+
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+/bin/su -
+/dev/.libtr
+egrep
+%s|%s
+%sps
+%s %s
+/dev/.tree
+%s%s | /bin/egrep -v "%s"
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ El anterior lee \verb+/dev/.libtr+ y oculta procesos.
+ 
+ 
+\verb+/bin/init+
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+Can't open a tty, all in use ?
+Can't fork subshell, there is no way...
+/dev/zqft4
+/bin/sh
+Can't execve shell!
+BD_Init: Starting backdoor daemon...
+FUCK: Can't allocate raw socket (%d)
+FUCK: Can't fork child (%d)
+Done, pid=%d
+/dev/zqft4/.rc
+use:
+%s <uivfp> [args]
+u       - uninstall
+i       - make pid invisible
+v       - make pid visible
+f [0/1] - toggle file hiding
+p [0/1] - toggle pid hiding
+Detected version: %s
+FUCK: Failed to uninstall (%d)
+Suckit uninstalled sucesfully!
+FUCK: Failed to hide pid %d (%d)
+Pid %d is hidden now!
+FUCK: Failed to unhide pid %d (%d)
+Pid %d is visible now!
+file
+Failed to change %s hiding (%d)!
+%s hiding is now %s!
+kmalloc
+_kmalloc
+__kmalloc
+/dev/zqft4
+/dev/kmem
+FUCK: Can't open %s for read/write (%d)
+RK_Init: idt=0x%08x,
+FUCK: IDT table read failed (offset 0x%08x)
+FUCK: Can't find sys_call_table[]
+sct[]=0x%08x,
+FUCK: Can't find kmalloc()!
+kmalloc()=0x%08x, gfp=0x%x
+FUCK: Can't read syscall %d addr
+Z_Init: Allocating kernel-code memory...
+FUCK: Out of kernel memory!
+Done, %d bytes, base=0x%08x
+/dev/kmem
+/dev/null
+core
+FUCK: Got signal %d while manipulating kernel!
+/sbin/init!
+0123456789abcdefghijklmnopqrstuvwxyz
+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+<NULL>
+'Yi
+/dev/null
+1.3b
+/dev/zqft4/.sniffer
+/proc/
+/proc/net/
+socket:[
+/sbin/init
+/sbin/init!
+login
+telnet
+rlogin
+rexec
+passwd
+adduser
+mysql
+ssword:
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Esas cadenas se parecen a las de \verb+/dev/zqft4/sk+ ya antes mencionado,
+así que se calculara su suma \verb+md5sum+ que es una número único de
+identificación para cada archivo basado en análisis y sumas bit a
+bit.  Si los números coinciden para dos archivos, estos son iguales.
+
+ \vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+ 4237949f8b00fc64feb9b575a5f6e1dc  /dev/zqft4/sk
+
+ 4237949f8b00fc64feb9b575a5f6e1dc  /sbin/init
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+
+
+ Los dos archivos son el mismo.
+ 
+ En este programa existen líneas que explican el origen de varios
+archivos estudiados. También se ve que una de sus funciones es ocultar
+procesos automáticamente y que llama a un programa de nombre
+\verb+/sbin/init!+  entre otras características. Otra función más es hacer invisibles
+a los archivos con \verb+!+ al final de su nombre.
+
+ Se buscaron otros archivos ocultos con el signo de admiración al
+final de su nombre y se encontraron los siguientes:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+485151   28 -rwxr-xr-x   1 root     root        27844 Apr  8 11:02 /sbin/init!
+533481   32 -rwxr-xr-x   1 root     root        31707 Apr  8 11:02 /dev/zqft4/bash!
+533491    4 -rw-r--r--   1 root     root           90 Apr 16 11:56 /dev/zqft4/bd!
+533485   28 -rwxr-xr-x   1 1018     1018        25163 Aug  4  2002 /dev/zqft4/local!
+533488   12 -rwxr-xr-x   1 root     root         9602 Apr  8 11:02 /dev/zqft4/clean!
+533490    4 -rwxr-xr-x   1 root     root           90 Apr 16 11:40 /dev/zqft4/smurf!
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Revisaremos estos programas.\\
+
+\verb+/sbin/init!+\\
+
+Tipo de archivo:
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+/sbin/init!: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
+dynamically linked (uses shared libs), stripped
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+Al revisar las cadenas de texto no encontramos nada extraño, y
+comparando sus sumas binarias se encontró que es el mismo \verb+/sbin/init+
+de un sistema limpio. Parece que su función es la de correr el
+init troyanizado.\\
+
+
+\verb+/dev/zqft4/bash!+
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+ka0sphere.freeftp.org
+ka0sphere.getmyip.com
+ka0sphere.zapto.org
+ka0sphere.sytes.net
+ka0sphere.servequake.com
+ka0sphere.servepics.com
+ka0sphere.servemp3.com
+ka0sphere.serveirc.com
+ka0sphere.servehttp.com
+ka0sphere.servehalflife.com
+ka0sphere.servegame.com
+ka0sphere.serveftp.com
+ka0sphere.servecounterstrike.com
+ka0sphere.servebeer.com
+ka0sphere.redirectme.net
+ka0sphere.no-ip.org
+ka0sphere.no-ip.info
+ka0sphere.no-ip.com
+ka0sphere.no-ip.biz
+ka0sphere.myvnc.com
+ka0sphere.myftp.org
+ka0sphere.myftp.biz
+ka0sphere.hopto.org
+ka0sphere.bounceme.net
+ka0sphere.3utilities.com
+ka0sphere.mine.nu
+ka0sphere.kicks-ass.org
+ka0sphere.is-a-geek.org
+ka0sphere.homeunix.com
+ka0sphere.gotdns.com
+cha0sphere.theroots.la
+cha0sphere.phearnet.org
+cha0sphere.hackerzlair.org
+cha0sphere.flooooooooooooooood.la
+cha0sphere.evilnet.la
+NOTICE %s :Someone needs a miracle
+NOTICE %s :BYSIN <target> <port> <secs>
+NOTICE %s :Packeting %s.
+NOTICE %s :SLICE2 <destination> <lowport> <highport> <secs>
+NOTICE %s :Error in SLICE2: Low > high.
+cant find %s!
+NOTICE %s :PAN <target> <secs>
+NOTICE %s :Panning %s.
+NOTICE %s :MAJIN <target> <secs>
+NOTICE %s :Majin'n %s.
+NOTICE %s :UPDATE <host> <port> <username> <pass> <src:bin>
+NOTICE %s :Unable to create socket (Wierd, you shouldnt get this error and ITS NOT MY FAULT!).
+NOTICE %s :Unable to resolve address.
+NOTICE %s :Unable to connect to dump site.
+220 
+NOTICE %s :Error while logging in to dump: %s
+USER %s
+331 
+PASS %s
+230 
+REST 0
+gcc --help
+Usage
+TYPE I
+200 
+NOTICE %s :GCC not found and cannot create passive binary mode: %s
+PASV
+227 
+NOTICE %s :Error while starting passive to dump: %s
+RETR %s
+NOTICE %s :Unable to create socket.
+NOTICE %s :Unable to connect to streamed dump site.
+NOTICE %s :Receiving update.
+mkdir /tmp
+/tmp/.c
+(gcc -o %s /tmp/.c; rm -rf /tmp/.c; kill -9 %d; kill -9 %d; %s &) > /dev/null
+/tmp/.o
+(mv /tmp/.o %s; chmod 755 %s; kill -9 %d; kill -9 %d; %s &) > /dev/null
+NOTICE %s :UPDATEHTTP <host> <src:bin>
+NOTICE %s :Unable to connect to http.
+GET /%s HTTP/1.0
+Connection: Keep-Alive
+User-Agent: Mozilla/4.75 [en] (X11; U; Linux 2.2.16-3 i686)
+Host: %s:80
+Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, image/png, */*
+Accept-Encoding: gzip
+Accept-Language: en
+Accept-Charset: iso-8859-1,*,utf-8
+(gcc -o %s /tmp/.c; rm -rf /tmp/.c; kill -9 %d; %s &) > /dev/null 2>&1
+(mv /tmp/.o %s; chmod 755 %s; kill -9 %d; %s &) > /dev/null
+NOTICE %s :GET <host> <save as>
+http://
+NOTICE %s :Receiving file.
+NOTICE %s :Saved as %s
+kill -9 %d;kill -9 0
+NOTICE %s :Killing pid %d.
+KILL
+KILLALL
+VERSION
+SLICE2
+MAJIN
+UPDATE
+UPDATEHTTP
+chrysaor
+kamikaze
+cha0sphere
+eCliPs
+CaRb0nE
+IRC 
+#leming
+PRIVMSG %s :%s
+MODE %s +ix %s
+inside.l3ming
+JOIN %s :%s
+MODE %s +tnmsk %s
+WHO %s
+PONG %s
+NOTICE %s :I'm having a problem resolving my host, someone will have to SPOOFS me manually.
+leming
+NICK %s
+PING
+PRIVMSG
+/etc/rc.d/rc.local
+"%s%s"
+"%s%s"
+Someone needs a miracle
+cr4sh
+NICK %s
+USER %s localhost localhost :%s
+ERROR
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+Parece ser que el anterior \textbf{shell} tiene agregadas funciones de conexión
+por medio de la red.\\
+ 
+
+\verb+/dev/zqft4/local!+\\
+
+
+Este programa se ejecutó en un sistema de pruebas, con el resultado
+de un daño en el arranque del sistema. Al parecer se debe correr en
+combinación con otros programas y no de manera individual.\\
+
+
+\verb+/dev/zqft4/clean!+\\
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+/var/log/messages
+/var/log/secure
+/var/log/xferlog
+/var/log/maillog
+messages.hm
+secure.hm
+xferlog.hm
+maillog.hm
+HideMe
+Usage: %s <user> <host> <IP>
+/var/run/utmp
+Uh ? utmp target not locked. Getting outta here.
+utmp target processed.
+/var/log/wtmp
+Uh? wtmp target not locked. Getting outta here.
+wtmp.hm
+Damn! Problems targeting wtmp. Getting outta here.
+/bin/mv wtmp.hm /var/log/wtmp
+Ach. Couldn't replace %s .
+/bin/chmod 644 /var/log/wtmp
+wtmp target processed.
+/var/log/lastlog
+Uh? lastlog target not locked. Getting outta here.
+
+lastlog target processed.
+Processing %s
+Hmmm. Couldn't reach var ...
+                DONE.
+mv messages.hm /var/log/messages
+mv secure.hm /var/log/secure
+mv xferlog.hm /var/log/xferlog
+mv maillog.hm /var/log/maillog
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Este programa elimina los registros del sistema que se le indiquen a
+voluntad del intruso o de manera automatizada.
+ 
+ Es de destacar que al parecer estos programas ocultos deben de ser ejecutados
+directamente desde la línea de comandos o desde un script para que funcionen.  
+Es muy común que los atacantes no sepan que esos programas están instalados 
+pues están ocultos por el sistema y ni ellos se percatan de su existencia si 
+no conocen de antemano el kit usado.
+

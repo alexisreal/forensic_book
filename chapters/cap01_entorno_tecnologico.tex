@@ -1,0 +1,37 @@
+\chapter{Topología y Entorno Tecnológico}
+
+El punto de partida de toda investigación pericial informática exige una caracterización minuciosa del objetivo: su arquitectura de hardware, sistema operativo, topología de red y los servicios de red expuestos al momento del incidente. En el contexto de 2004, los servidores departamentales solían asumir roles múltiples y concurrentes (correo, archivos NFS, estaciones de cómputo y entornos gráficos X11), lo que ampliaba notablemente su superficie de ataque.
+
+\begin{notaforense}[Contexto de Infraestructura en 2004]
+El servidor estudiado representaba el estándar de cómputo de alto rendimiento departamental a principios de la década del 2000: una arquitectura x86 monoprocesador Intel Pentium III sobre bus PCI y discos duros SCSI/IDE, enlazada mediante conmutadores Fast Ethernet (100 Mbps) a una red universitaria con direccionamiento IPv4 público directo y sin cortafuegos de aplicación intermedios.
+\end{notaforense}
+
+\section{Descripción del sistema}
+
+ \textbf{Nombre:} victima1
+
+ \textbf{Dominio:} foo.bar.mx
+
+ \textbf{Ip:} 192.0.2.10
+
+ \textbf{Funciónes:} Servidor de correo, servidor de archivos, servidor gráfico.
+
+ \textbf{Marca:} Genérico ensamblado.
+
+ \textbf{Procesador:} Intel Pentium III 750 MHz.
+
+ \textbf{Memoria:} 256 MB RAM.
+
+ \textbf{Discos:} IDE ATA 66 20 GB.
+ 
+ \textbf{Sistema Operativo:} GNU/Linux Debian 3.0-r1.  
+
+\section{Ubicación física del sistema}
+
+ El equipo estudiado estaba instalado en el edificio xxx del campus. Su conexión al switch general era por medio de una 
+tarjeta de red ethernet con topología de estrella. Compartía directorios con el servidor \verb+xxx.xxx.xxx.2+ 
+y había acceso para usuarios por consola y terminal gráfica.
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: Topología y Perímetro]
+En 2004, era una práctica habitual conectar servidores de cómputo directamente con direcciones IP públicas sin capas de inspección profunda de paquetes ni arquitecturas de confianza cero (\textit{Zero Trust}). Actualmente, un sistema análogo operaría dentro de una VPC privada, aislado tras pasarelas seguras, balanceadores de carga con WAF, segmentación por microperímetros y autenticación reforzada mediante llaves criptográficas basadas en hardware.
+\end{perspectiva20}

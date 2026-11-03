@@ -1,0 +1,104 @@
+\chapter{Veredicto Pericial y Síntesis del Caso}
+
+La fase final de toda investigación pericial consiste en integrar la totalidad de los indicios materiales, marcas de tiempo y correlaciones de red en una hipótesis concluyente que reconstruya la mecánica de los hechos y determine el grado de afectación real de la infraestructura evaluada.
+
+\section{Conclusiones}
+
+La evidencia es muy clara y muestra que existieron varias
+intrusiones. El punto principal de acceso al equipo fue por el
+servicio \verb+ftp+, pero este no fue el único blanco, también se trato de
+explotar el servicio \verb+samba+ y \verb+nfs+. La causa principal de este tipo de
+intrusiones es la pobre elección de claves de acceso por parte de los
+usuarios. Se encontró que en alguna ocasión las cuentas de los
+usuarios \verb+xxxxx+, \verb+xxxxxx+ y \verb+xxxxxxxx+ fueron objeto de intrusión debido a
+la facilidad de adivinar sus claves. La implantación de servidores
+\verb+ftp+ e \textbf{irc} son cosa muy común en este tipo de ataques y son
+resueltos con gran facilidad cuando se cierra el acceso a las cuentas
+involucradas y se cambian los passwords. El periodo que los intrusos
+mantienen activos los servicios sembrados es corto y es extraño que
+hayan permanecido tanto tiempo en activo. El objetivo principal de
+estos intrusos es dar servicios y pasar desapercibidos sin extraer
+información ni causar perjuicio alguno.
+
+ Los directorios y archivos en \verb+/dev+ muestran otro ataque al parecer
+independiente y posterior al de los \textbf{irc}. El objetivo principal de este segundo ataque era
+obtener control del equipo, conocer los passwords de root si estos
+fueran cambiados, y saber información confidencial de los usuarios. Este es
+el ataque de alguien que quería saber lo que estaba ocurriendo en el
+servidor y no perder su control si se hacían cambios. El inicio de este ataque coincide con los reemplazos de
+passwords de root en todas las máquinas a cargo del administrador. Es
+después de estos cambios que aparecen las primeras evidencias de espionaje y del deseo de
+conocer las claves de administración de los servidores. Es posible que
+el descubrir la intrusión del \textbf{irc}, haya animado a un atacante interno
+a realizar sus propias acciones protegido bajo el manto de la
+confusión que podría causar el ataque e intrusión originales.
+
+ La obtención de \textbf{rootkits} es relativamente sencilla, pero al momento
+de instalarlos pueden ocurrir errores que impidan la correcta fijación
+de los atributos de estos. Es así que cualquier cambio en el orden de
+instalación puede llevar a resultados muy diferentes, como la
+conservación de los propietarios originales y la posterior
+imposibilidad de hacer modificaciones o inculpar a otros usuarios como
+en este caso. Este ataque es claramente perpetrado por alguien de poca
+experiencia en el \emph{cracking} a diferencia de los ataques usuales de
+siembra de \textbf{irc} con que el administrador se ha encontrado en muy
+diversas ocasiones en servidores distribuidos por todo el país. Parece ser que las acciones se salieron del
+control del intruso y solo revisaba que no hubiera sido descubierto.
+
+Después de estudiar cada una de las máquinas a cargo del
+administrador, se encontró que el interés único del atacante era tener
+control de victima2, victima1 e io, estos son los servidores
+principales, pero existen otros menos importantes pero con gran
+actividad. El atacante sabia cuales eran los equipos y conocía su
+ubicación física. Después de checar varias máquinas de la subred se
+verificó que no había ataques ni intrusiones en equipos fuera del
+edificio donde están los sistemas estudiados. Cabe mencionar que un
+atacante externo no tiene forma de conocer la ubicación física de los
+equipos y mucho menos conocer la relación entre ellos. El atacante
+sabia cuales eran las máquinas y así lo muestran los registros. Varias
+de las máquinas fuera de la universidad que han estado comprometidas
+por efecto de este ataque ya han sido reportadas a sus respectivos
+administradores, y las que no lo están serán reportadas a la brevedad.
+
+ La actividad mostrada por el usuario duende indica el conocimiento
+de la existencia de la intrusión y la posesión de muchos de los
+programas involucrados en el ataque. La ejecución de estos programas
+en el sistema y el acceso y revisión de información confidencial o
+comprometida es ya de por si nefasta, pero el intento de eliminación
+de evidencia cuando trata de cambiar el propietario de estos programas
+de duende a root deja en claro la autoría o complicidad con el
+ataque.
+
+ Para la administración y la Comisión de Cómputo, no hay diferencia
+alguna entre un posible atacante original y la cuenta duende pues la
+eliminación de evidencia, el ocultamiento de algún tipo de información
+referente al ataque sea cual fuere la naturaleza de este, y no haber
+informado a las autoridades, en este caso el administrador demuestra el
+deseo de que no se conociera y no se tomara acción alguna contra el
+ataque por alguna obscura razón. Además de que el acceso no
+autorizado a la cuenta de yyyyy en la máquina del correo y su intento
+fallido de convertirse en root son ya de por si claros. El
+administrador del sistema es la única persona autorizada a revisar
+toda información que sea necesaria sin restricciones siempre y cuando 
+la situación lo ameríte y de manera ética, y es
+quien autoriza a terceros a revisar el sistema si es meritorio incluso
+por mandato legal.
+
+ Los servidores involucrados fueron reemplazados por otros desde el día
+en que se comenzó el análisis \emph{post mortem}. Hay que destacar que desde 
+entonces no ha existido ningún intento de acceso no autorizado a los equipos.
+Esto es extraño en ataques externos que no pueden conocer las acciones 
+sobre los equipos por los administradores.
+
+Se mantienen funcionando \emph{honey pots} que engañan a los posibles
+intrusos haciéndolos pensar que entran a un sistema limpio no a una trampa. 
+De esta manera los intrusos no se enteran de que están siendo vigilados en un servidor
+falso.   
+
+
+Con este documento la Administración y la Comisión del Centro de Cómputo del
+Instituto de Física y Matemáticas de la UMSNH cierra las
+investigaciones sobre este caso, el cual tuvo una duración de un mínimo de 180
+horas efectivas de trabajo de campo mas otras tantas de investigación
+documental.
+

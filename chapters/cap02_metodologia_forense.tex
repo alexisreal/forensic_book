@@ -1,0 +1,158 @@
+\chapter{Principios Forenses y Cadena de Custodia}
+
+La validez jurídica y técnica de un dictamen forense descansa en la inviolabilidad de la evidencia. Frente a una sospecha de compromiso, el perito debe resolver el dilema fundamental entre preservar el estado volátil de la máquina en funcionamiento o proceder al apagado controlado para su examen estático en laboratorio.
+
+\begin{notaforense}[La Regla de Oro Forense]
+Nunca se investiga directamente sobre el medio original de almacenamiento si no es estrictamente imprescindible. La clonación bit a bit y el cotejo criptográfico mediante sumas de verificación MD5 y SHA1 garantizan que el estado de la evidencia permanezca inalterado a lo largo del proceso pericial.
+\end{notaforense}
+
+\section{Análisis \emph{post-mortem}}
+
+
+ Desde que se sembraron los programas de registro se hizo una copia
+completa del sistema, y antes del análisis forense se generaron varias
+copias idénticas bit a bit de los discos duros. Salvo por necesidad
+se trabajo en el disco original si era meritorio. La copia de las
+particiones del disco duro se analizó en sistemas limpios y
+controlados.
+
+\subsection{Sistemas de análisis y referencia}
+
+
+\textbf{Dell precision 350}\\
+Pentium 4 2.8 GHz\\
+512 MB RAM\\
+DD 80 GB\\
+Debian GNU/Linux Woody (referencia.)\\
+Debian GNU/linux Sarge (análisis.)\\
+
+\textbf{Dell inspiron 4150}\\
+Pentium 4 1.8 GHz\\
+256 MB RAM\\
+DD 30 GB\\
+Debian GNU/Linux Woody (referencia.)\\
+Debian GNU/linux Sarge (análisis.)\\
+
+
+\textbf{Programas usados para el análisis}\\
+
+
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{verbatim}
+
+-- strings 
+								  
+-- strace 
+
+-- ltrace
+
+-- gdb
+
+-- find 
+
+-- md5sum
+
+-- netstat 
+
+-- /usr/sbin/lsof 
+
+-- grep 
+
+-- dd 
+
+-- export 
+
+-- chkrootkit 
+
+-- icat 
+
+-- file 
+    
+-- readelf 
+
+-- objdump 
+   
+-- ps 
+    
+-- nc 
+    
+-- stat 
+
+-- nm 
+
+-- unrm 
+
+-- mactime 
+
+-- sleuthkit
+
+-- autopsia
+
+-- entropy
+
+-- gcc
+
+-- f-prot 
+
+-- lsattr
+
+-- lazarus
+
+-- dcat                            
+
+-- dls                              
+
+-- dstat                            
+
+-- ffind                            
+
+-- file                             
+
+-- fls                              
+
+-- fsstat                           
+
+-- hfind                            
+
+-- icat                             
+
+-- ifind                            
+
+-- ils                              
+
+-- istat                            
+
+-- mactime                          
+
+-- md5                              
+
+-- sha1                             
+
+-- sorter
+
+-- grave-robber
+
+-- lastcomm
+
+-- major_minor
+
+-- timeout
+
+-- bdf                                                      
+
+-- ils2mac  
+                                          
+-- realpath
+
+-- check_wtmpx                                          
+
+-- chkdirs                                                   
+
+-- chklastlog
+
+\begin{perspectiva20}[Perspectiva 20 Años Después: Adquisición de Memoria Volátil]
+En 2004, la adquisición de memoria RAM viva estaba en una fase incipiente (herramientas como \textit{fmem} o \textit{dd} sobre \texttt{/dev/mem}). Hoy en día, la captura de memoria volátil mediante herramientas como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior análisis con \textit{Volatility 3} constituyen el primer paso ineludible antes de apagar cualquier sistema comprometido, permitiendo rescatar llaves criptográficas, sockets y procesos inyectados que desaparecen al apagar el equipo.
+\end{perspectiva20}

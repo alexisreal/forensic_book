@@ -1,0 +1,83 @@
+\documentclass[10pt,twoside,openright]{book}
+
+% Carga de paquetes y estilos
+\input{config/preamble.tex}
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% PRELIMINARES (FRONTMATTER)
+% ------------------------------------------------------------------------------
+\frontmatter
+\pagestyle{plain}
+
+\input{frontmatter/portada.tex}
+\cleardoublepage
+
+\input{frontmatter/creditos.tex}
+\cleardoublepage
+
+\input{frontmatter/prefacio.tex}
+\cleardoublepage
+
+\input{frontmatter/resumen.tex}
+\cleardoublepage
+
+\tableofcontents
+\cleardoublepage
+
+% ------------------------------------------------------------------------------
+% CUERPO PRINCIPAL (MAINMATTER)
+% ------------------------------------------------------------------------------
+\mainmatter
+\pagestyle{fancy}
+
+% PARTE I: EL ESCENARIO Y LA PREPARACIÓN FORENSE
+\part{El Escenario y la Preparación Forense}
+
+\input{chapters/cap01_entorno_tecnologico.tex}
+\input{chapters/cap02_metodologia_forense.tex}
+
+% PARTE II: DETECCIÓN TEMPRANA Y ARTEFACTOS EN VIVO
+\part{Detección Temprana y Artefactos en Vivo}
+
+\input{chapters/cap03_deteccion_en_vivo.tex}
+\input{chapters/cap04_siembra_servicios_malware.tex}
+\input{chapters/cap05_monitoreo_usuarios.tex}
+
+% PARTE III: ANÁLISIS FORENSE POST-MORTEM Y RECONSTRUCCIÓN PROFUNDA
+\part{Análisis Forense Post-Mortem y Reconstrucción Profunda}
+
+\input{chapters/cap06_analisis_referencia_rpm.tex}
+\input{chapters/cap07_antivirus_rootkits.tex}
+\input{chapters/cap08_lineas_tiempo_mactime.tex}
+\input{chapters/cap09_mineria_bitacoras.tex}
+\input{chapters/cap10_cuentas_comprometidas.tex}
+\input{chapters/cap11_recuperacion_archivos_borrados.tex}
+\input{chapters/cap12_correlacion_multisistema.tex}
+\input{chapters/cap13_servidor_correo_webmail.tex}
+
+% PARTE IV: VEREDICTO, ATRIBUCIÓN Y PERSPECTIVA ACTUAL
+\part{Veredicto, Atribución y Perspectiva Actual}
+
+\input{chapters/cap14_veredicto_y_atribucion.tex}
+\input{chapters/cap15_retrospectiva_20_anios.tex}
+
+% ------------------------------------------------------------------------------
+% APÉNDICES Y MATERIAL COMPLEMENTARIO
+% ------------------------------------------------------------------------------
+\appendix
+\part{Apéndices Técnicos}
+
+\input{appendices/apendice_a_iocs.tex}
+\input{appendices/apendice_b_bitacoras_completas.tex}
+\input{appendices/apendice_c_glosario.tex}
+
+% ------------------------------------------------------------------------------
+% PARTE FINAL (BACKMATTER)
+% ------------------------------------------------------------------------------
+\backmatter
+
+\input{biblio/bibliografia.tex}
+
+\end{document}

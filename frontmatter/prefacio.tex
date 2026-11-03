@@ -1,0 +1,20 @@
+\chapter*{Prefacio: Veinte Años Después}
+\addcontentsline{toc}{chapter}{Prefacio: Veinte Años Después}
+
+A comienzos de 2005, los sistemas informáticos universitarios y de investigación en México experimentaban una transformación silenciosa y vertiginosa. Servidores ensamblados con procesadores Intel Pentium III sostenían servicios críticos de correo electrónico, compartición de archivos NFS/Samba y estaciones gráficas de cálculo. La administración de estos entornos descansaba en distribuciones GNU/Linux como Red Hat, operadas frecuentemente por equipos reducidos con recursos limitados y bajo una exposición directa a una Internet que transitaba aceleradamente del módem telefónico conmutado al ADSL de banda ancha.
+
+Fue en ese escenario donde ocurrió la intrusión documentada en estas páginas. En abril de 2004, la detección fortuita de binarios con permisos indebidos de \texttt{root} en directorios de dispositivos desencadenó una de las investigaciones periciales más minuciosas de la época. No existían entonces las plataformas automatizadas de EDR (\textit{Endpoint Detection and Response}), ni los sistemas SIEM centralizados en la nube, ni los volcados instantáneos de hipervisor. La respuesta a incidentes exigía compilar herramientas forenses directamente desde el código fuente, interrogar inodos con \textit{The Coroner's Toolkit} (TCT) y reconstruir la memoria de los discos duros leyendo directamente los cilindros magnéticos y las estructuras del sistema de archivos Ext2.
+
+El manuscrito original que dio origen a esta obra fue redactado en enero de 2005 con la ambición de convertirse en un libro de referencia pericial. Con el paso de los años, el texto permaneció como un testimonio condensado de un caso real. Al cumplirse dos décadas de aquellos sucesos, revisitar este documento revela una paradoja fascinante: si bien las tecnologías de base han mutado radicalmente —hoy dominadas por contenedores, microservicios y nubes elásticas—, \textbf{los principios fundamentales del cómputo forense y la psicología del atacante permanecen asombrosamente inmutables}.
+
+La debilidad de contraseñas de usuarios legítimos, la coexistencia de atacantes oportunistas externos con actores internos maliciosos que buscan capitalizar la confusión, la necesidad crítica de preservar la cadena de custodia antes de alterar el estado volátil del equipo, y la paciencia metódica requerida para contrastar marcas temporales MAC con registros de bitácoras siguen siendo las lecciones cardinales que todo analista de ciberseguridad debe dominar.
+
+Esta edición conmemorativa ha sido reestructurada editorialmente para transformar un informe técnico denso en una obra monográfica accesible y formativa. Se han depurado los listados excesivos, anonimizado rigurosamente las identidades conforme a estándares internacionales y añadido comentarios retrospectivos que contextualizan cada hallazgo a la luz de las prácticas contemporáneas.
+
+Invito al lector a sumergirse en esta autopsia digital, no solo como un ejercicio de arqueología informática, sino como una lección viva sobre el arte y la ciencia de investigar lo invisible.
+
+\vspace{2em}
+\begin{flushright}
+\textbf{Alexis Real Santillán}\\
+\textit{Investigador y Perito en Seguridad Informática}\\
+\end{flushright}

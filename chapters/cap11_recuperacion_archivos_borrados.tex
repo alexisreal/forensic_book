@@ -1,0 +1,89 @@
+\chapter{Recuperación de Archivos Eliminados e Inodos Huérfanos}
+
+Cuando un intruso advierte la posibilidad de ser detectado o concluye una fase de su ataque, suele ejecutar comandos de borrado (\texttt{rm -rf}) para suprimir sus herramientas y bitácoras intermedias. Sin embargo, en el sistema de archivos Ext2/Ext3, la eliminación de un archivo desasocia el inodo del directorio pero mantiene intactos los bloques de datos en el disco magnético hasta que son reutilizados por nuevas operaciones de escritura.
+
+\section{Recuperación de archivos eliminados del sistema}
+
+
+ Se recupero el contenido de archivos en el disco duro que fueron
+borrados por cualquier método y que no han sido sobreescritos aun.  Se
+usaron diversas técnicas de recuperación de datos entre ellas el barrido directo 
+de todos los bits en el disco. Gran parte de la
+información borrada no pudo extraerse ya que el servidor tenía un uso
+muy intenso y el remplazo de los bloques de datos es casi inmediato. De los
+archivos que no se pueden recuperar por medios estándar, se obtuvo el
+nombre almacenado del archivo y se hizo un análisis de la cantidad informática llamada entropía 
+de los bits en
+los bloques del disco duro, con el fin de poder concatenar datos dispersos y
+reconstruir algún archivo que pudiera ser de interés. Esta última
+prueba fue realizada en ciertos archivos, pero su gran consumo de tiempo la descartó como
+método de análisis general.
+
+
+ Archivos sospechosos de entre 300,000 recuperados.
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+r / r	/dev/zqft4/algo	          2003.05.10 00:05:03 (cst)	2003.05.10 00:05:03 (cst)	
+                                2003.05.10 00:05:09 (cst)	0	0	0	532496 (realloc)
+
+s / s	   	/dev/log              2003.05.08 22:23:03 (cst)	   	2003.05.08 22:23:03 (cst)	   	
+                                2003.05.10 03:00:57 (cst)	   	0	   	0	   	0
+                                305889
+
+d / r	   	/tmp/.sxp             2003.04.08 13:02:52 (cst)	   	2003.05.09 12:25:06 (cst)	   	
+                                2003.04.23 22:34:05 (cst)	   	475738	   	0	   	0	   	
+                                130441 (realloc)
+
+r / r  	    	sh                 2003.04.15 21:39:50 (cst)  	    	2003.04.26 16:00:32 (cst)  	    	
+                                2003.04.15 22:29:00 (cst)  	    	466184  	    	523  	    	
+                                523  	   	786702 (realloc)
+
+f / r  	    	mc.pipe.12891      2003.03.08 12:13:10 (cst)  	    	2003.05.08 03:01:44 (cst)  	    	
+                                2003.04.11 20:55:39 (cst)  	    	69  	    	500  	    	100  	   	
+                                130461 (realloc)
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Los archivos anteriores son logs del sistema y ejecutables de \textbf{irc}. Lo
+que es de destacar es la existencia de un archivo llamado \verb+algo+.
+Parece ser que \verb+algo+ fue una prueba de control. La palabra \verb+algo+
+esta en español por lo que podemos decir que la instalación fue hecha
+por un hispano parlante. \verb+/tmp.sxp+ fue recuperado pero parece ser que
+esta ligado al exploit completo del \verb+sendmail+ en el directorio \verb+/ex+.\\
+  
+
+ \verb+mc.pipe.1281+ es un archivo temporal propiedad del usuario duende y
+contiene referencias de un script ejecutado desde mc por el mismo usuario.\\
+
+ Su contenido es el siguiente:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+linux
+sysinit
+dnsquery
+identd
+plogd
+db
+sh
+.tree
+screen
+popclean
+ecko
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Esto muestra claramente que el el 11 de abril, el usuario duende
+ejecutó desde el \verb+midnight commander+ varios de los programas que
+estamos estudiando. Recordemos que estos son archivos eliminados y
+recuperados para esta investigación.
+
