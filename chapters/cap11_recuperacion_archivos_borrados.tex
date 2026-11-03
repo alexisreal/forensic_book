@@ -1,62 +1,71 @@
 \chapter{Recuperación de Archivos Eliminados e Inodos Huérfanos}
 
-Cuando un atacante concluye una fase de su incursión o advierte la posibilidad de haber sido descubierto, su reacción operativa inmediata consiste en ejecutar comandos de borrado destructivo (\texttt{rm -rf}) sobre sus herramientas, directorios de compilación y archivos de registro. Sin embargo, en la arquitectura de los sistemas de archivos clásicos de Unix, el comando \texttt{rm} no destruye físicamente la información: simplemente destruye el enlace que une el nombre del archivo con su inodo correspondiente.
+Cuando un intruso advierte la posibilidad de ser detectado o concluye una fase de su ataque, suele ejecutar comandos de borrado (\texttt{rm -rf}) para suprimir sus herramientas y bitácoras intermedias. Sin embargo, en el sistema de archivos Ext2/Ext3, la eliminación de un archivo desasocia el inodo del directorio pero mantiene intactos los bloques de datos en el disco magnético hasta que son reutilizados por nuevas operaciones de escritura.
 
-En este capítulo se expone la metodología de recuperación forense (\textit{file carving} y reconstrucción de inodos no asignados) aplicada sobre la imagen del servidor \texttt{victima1}, permitiendo rescatar archivos suprimidos que aportaron pistas probatorias determinantes sobre el perfil lingüístico del atacante y los vectores de explotación empleados.
+\section{Recuperación de Inodos Huérfanos y Datos No Asignados (\textit{Carving})}
 
-\section{Mecánica del Borrado en Ext2/Ext3: Inodos y Bloques No Asignados}
 
-Para comprender la viabilidad de la recuperación de datos, es indispensable analizar la mecánica interna de la llamada al sistema \texttt{unlink()} en el sistema de archivos Ext2:
+ Se recuperó el contenido de archivos en el disco duro que fueron
+borrados por cualquier método y que no han sido sobreescritos aun. Se
+usaron diversas técnicas de recuperación de datos entre ellas el barrido directo 
+de todos los bits en el disco. Gran parte de la
+información borrada no pudo extraerse ya que el servidor tenía un uso
+muy intenso y el remplazo de los bloques de datos es casi inmediato. De los
+archivos que no se pueden recuperar por medios estándar, se obtuvo el
+nombre almacenado del archivo y se hizo un análisis de la cantidad informática llamada entropía 
+de los bits en
+los bloques del disco duro, con el fin de poder concatenar datos dispersos y
+reconstruir algún archivo que pudiera ser de interés. Esta última
+prueba fue realizada en ciertos archivos, pero su gran consumo de tiempo la descartó como
+método de análisis general.
 
-\begin{enumerate}
-    \item \textbf{Desvinculación del directorio:} El sistema operativo localiza la entrada del archivo en el directorio correspondiente y marca su registro como disponible, de modo que el nombre desaparece de consultas ordinarias como \texttt{ls}.
-    \item \textbf{Decremento del contador de enlaces:} El campo \texttt{i\_links\_count} del inodo se decrementa en uno. Cuando este contador llega a cero y ningún proceso mantiene abierto el descriptor del archivo, el inodo es liberado.
-    \item \textbf{Marcado de mapas de bits:} Los bloques de datos y el propio inodo son marcados como libres (\textit{unallocated}) en el mapa de bits del sistema de archivos (\textit{block bitmap} e \textit{inode bitmap}).
-    \item \textbf{Persistencia física de los datos:} \textbf{Los sectores magnéticos que contienen los bytes del archivo no son sobreescritos ni borrados en ese instante}. Los datos permanecen físicamente intactos en los platos del disco duro hasta que nuevas operaciones de escritura del sistema operativo reclaman y sobreescriben esos bloques específicos.
-\end{enumerate}
 
-\section{Metodología de Extracción Forense (\textit{unrm} y Entropía de Bloques)}
+ Archivos sospechosos de entre 300,000 recuperados.
 
-Dado que el servidor \texttt{victima1} sostenía un tráfico de producción intensivo (correo entrante y archivos temporales), el riesgo de sobreescritura de sectores libres aumentaba con cada minuto de operación previa a la clonación en frío.
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+r / r	/dev/zqft4/algo	          2003.05.10 00:05:03 (cst)	2003.05.10 00:05:03 (cst)	
+                                2003.05.10 00:05:09 (cst)	0	0	0	532496 (realloc)
 
-Para maximizar la recuperación de evidencia, el equipo pericial aplicó una doble estrategia en el laboratorio:
-\begin{itemize}
-    \item \textbf{Extracción directa de inodos huérfanos (\textit{unrm}):} Utilizando la herramienta \texttt{unrm} del paquete TCT, se barrió el espacio no asignado del sistema de archivos en búsqueda de estructuras de inodo cuyos punteros a bloques directos e indirectos aún no hubiesen sido reutilizados.
-    \item \textbf{Análisis de entropía de datos:} En aquellos sectores fragmentados donde los metadatos del inodo habían sido destruidos, se aplicó un cálculo de entropía informacional de Shannon sobre los bloques de datos contiguos. Dado que el código binario compilado exhibe una densidad de entropía claramente diferenciada frente al texto plano o el código fuente en C, esta técnica permitió delimitar y concatenar fragmentos huérfanos pertenecientes a scripts del atacante.
-\end{itemize}
+s / s	   	/dev/log              2003.05.08 22:23:03 (cst)	   	2003.05.08 22:23:03 (cst)	   	
+                                2003.05.10 03:00:57 (cst)	   	0	   	0	   	0
+                                305889
 
-\section{Disección de los Artefactos Recuperados del Espacio No Asignado}
+d / r	   	/tmp/.sxp             2003.04.08 13:02:52 (cst)	   	2003.05.09 12:25:06 (cst)	   	
+                                2003.04.23 22:34:05 (cst)	   	475738	   	0	   	0	   	
+                                130441 (realloc)
 
-De un universo superior a 300,000 bloques y fragmentos no asignados procesados en el laboratorio, se lograron aislar cinco artefactos de altísima relevancia pericial, cuya información recuperada se detalla en el Listado~\ref{lst:carved_files}.
+r / r  	    	sh                 2003.04.15 21:39:50 (cst)  	    	2003.04.26 16:00:32 (cst)  	    	
+                                2003.04.15 22:29:00 (cst)  	    	466184  	    	523  	    	
+                                523  	   	786702 (realloc)
 
-\begin{lstlisting}[style=terminal,caption={Metadatos de inodos huérfanos y archivos eliminados recuperados con TCT.},label={lst:carved_files}]
-Tipo  Ruta / Nombre Inodo      Fecha Modificación (mtime)  Fecha Cambio Inodo (ctime)  Inodo  Estado
-r/r   /dev/zqft4/algo          2003.05.10 00:05:03 (cst)   2003.05.10 00:05:09 (cst)  532496 (realloc)
-s/s   /dev/log                 2003.05.08 22:23:03 (cst)   2003.05.10 03:00:57 (cst)  305889 (orphaned)
-d/r   /tmp/.sxp                2003.04.08 13:02:52 (cst)   2003.04.23 22:34:05 (cst)  130441 (realloc)
-r/r   sh                       2003.04.15 21:39:50 (cst)   2003.04.15 22:29:00 (cst)  786702 (realloc)
-f/r   mc.pipe.12891            2003.03.08 12:13:10 (cst)   2003.04.11 20:55:39 (cst)  130461 (realloc)
+f / r  	    	mc.pipe.12891      2003.03.08 12:13:10 (cst)  	    	2003.05.08 03:01:44 (cst)  	    	
+                                2003.04.11 20:55:39 (cst)  	    	69  	    	500  	    	100  	   	
+                                130461 (realloc)
 \end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-\subsection{El Archivo /dev/zqft4/algo y el Perfil Lingüístico}
+ Los archivos anteriores son logs del sistema y ejecutables de \textbf{IRC}. Lo
+que es de destacar es la existencia de un archivo llamado \texttt{algo}.
+Parece ser que \texttt{algo} fue una prueba de control. La palabra \texttt{algo}
+esta en español por lo que podemos decir que la instalación fue hecha
+por un hispano parlante. \texttt{/tmp.sxp} fue recuperado pero parece ser que
+esta ligado al \textit{exploit} completo del \texttt{sendmail} en el directorio \texttt{/ex}.\\
+ 
 
-El inodo 532496 preservaba la traza de un archivo denominado \texttt{algo}, creado dentro del directorio clandestino de dispositivos \texttt{/dev/zqft4} el 10 de mayo a las 00:05~h. 
+ \texttt{mc.pipe.1281} es un archivo temporal propiedad del usuario duende y
+contiene referencias de un \textit{script} ejecutado desde mc por el mismo usuario.\\
 
-La presencia del término \textbf{«algo»} ---una palabra del léxico común español empleada típicamente como nombre provisional de prueba al verificar la sintaxis de un script o comando--- aportó un indicio de perfilamiento pericial muy claro: a diferencia de los ataques masivos automatizados de origen internacional (cuyos scripts operan invariablemente con identificadores en inglés, rumano o ruso), la configuración y prueba manual de los servicios en este servidor fue conducida por un operador **hispanohablante nativo**.
-
-\subsection{El Artefacto /tmp/.sxp y el Vector de Sendmail}
-
-El inodo 130441 recuperó una estructura de directorio oculta denominada \texttt{/tmp/.sxp}, cuyas marcas temporales de inodo se remontan al 8 de abril a las 13:02~h. 
-
-El contenido de este directorio se vinculó materialmente con el código de explotación localizado en \texttt{/home/proa/ex}, correspondiente a un \textit{exploit} conocido para versiones vulnerables del servidor de correo \texttt{Sendmail} en Linux, sugiriendo que el atacante ensayó una vía de escalamiento de privilegios local a través de dicho servicio antes de afianzar la sustitución de binarios en \texttt{/sbin/init}.
-
-\subsection{La Tubería Temporal mc.pipe.12891}
-
-El inodo 130461 corresponde a una tubería con nombre (\textit{named pipe}) temporal generada por el gestor de archivos \textit{Midnight Commander} (\texttt{mc.pipe.12891}), propiedad explícita del usuario \texttt{duende} (UID 500) y grupo 100.
-
-Al volcar el contenido residual almacenado en los bloques asociados a este inodo suprimido, se recuperó la secuencia de comandos ejecutada desde la interfaz de \texttt{mc}:
-
-\begin{lstlisting}[style=terminal,caption={Contenido de la tubería mc.pipe.12891 recuperada del disco.},label={lst:mc_pipe_content}]
+ Su contenido es el siguiente:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+{\footnotesize
+\begin{lstlisting}[style=terminal]
 linux
 sysinit
 dnsquery
@@ -69,14 +78,12 @@ screen
 popclean
 ecko
 \end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-La correspondencia exacta entre este listado y los nombres de camuflaje de procesos identificados en el archivo \texttt{/dev/.libpt} (Capítulo 4) confirmó que el 11 de abril a las 20:55~h, el usuario \texttt{duende} ejecutó y verificó interactivamente las herramientas de suplantación de procesos y el \textit{sniffer} \texttt{popclean} desde su propia sesión de \textit{Midnight Commander}.
+ Esto muestra claramente que el el 11 de abril, el usuario duende
+ejecutó desde el \texttt{midnight commander} varios de los programas que
+estamos estudiando. Recordemos que estos son archivos eliminados y
+recuperados para esta investigación.
 
-\section{Conclusiones de la Recuperación de Datos Suprimidos}
-
-El rescate pericial de inodos huérfanos y bloques no asignados demostró que:
-\begin{itemize}
-    \item Los comandos de borrado aplicados por el intruso no impidieron la reconstrucción de sus pruebas intermedias ni de sus scripts de trabajo.
-    \item Se recuperaron evidencias directas que atan materialmente al usuario \texttt{duende} con la ejecución del malware \texttt{popclean} y las cadenas de camuflaje de procesos.
-    \item Los marcadores léxicos recuperados (\texttt{algo}) confirmaron la hipótesis de un operador local hispanohablante operando en las instalaciones.
-\end{itemize}

