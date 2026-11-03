@@ -77,25 +77,26 @@ Tras procesar los bloques del sistema de archivos mediante \texttt{ils} y \textt
 
 \begin{table}[htbp]
 \centering
-\small
-\begin{tabularx}{\textwidth}{@{} l l l r l r @{}}
+\scriptsize
+\begin{tabularx}{\textwidth}{@{} l >{\raggedright\arraybackslash}X l l l r @{}}
 \toprule
-\textbf{Tipo} & \textbf{Ruta recuperada} & \textbf{Fecha borrado (\textit{dtime})} & \textbf{Tamaño} & \textbf{UID:GID} & \textbf{Inodo} \\
+\textbf{Tipo} & \textbf{Ruta recuperada} & \textbf{Modificación (\textit{mtime})} & \textbf{Borrado (\textit{dtime})} & \textbf{UID:GID} & \textbf{Inodo} \\
 \midrule
-\texttt{r/r} & \texttt{/dev/zqft4/algo}    & 2003-05-10 00:05:09 & 0 B     & \texttt{0:0} (root)      & 532496 \\
-\texttt{s/s} & \texttt{/dev/log}           & 2003-05-10 03:00:57 & 0 B     & \texttt{0:0} (root)      & 305889 \\
-\texttt{d/r} & \texttt{/tmp/.sxp}          & 2003-04-23 22:34:05 & 464 KB  & \texttt{0:0} (root)      & 130441 \\
-\texttt{r/r} & \texttt{sh}                 & 2003-04-15 22:29:00 & 455 KB  & \texttt{523:523} (proa)  & 786702 \\
-\texttt{f/r} & \texttt{mc.pipe.12891}      & 2003-04-11 20:55:39 & 69 B    & \texttt{500:100} (duende)& 130461 \\
+\texttt{r/r} & \texttt{/dev/zqft4/algo}    & 2003-05-10 00:05:03 & 2003-05-10 00:05:09 & \texttt{0:0} (root)      & 532496 \\
+\texttt{s/s} & \texttt{/dev/log}           & 2003-05-08 22:23:03 & 2003-05-10 03:00:57 & \texttt{0:0} (root)      & 305889 \\
+\texttt{d/r} & \texttt{/tmp/.sxp}          & 2003-05-09 12:25:06 & 2003-04-23 22:34:05 & \texttt{0:0} (root)      & 130441 \\
+\texttt{r/r} & \texttt{sh}                 & 2003-04-26 16:00:32 & 2003-04-15 22:29:00 & \texttt{523:523} (proa)  & 786702 \\
+\texttt{f/r} & \texttt{mc.pipe.12891}      & 2003-05-08 03:01:44 & 2003-04-11 20:55:39 & \texttt{500:100} (duende)& 130461 \\
 \bottomrule
 \end{tabularx}
 \caption{Artefactos y archivos eliminados recuperados mediante análisis de inodos huérfanos.}
 \label{tab:archivos_recuperados}
 \end{table}
 
-El registro cronológico completo reportado por \texttt{ils2mac} (incluyendo marcas de modificación \textit{mtime}, acceso \textit{atime} y borrado \textit{dtime}) se presenta a continuación:
-
+\noindent
+\begin{minipage}{\linewidth}
 \begin{lstlisting}[style=terminal]
+# ils2mac -v /dev/hda1 | grep -E "algo|log|sxp|pipe"
 TIPO  RUTA RECUPERADA      MTIME (MODIF)        DTIME (BORRADO)      UID:GID   INODO
 ---------------------------------------------------------------------------------------
 r/r   /dev/zqft4/algo      2003.05.10 00:05:03  2003.05.10 00:05:09  0:0       532496
@@ -105,6 +106,7 @@ r/r   sh                   2003.04.26 16:00:32  2003.04.15 22:29:00  523:523   7
 f/r   mc.pipe.12891        2003.05.08 03:01:44  2003.04.11 20:55:39  500:100   130461
 ---------------------------------------------------------------------------------------
 \end{lstlisting}
+\end{minipage}
 
 \vspace{1em}
 
@@ -145,10 +147,10 @@ ejecutó desde \texttt{Midnight Commander} varios de los programas maliciosos qu
 estamos estudiando. Recordemos que estos son archivos eliminados y
 recuperados pericialmente para esta investigación.
 
-La recuperación de estos archivos borrados cerró el cerco probatorio sobre la autoría material en \texttt{helios}. No obstante, subsistía una incógnita angular para la investigación: la totalidad de las sesiones de \texttt{duende} documentadas en los registros de auditoría y en los procesos en memoria provenían de la dirección IP interna \texttt{192.0.2.20}, perteneciente al servidor de cómputo \texttt{atlas}. ¿Por qué el atacante triangulaba sus accesos a través de un segundo nodo interno si no tenía restricciones para ingresar directamente desde el exterior? ¿Había sido \texttt{atlas} igualmente vulnerado para servir como trampolín encubierto? Para esclarecer esta maniobra y documentar el movimiento lateral del intruso, la investigación pericial se extendió formalmente hacia el servidor \texttt{atlas}, como se detalla en el Capítulo~\ref{cap:correlacion_multisistema}.
+La recuperación de estos archivos borrados cerró el cerco probatorio sobre la autoría material en \texttt{helios}. No obstante, subsistía una incógnita angular para la investigación: la totalidad de las sesiones de \texttt{duende} documentadas en los registros de auditoría y en los procesos en memoria provenían de la dirección IP interna \texttt{192.0.2.20}, perteneciente al servidor de cómputo \texttt{atlas}. ?`Por qué el atacante triangulaba sus accesos a través de un segundo nodo interno si no tenía restricciones para ingresar directamente desde el exterior? ?`Había sido \texttt{atlas} igualmente vulnerado para servir como trampolín encubierto? Para esclarecer esta maniobra y documentar el movimiento lateral del intruso, la investigación pericial se extendió formalmente hacia el servidor \texttt{atlas}, como se detalla en el Capítulo~\ref{cap:correlacion_multisistema}.
 
 \begin{retoforense}[Recuperación de Archivos Temporales de Aplicaciones]
-El archivo \texttt{mc.pipe.12891} documentó la lista de procesos simulados del malware. ¿Por qué utilidades interactivas de consola como \texttt{mc}, \texttt{screen} o editores como \texttt{vim} dejan artefactos residuales en \texttt{/tmp} o \texttt{/var/tmp} y de qué manera un perito forense puede utilizarlos para reconstruir la interacción del usuario cuando el atacante ha eliminado su archivo \texttt{.bash\_history}?
+El archivo \texttt{mc.pipe.12891} documentó la lista de procesos simulados del malware. ?`Por qué utilidades interactivas de consola como \texttt{mc}, \texttt{screen} o editores como \texttt{vim} dejan artefactos residuales en \texttt{/tmp} o \texttt{/var/tmp} y de qué manera un perito forense puede utilizarlos para reconstruir la interacción del usuario cuando el atacante ha eliminado su archivo \texttt{.bash\_history}?
 \end{retoforense}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: File Carving en Discos SSD Modernos y TRIM]

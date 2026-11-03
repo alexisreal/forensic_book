@@ -593,7 +593,7 @@ directo con la intrusión y sustracción de información confidencial.
 La inspección de estas cuentas personales reveló además que el intruso había ejecutado órdenes sistemáticas de borrado (\texttt{rm -rf}) para suprimir scripts intermedios, bitácoras de compilación y archivos temporales, buscando encubrir la autoría material del ataque. Sin embargo, en la arquitectura de Linux Ext2, la supresión lógica no destruye físicamente los bloques magnéticos de datos. Para rescatar esta evidencia indispensable que el atacante pretendió hacer desaparecer, el procedimiento pericial recurrió a la interrogación de inodos huérfanos y al tallado forense de estructuras desasociadas (\textit{file carving}), como se documenta en el siguiente capítulo.
 
 \begin{retoforense}[Detección de Bots y Procesos Ocultos en Espacio de Usuario]
-En el directorio de \texttt{proa} se localizaron ejecutables \texttt{in.ftpd} y \texttt{psybnc}. Si el intruso no posee privilegios de \texttt{root} para enlazar puertos privilegiados ($< 1024$), ¿en qué rangos de puertos efímeros suelen operar estos servicios y qué comando de red (\texttt{netstat -tlpn} o \texttt{ss}) permite identificar qué sockets están asociados a un UID específico?
+En el directorio de \texttt{proa} se localizaron ejecutables \texttt{in.ftpd} y \texttt{psybnc}. Si el intruso no posee privilegios de \texttt{root} para enlazar puertos privilegiados ($< 1024$), ?`en qué rangos de puertos efímeros suelen operar estos servicios y qué comando de red (\texttt{netstat -tlpn} o \texttt{ss}) permite identificar qué sockets están asociados a un UID específico?
 \end{retoforense}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: Gestión de Identidades y Autenticación FIDO2]

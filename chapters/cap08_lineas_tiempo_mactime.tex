@@ -315,7 +315,7 @@ están entre los programas modificados/creados y se muestran arriba.
 La fijación incontrovertible de la <<hora cero>> del ataque (domingo 11 de abril de 2004 a partir de las 20:55:02) brindó la coordenada pericial indispensable para orientar la siguiente fase: cruzar esta ventana crítica contra los registros de auditoría del sistema operativo. A pesar de los intentos del intruso por purgar las bitácoras con utilidades como \texttt{clean!}, el análisis minucioso de las bitácoras de autenticación (\texttt{auth.log}), los registros binarios de sesión (\texttt{wtmp}) y las transferencias de archivos (\texttt{xferlog}) permitió determinar con qué credenciales se accedió y qué archivos se descargaron en ese instante.
 
 \begin{retoforense}[Detección de Falsificación Temporal (Timestomping)]
-Si un intruso ejecuta \texttt{touch -r /bin/sh /dev/zqft4/bash!} para clonar las marcas \texttt{mtime} y \texttt{atime} del shell legítimo, ¿por qué el comando \texttt{mactime} continúa reportando la fecha real de la implantación en la columna \texttt{c} (\textit{ctime}) y cómo puede un perito explotar esta discrepancia para refutar coartadas temporales?
+Si un intruso ejecuta \texttt{touch -r /bin/sh /dev/zqft4/bash!} para clonar las marcas \texttt{mtime} y \texttt{atime} del shell legítimo, ?`por qué el comando \texttt{mactime} continúa reportando la fecha real de la implantación en la columna \texttt{c} (\textit{ctime}) y cómo puede un perito explotar esta discrepancia para refutar coartadas temporales?
 \end{retoforense}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: De mactime a Super-Timelines con Plaso]
