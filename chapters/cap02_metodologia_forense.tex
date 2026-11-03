@@ -41,7 +41,7 @@ Debian GNU/linux Sarge (análisis.)\\
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 {\footnotesize
-\begin{verbatim}
+\begin{lstlisting}[style=terminal]
 
 -- strings 
 								  
@@ -151,7 +151,23 @@ Debian GNU/linux Sarge (análisis.)\\
 
 -- chkdirs                                                   
 
--- chklastlog
+-- chklastlog                                                
+
+-- chkpro                                                  
+
+-- chkproc                                                  
+
+-- chkwtmp                                                  
+
+-- ifpromisc                                                
+
+-- snif                                                     
+
+-- last
+
+\end{lstlisting}
+}
+\vspace{0.8em}\hrulefill\vspace{0.8em}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: Adquisición de Memoria Volátil]
 En 2004, la adquisición de memoria RAM viva estaba en una fase incipiente (herramientas como \textit{fmem} o \textit{dd} sobre \texttt{/dev/mem}). Hoy en día, la captura de memoria volátil mediante herramientas como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior análisis con \textit{Volatility 3} constituyen el primer paso ineludible antes de apagar cualquier sistema comprometido, permitiendo rescatar llaves criptográficas, sockets y procesos inyectados que desaparecen al apagar el equipo.

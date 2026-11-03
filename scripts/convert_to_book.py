@@ -112,7 +112,7 @@ retrospectiva_ch2 = """
 En 2004, la adquisición de memoria RAM viva estaba en una fase incipiente (herramientas como \\textit{fmem} o \\textit{dd} sobre \\texttt{/dev/mem}). Hoy en día, la captura de memoria volátil mediante herramientas como \\textit{LiME} (\\textit{Linux Memory Extractor}) y su posterior análisis con \\textit{Volatility 3} constituyen el primer paso ineludible antes de apagar cualquier sistema comprometido, permitiendo rescatar llaves criptográficas, sockets y procesos inyectados que desaparecen al apagar el equipo.
 \\end{perspectiva20}
 """
-raw_ch2 = slice_raw(2304, 2450)
+raw_ch2 = slice_raw(2304, 2465)
 write_chapter("cap02_metodologia_forense.tex", "Principios Forenses y Cadena de Custodia", intro_ch2, raw_ch2, callout_ch2, retrospectiva_ch2)
 
 # CHAPTER 3: Detección Temprana y Artefactos en Vivo (L115-831)
@@ -145,7 +145,7 @@ write_chapter("cap05_monitoreo_usuarios.tex", "Monitoreo Activo y Análisis de S
 intro_ch6 = """
 El método de análisis forense comparativo consiste en contrastar el estado del sistema investigado contra una instalación limpia e idéntica montada en el laboratorio de referencia. En entornos GNU/Linux basados en RPM (Red Hat Package Manager), el comando \\texttt{rpm -V} permite contrastar los tamaños de archivo, fechas de modificación, atributos y sumas de verificación MD5 respecto a la base de datos oficial del distribuidor.
 """
-raw_ch6 = slice_raw(2451, 2918)
+raw_ch6 = slice_raw(2466, 2918)
 write_chapter("cap06_analisis_referencia_rpm.tex", "Análisis Diferencial con el Sistema de Referencia", intro_ch6, raw_ch6)
 
 # CHAPTER 7: Detección de Binarios Troyanizados y Rootkits (L2919-2998 + L5366-5404)
