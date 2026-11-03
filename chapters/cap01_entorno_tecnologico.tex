@@ -14,7 +14,7 @@ El sistema objeto de la investigación forense corresponde al servidor principal
 \centering
 \small
 \begin{tabular}{ll}
-\toprule
+    oprule
 \textbf{Parámetro} & \textbf{Especificación Técnica} \\
 \midrule
 Nombre de host (\textit{hostname}) & \texttt{helios} \\
@@ -67,19 +67,19 @@ El equipo analizado se encontraba físicamente instalado en el centro de cómput
 \node[serverbox] (helios) at (2.0, 1.0) {
     \textbf{helios} (\textit{Objetivo})\\
     \scriptsize 192.0.2.10 (Debian 3.0)\\
-    \tiny NFS, Mail, X11, FTP, SSH
+        iny NFS, Mail, X11, FTP, SSH
 };
 
 \node[netbox] (atlas) at (5.3, 1.0) {
     \textbf{atlas} (\textit{Secundario})\\
     \scriptsize 192.0.2.20 (Debian 3.0)\\
-    \tiny Servidor Cómputo / Telnet
+        iny Servidor Cómputo / Telnet
 };
 
 \node[netbox] (io) at (8.4, 1.0) {
     \textbf{io} (\textit{Correo / Webmail})\\
     \scriptsize 192.0.2.25 (FreeBSD)\\
-    \tiny Sendmail, IMAP, OpenWebMail
+        iny Sendmail, IMAP, OpenWebMail
 };
 
 % Conexiones verticales al bus
@@ -88,7 +88,7 @@ El equipo analizado se encontraba físicamente instalado en el centro de cómput
 \draw[draw=secondary, thick] (io.north) -- (8.4, 2.9);
 
 % Relación de confianza NFS/Samba entre helios y atlas
-\draw[trustline] (helios.east) -- (atlas.west) node[midway, below, font=\tiny\bfseries\color{accent}] {NFS / NIS Trust};
+\draw[trustline] (helios.east) -- (atlas.west) node[midway, below, font=    iny\bfseries\color{accent}] {NFS / NIS Trust};
 
 % Estaciones de trabajo inferiores
 \node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws1) at (1.2, -1.1) {\textbf{Estación X11}\\192.0.2.29};
@@ -114,7 +114,7 @@ La convergencia de servicios heterogéneos sobre un único host central constitu
 \centering
 \small
 \begin{tabular}{llll}
-\toprule
+    oprule
 \textbf{Puerto / Protocolo} & \textbf{Servicio Daemon} & \textbf{Finalidad Operativa} & \textbf{Vector de Riesgo Evaluado} \\
 \midrule
 \texttt{21/tcp} & ProFTPD 1.2 & Transferencia de archivos & Fuerza bruta contra usuarios locales \\

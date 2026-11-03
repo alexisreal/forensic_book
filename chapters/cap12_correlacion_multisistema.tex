@@ -35,19 +35,19 @@ El mecanismo de pivoteo empleado por el intruso se ilustra en la Figura~\ref{fig
 \node[font=\bfseries\small\color{primary}, anchor=north west] at (5.0, 3.6) {Subred Interna IFM (\texttt{192.0.2.0/24})};
 
 % Nodos Externos
-\node[extbox] (attacker) at (1.8, 2.2) {\textbf{Operador / Intruso}\\\scriptsize Morelia, Michoacán\\\tiny DSL Prodigy / Telemedia};
+\node[extbox] (attacker) at (1.8, 2.2) {\textbf{Operador / Intruso}\\\scriptsize Morelia, Michoacán\\    iny DSL Prodigy / Telemedia};
 \node[netcloud] (isp) at (1.8, 0.0) {\textbf{Pools de Acceso DSL}\\\scriptsize \texttt{200.78.118.x} / \texttt{203.0.113.89}};
 
 % Nodos Internos
-\node[hostbox] (atlas) at (6.8, 2.2) {\textbf{atlas} (\textit{Pivote})\\\scriptsize \texttt{192.0.2.20}\\\tiny SSH port 22};
-\node[targetbox] (helios) at (10.4, 0.6) {\textbf{helios} (\textit{Objetivo Central})\\\scriptsize \texttt{192.0.2.10}\\\tiny Rootkit Suckit, Sniffer, NFS};
-\node[hostbox] (io) at (6.8, -1.2) {\textbf{io} (\textit{Correo})\\\scriptsize \texttt{192.0.2.25}\\\tiny OpenWebMail, IMAP};
+\node[hostbox] (atlas) at (6.8, 2.2) {\textbf{atlas} (\textit{Pivote})\\\scriptsize \texttt{192.0.2.20}\\    iny SSH port 22};
+\node[targetbox] (helios) at (10.4, 0.6) {\textbf{helios} (\textit{Objetivo Central})\\\scriptsize \texttt{192.0.2.10}\\    iny Rootkit Suckit, Sniffer, NFS};
+\node[hostbox] (io) at (6.8, -1.2) {\textbf{io} (\textit{Correo})\\\scriptsize \texttt{192.0.2.25}\\    iny OpenWebMail, IMAP};
 
 % Saltos
 \draw[hop1] (attacker) -- (isp);
 \draw[hop1] (isp.east) -| (atlas.south) node[pos=0.3, above, font=\scriptsize\bfseries\color{secondary}] {Salto 1: SSH Externo};
 \draw[hop2] (atlas.east) -| (helios.north) node[pos=0.3, above, font=\scriptsize\bfseries\color{accent}] {Salto 2: Pivoteo Interno (Red Local)};
-\draw[hop3] (atlas.south) -- (io.north) node[midway, right, font=\tiny\bfseries\color{accent!70}] {Salto 3: Intento SSH \texttt{mherrera}};
+\draw[hop3] (atlas.south) -- (io.north) node[midway, right, font=    iny\bfseries\color{accent!70}] {Salto 3: Intento SSH \texttt{mherrera}};
 
 \end{tikzpicture}
 \caption{Diagrama de movimiento lateral y técnica de pivoteo a través del servidor secundario \texttt{atlas}.}
@@ -96,9 +96,9 @@ estudiados.
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \begin{lstlisting}[style=terminal]
-d / d  	    	ex/  	    	2002.11.27 20:51:02 (cst)  	    	2003.04.27 12:29:51 (cst)  	    	
-                        2003.04.23 00:39:37 (cst)  	    	4096  	    	512  	    	
-                        512  	   	999703 (realloc)
+d / d              ex/              2002.11.27 20:51:02 (cst)              2003.04.27 12:29:51 (cst)              
+                        2003.04.23 00:39:37 (cst)              4096              512              
+                        512             999703 (realloc)
 \end{lstlisting}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}

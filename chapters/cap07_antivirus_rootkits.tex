@@ -51,7 +51,7 @@ A partir de esta prospección pericial, se constató que cerca de 900 programas 
 \begin{notaforense}[Anatomía y Comportamiento del Virus Parásito Unix/RST.A]
 Descubierto originalmente en septiembre de 2001, \textbf{Unix/RST.A} representó uno de los primeros virus parásitos directos para arquitecturas Linux ELF de 32 bits. Su funcionamiento técnico se desglosa en:
 \begin{itemize}
-    \item \textbf{Infección de la cabecera ELF:} Agrega una sección parasitaria al final del ejecutable y modifica el punto de entrada (\textit{e_entry}) de la cabecera ELF para desviar la ejecución inicial hacia su propio código inyectado.
+    \item \textbf{Infección de la cabecera ELF:} Agrega una sección parasitaria al final del ejecutable y modifica el punto de entrada (\textit{e\_entry}) de la cabecera ELF para desviar la ejecución inicial hacia su propio código inyectado.
     \item \textbf{Propagación local:} Al ejecutarse cualquier binario infectado bajo la cuenta \texttt{root}, el virus recorre los directorios ejecutables estándar (\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}) infectando sistemáticamente todos los programas en los que tenga permisos de escritura.
     \item \textbf{Puerta trasera oculta:} Abre un socket crudo (\textit{raw socket}) a la escucha de paquetes ICMP o UDP específicamente estructurados, permitiendo al atacante activar una shell remota con privilegios de superusuario sin abrir ningún puerto TCP tradicional en el sistema.
 \end{itemize}

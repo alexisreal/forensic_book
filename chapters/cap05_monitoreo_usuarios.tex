@@ -442,17 +442,17 @@ Usando \texttt{/dev/.tree}
   |   `-ps,7724) -u root 
   |       `-sh,7726) -c ...
   |           `-egrep,7728) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
-  			popclean|popclean|ps 
+              popclean|popclean|ps 
   |               `-(egrep,7729)
   |-exim,7787) -Mc 199GX3-00021V-00 
   |-tar,11017) chf - sbin 
   |   `-(tar,11019)
   |-sendmail,11820) -i -- brenton@helios.ifm.lab.edu.mx 
   |-egrep,12689,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
-  			popclean|popclean|ps 
+              popclean|popclean|ps 
   |   `-(egrep,12690)
   |-egrep,14928,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
-  			popclean|popclean|ps 
+              popclean|popclean|ps 
   |   `-(egrep,14929)
   |-echo,19340) a\c 
   |   `-(echo,19342)
@@ -473,7 +473,7 @@ pstree del sistema, una de ellas es la siguiente:
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \begin{lstlisting}[style=terminal]
 -egrep,14928,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
-			popclean|popclean|ps 
+            popclean|popclean|ps 
   |   `-(egrep,14929)
 \end{lstlisting}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -520,7 +520,7 @@ root       271  0.0  0.2  1444  540 ?        S    Apr23   0:00 /sbin/rpc.statd P
 root       284  0.0  0.2  1992  652 ?        S    Apr23   0:00 /usr/sbin/inetd PWD=/ CONSOLE=/dev/console 
                 PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
                 PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84
-		 _=/sbin/start-stop-daemon
+         _=/sbin/start-stop-daemon
 daemon     299  0.0  0.2  1976  512 ?        S    Apr23   0:00 lpd Waiting                                                                                                                                                                                                                                                          
 root       314  0.0  0.2  2788  660 ?        S    Apr23   0:00 /usr/sbin/sshd PWD=/ CONSOLE=/dev/console
                 PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
@@ -744,7 +744,7 @@ duende  12689  0.0  0.0  1284  252 ?        T    07:43   0:00
                 /bin/egrep -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko
                 |popclean|popclean|ps PWD=/dev/zqft4 VENDOR=intel REMOTEHOST=atlas.ifm.lab.edu.mx 
                 MOZILLA_HOME=/usr/local/netscape OPENWINHOME=/usr/openwin USER=duende MACHTYPE=i386
-	        MAIL=/var/mail/duende LANG=C HOST=helios SSH_CLIENT=192.0.2.20 33996 22 
+            MAIL=/var/mail/duende LANG=C HOST=helios SSH_CLIENT=192.0.2.20 33996 22 
                 LOGNAME=duende SHLVL=2 GROUP=unknown SHELL=/bin/tcsh HOSTTYPE=i386-linux 
                 OSTYPE=linux HOME=/home/staff/duende TERM=vt100 PATH=/bin:/usr/bin:/usr/local/bin
                 :/usr/X11R6/bin:.:/home/staff/duende/prog/bin:/usr/local/bin:/opt/kde/bin
@@ -881,7 +881,7 @@ de un LKM pues había una referencia a \texttt{/sbin/init!} el que no aparece en
 listados que se obtuvieron.
 
 \begin{retoforense}[Discrepancia entre /proc y llamadas de ps]
-La alerta de \texttt{chkrootkit} (\textit{You have 11 process hidden for ps command}) se genera contrastando las entradas devueltas por la llamada al sistema \texttt{sys_getdents()} sobre el sistema de archivos \texttt{/proc} frente a las salidas de \texttt{ps}. Si un intruso modifica la tabla del kernel pero olvida ocultar los subdirectorios numéricos en \texttt{/proc}, ¿cómo puede un analista listar los PIDs reales mediante un script de consola que no dependa de binarios del sistema?
+La alerta de \texttt{chkrootkit} (\textit{You have 11 process hidden for ps command}) se genera contrastando las entradas devueltas por la llamada al sistema \texttt{sys\_getdents()} sobre el sistema de archivos \texttt{/proc} frente a las salidas de \texttt{ps}. Si un intruso modifica la tabla del kernel pero olvida ocultar los subdirectorios numéricos en \texttt{/proc}, ¿cómo puede un analista listar los PIDs reales mediante un script de consola que no dependa de binarios del sistema?
 \end{retoforense}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: EDR y Registro de Telemetría]

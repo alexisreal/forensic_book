@@ -16,7 +16,7 @@ A lo largo del estudio de este caso, el lector observará la aplicación prácti
     \item \textbf{El Orden de Volatilidad (RFC 3227):}
     La recolección de evidencias debe ejecutarse respetando la vida útil de los datos, desde los más efímeros hasta los más persistentes:
     \begin{equation*}
-    \text{Registros de CPU/Caché} \to \text{Memoria RAM/Sockets} \to \text{Estado del Kernel} \to \text{Almacenamiento en Disco} \to \text{Respaldos}
+    \text{Registros de CPU/Caché}     o \text{Memoria RAM/Sockets}     o \text{Estado del Kernel}     o \text{Almacenamiento en Disco}     o \text{Respaldos}
     \end{equation*}
     En el caso documentado, el equipo pericial supo equilibrar el monitoreo en vivo de la memoria y las sesiones antes de proceder a la clonación en frío del almacenamiento masivo.
 
@@ -32,7 +32,7 @@ Para facilitar su uso en asignaturas universitarias y certificaciones profesiona
 \centering
 \small
 \begin{tabular}{lll}
-\toprule
+    oprule
 \textbf{Fase Metodológica (NIST / ISO)} & \textbf{Capítulos del Libro} & \textbf{Competencias Periciales Desarrolladas} \\
 \midrule
 \textbf{1. Identificación y Triage} & Capítulos 1 y 3 & Reconocimiento de anomalías, evaluación de SUID y triage en vivo. \\

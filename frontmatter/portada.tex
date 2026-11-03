@@ -2,7 +2,7 @@
 % PORTADA EXTERIOR A TODO COLOR (FULL-BLEED TIKZ + ILUSTRACIÓN FORENSE)
 % ==============================================================================
 \begin{titlepage}
-\thispagestyle{empty}
+    hispagestyle{empty}
 
 \begin{tikzpicture}[remember picture, overlay]
     % Fondo degradado profundo (Azul noche / Grafito forense)
@@ -40,10 +40,8 @@
     % Ilustración central (Plato magnético, circuitos y traza de intrusión)
     \node[anchor=center] at ($(current page.center) + (0, -6mm)$) {
         \begin{tikzpicture}
-            % Marco con sombra y resplandor
-            \node[draw=cyan!50, line width=1pt, rounded corners=4pt, inner sep=1.5pt, fill=black!60] {
-                \clip[rounded corners=3pt] (0,0) rectangle (9.2cm, 8.4cm);
-                \node at (4.6cm, 4.2cm) {\includegraphics[width=9.4cm, keepaspectratio]{figures/portada_forense.jpg}};
+            \node[draw=cyan!60, line width=1.2pt, rounded corners=6pt, inner sep=2pt, fill=black!80] {
+                \includegraphics[width=9.2cm, height=8.4cm, keepaspectratio]{figures/portada_forense.jpg}
             };
         \end{tikzpicture}
     };
@@ -58,26 +56,26 @@
         {Instituto de Física y Matemáticas\\
         Universidad Michoacana de San Nicolás de Hidalgo};
 
-    \node[anchor=south, text=gray!50, font=\sffamily\tiny, align=center] 
+    \node[anchor=south, text=gray!50, font=\sffamily    iny, align=center] 
         at ($(current page.south) + (0, 23mm)$) 
         {Colaboración técnica original: \textbf{Jonatan Soffer Hernández} (Linux OpenSource de México)};
 
     % Cintillo final conmemorativo
-    \node[anchor=south, text=cyan!80, font=\sffamily\bfseries\tiny] 
+    \node[anchor=south, text=cyan!80, font=\sffamily\bfseries    iny] 
         at ($(current page.south) + (0, 13mm)$) 
         {EDICIÓN CONMEMORATIVA Y RETROSPECTIVA (2005--2025) $\cdot$ ESTÁNDAR RFC 5737 / 2606 $\cdot$ NIST SP 800-86};
 
 \end{tikzpicture}
 
 \newpage
-\thispagestyle{empty}
+    hispagestyle{empty}
 \mbox{}
 \newpage
 
 % ==============================================================================
 % PORTADILLA INTERIOR (PÁGINA DE TÍTULO CLÁSICA EN BLANCO Y NEGRO)
 % ==============================================================================
-\thispagestyle{empty}
+    hispagestyle{empty}
 \begin{center}
     \vspace*{1.5cm}
 

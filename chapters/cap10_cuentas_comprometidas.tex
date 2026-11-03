@@ -6,8 +6,8 @@ La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslab
 Al inspeccionar las carpetas personales (\texttt{/home/<usuario>}), el perito busca evidencias de persistencia y artefactos de ejecución:
 \begin{itemize}
     \item \textbf{Directorios ocultos (\textit{dot-directories}):} Creación de carpetas como \texttt{...} (tres puntos), \texttt{.king} o \texttt{psybnc} para disimular código frente a comandos convencionales como \texttt{ls}.
-    \item \textbf{Persistencia mediante SSH (\texttt{~/.ssh/authorized_keys2}):} Inyección de llaves públicas RSA que permiten al atacante iniciar sesión sin contraseña incluso después de que el administrador revoque o modifique la clave de la cuenta.
-    \item \textbf{Evasión de historial (\texttt{.bash_history}):} Desactivación del historial mediante variables de entorno (\texttt{HISTSIZE=0}, \texttt{export HISTFILE=/dev/null}) o manipulación directa del archivo al cerrar la sesión.
+    \item \textbf{Persistencia mediante SSH (\texttt{~/.ssh/authorized\_keys2}):} Inyección de llaves públicas RSA que permiten al atacante iniciar sesión sin contraseña incluso después de que el administrador revoque o modifique la clave de la cuenta.
+    \item \textbf{Evasión de historial (\texttt{.bash\_history}):} Desactivación del historial mediante variables de entorno (\texttt{HISTSIZE=0}, \texttt{export HISTFILE=/dev/null}) o manipulación directa del archivo al cerrar la sesión.
 \end{itemize}
 \end{notaforense}
 
@@ -141,11 +141,11 @@ drwx------ scott/users       0 2002-02-08 07:09:51 ex/
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \begin{lstlisting}[style=terminal]
 ep: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
-	not stripped
+    not stripped
 rh: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
-	not stripped
+    not stripped
 sd: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
-	not stripped
+    not stripped
 \end{lstlisting}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
