@@ -1,12 +1,12 @@
-\chapter{Principios Forenses y Cadena de Custodia}
+\chapter{Principios forenses y cadena de custodia}
 
 La validez jurídica y técnica de un dictamen forense descansa en la inviolabilidad de la evidencia. Frente a la sospecha fundada de un compromiso de seguridad en un sistema de producción, el equipo pericial debe resolver el dilema fundamental entre preservar el estado volátil de la máquina en funcionamiento o proceder al apagado controlado para su examen estático en laboratorio.
 
-\begin{notaforense}[La Regla de Oro Forense]
+\begin{notaforense}[La regla de oro forense]
 Nunca se investiga directamente sobre el medio original de almacenamiento si no es estrictamente imprescindible. La clonación física bit a bit y el cotejo criptográfico mediante sumas de verificación MD5 y SHA-1 garantizan que el estado de la evidencia permanezca inalterado a lo largo del proceso pericial, asegurando la reproducibilidad de los resultados.
 \end{notaforense}
 
-\section{Metodología Pericial y Preservación de Evidencias}
+\section{Metodología pericial y preservación de evidencias}
 
 Desde el instante en que se descubrieron los primeros indicios de intrusión y se sembraron los programas de registro encubierto, se procedió a realizar un respaldo integral del sistema. Antes de iniciar cualquier intervención analítica invasiva, se generaron imágenes binarias idénticas (\textit{bit-stream copies}) de los discos duros mediante la utilidad \texttt{dd}, operando con bloques fijos y parámetros de sincronización para tolerar posibles sectores defectuosos sin alterar el alineamiento de los inodos:
 
@@ -37,13 +37,13 @@ Salvo en aquellas situaciones excepcionales donde se requirió verificar el comp
 ]
 
 % Nodos superiores
-\node[phase] (p1) at (0, 3.8) {\textbf{1. Aislamiento}\\\scriptsize Contención Pericial};
-\node[phase] (p2) at (4.5, 3.8) {\textbf{2. Adquisición}\\\scriptsize Clonación Bit a Bit};
-\node[phase] (p3) at (9.0, 3.8) {\textbf{3. Verificación}\\\scriptsize Integridad Criptográfica};
+\node[phase] (p1) at (0, 3.8) {\textbf{1. Aislamiento}\\\scriptsize Contención pericial};
+\node[phase] (p2) at (4.5, 3.8) {\textbf{2. Adquisición}\\\scriptsize Clonación bit a bit};
+\node[phase] (p3) at (9.0, 3.8) {\textbf{3. Verificación}\\\scriptsize Integridad criptográfica};
 
 % Nodos inferiores
-\node[phase] (p4) at (9.0, 0.2) {\textbf{4. Resguardo y Copia}\\\scriptsize Cadena de Custodia};
-\node[phase] (p5) at (4.5, 0.2) {\textbf{5. Análisis Diferencial}\\\scriptsize Sistema de Referencia};
+\node[phase] (p4) at (9.0, 0.2) {\textbf{4. Resguardo y copia}\\\scriptsize Cadena de custodia};
+\node[phase] (p5) at (4.5, 0.2) {\textbf{5. Análisis diferencial}\\\scriptsize Sistema de referencia};
 
 % Conexiones de flujo
 \draw[flowline] (p1) -- (p2);
@@ -64,11 +64,11 @@ Salvo en aquellas situaciones excepcionales donde se requirió verificar el comp
 \label{fig:metodologia_forense}
 \end{figure}
 
-\begin{retoforense}[Integridad de la Imagen Pericial]
+\begin{retoforense}[Integridad de la imagen pericial]
 ¿Por qué la opción \texttt{conv=noerror,sync} en \texttt{dd} resulta indispensable frente a un disco con sectores magnéticos dañados? Si se omitiera el parámetro \texttt{sync}, ¿qué ocurriría con el desplazamiento (\textit{offset}) de los bloques subsiguientes y de qué manera invalidaría la reconstrucción de la tabla de inodos en el examen de laboratorio?
 \end{retoforense}
 
-\section{Sistemas de Laboratorio y Entornos de Referencia}
+\section{Sistemas de laboratorio y entornos de referencia}
 
 Para discriminar con certeza matemática las modificaciones ilícitas introducidas por los atacantes frente a las alteraciones legítimas derivadas de la operación cotidiana, se estructuró un procedimiento de \textbf{análisis diferencial}. Este método consistió en contrastar las imágenes forenses contra instalaciones testigo limpias (\textit{sistemas de referencia}), configuradas con versiones idénticas del sistema operativo y paquetes oficiales no vulnerados.
 
@@ -77,48 +77,48 @@ El laboratorio forense dispuso de dos plataformas independientes de cómputo des
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{lll}
-    oprule
-\textbf{Componente} & \textbf{Estación Principal (Sobremesa)} & \textbf{Estación Portátil (Móvil)} \\
+\begin{tabularx}{\textwidth}{@{} l X X @{}}
+\toprule
+\textbf{Componente} & \textbf{Estación principal (sobremesa)} & \textbf{Estación portátil (móvil)} \\
 \midrule
 Modelo & Dell Precision 350 & Dell Inspiron 4150 \\
 Procesador & Intel Pentium 4 a 2.8~GHz & Intel Mobile Pentium 4 a 1.8~GHz \\
 Memoria RAM & 512~MB DDR & 256~MB DDR \\
-Disco Duro & IDE de 80~GB & IDE de 30~GB \\
-Entorno de Referencia & Debian GNU/Linux 3.0 (\textit{Woody}) & Debian GNU/Linux 3.0 (\textit{Woody}) \\
-Entorno de Análisis & Debian GNU/Linux 3.1 (\textit{Sarge}) & Debian GNU/Linux 3.1 (\textit{Sarge}) \\
+Disco duro & IDE de 80~GB & IDE de 30~GB \\
+Entorno de referencia & Debian GNU/Linux 3.0 (\textit{Woody}) & Debian GNU/Linux 3.0 (\textit{Woody}) \\
+Entorno de análisis & Debian GNU/Linux 3.1 (\textit{Sarge}) & Debian GNU/Linux 3.1 (\textit{Sarge}) \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Plataformas de hardware y entornos de referencia del laboratorio forense.}
 \label{tab:sistemas_laboratorio}
 \end{table}
 
-\section{Taxonomía del Instrumental Pericial Utilizado}
+\section{Taxonomía del instrumental pericial utilizado}
 
 El análisis forense digital en la época requería la orquestación metódica de diversas herramientas especializadas de bajo nivel, agrupadas en el Cuadro~\ref{tab:herramientas_forenses} de acuerdo con su función pericial.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{lp{10cm}}
-    oprule
-\textbf{Categoría Pericial} & \textbf{Herramientas y Utilidades Empleadas} \\
+\begin{tabularx}{\textwidth}{@{} p{3.8cm} X @{}}
+\toprule
+\textbf{Categoría pericial} & \textbf{Herramientas y utilidades empleadas} \\
 \midrule
-\textbf{Inspección Binaria y Reversa} & \texttt{strings}, \texttt{strace}, \texttt{ltrace}, \texttt{gdb}, \texttt{readelf}, \texttt{objdump}, \texttt{nm}, \texttt{file}. Permiten desensamblar ejecutables, auditar llamadas al sistema (\textit{syscalls}) e inspeccionar tablas de símbolos. \\
+\textbf{Inspección binaria y reversa} & \texttt{strings}, \texttt{strace}, \texttt{ltrace}, \texttt{gdb}, \texttt{readelf}, \texttt{objdump}, \texttt{nm}, \texttt{file}. Permiten desensamblar ejecutables, auditar llamadas al sistema (\textit{syscalls}) e inspeccionar tablas de símbolos. \\
 \addlinespace
-\textbf{Integridad Criptográfica} & \texttt{md5sum}, \texttt{sha1sum}, \texttt{stat}, \texttt{lsattr}. Cálculo de huellas hash sobre bloques e inspección de metadatos de inodos y atributos especiales de Ext2. \\
+\textbf{Integridad criptográfica} & \texttt{md5sum}, \texttt{sha1sum}, \texttt{stat}, \texttt{lsattr}. Cálculo de huellas hash sobre bloques e inspección de metadatos de inodos y atributos especiales de Ext2. \\
 \addlinespace
-\textbf{Suites Forenses Especializadas} & \texttt{The Coroner's Toolkit (TCT)} (\textit{grave-robber}, \textit{ils2mac}, \textit{mactime}, \textit{unrm}, \textit{lazarus}) y \texttt{The Sleuth Kit (TSK)} (\textit{fls}, \textit{ils}, \textit{istat}, \textit{icat}, \textit{fsstat}, \textit{dls}, \textit{Autopsy}). Recuperación de inodos huérfanos y reconstrucción cronológica. \\
+\textbf{Suites forenses especializadas} & \texttt{The Coroner's Toolkit (TCT)} (\textit{grave-robber}, \textit{ils2mac}, \textit{mactime}, \textit{unrm}, \textit{lazarus}) y \texttt{The Sleuth Kit (TSK)} (\textit{fls}, \textit{ils}, \textit{istat}, \textit{icat}, \textit{fsstat}, \textit{dls}, \textit{Autopsy}). Recuperación de inodos huérfanos y reconstrucción cronológica. \\
 \addlinespace
-\textbf{Detección de Malware y Rootkits} & \texttt{chkrootkit}, \texttt{f-prot}, \texttt{ifpromisc}, \texttt{check\_wtmpx}, \texttt{chklastlog}, \texttt{chkwtmp}, \texttt{snif}. Auditoría de interfaces en modo promiscuo y alteración de registros de acceso. \\
+\textbf{Detección de malware y rootkits} & \texttt{chkrootkit}, \texttt{f-prot}, \texttt{ifpromisc}, \texttt{check\_wtmpx}, \texttt{chklastlog}, \texttt{chkwtmp}, \texttt{snif}. Auditoría de interfaces en modo promiscuo y alteración de registros de acceso. \\
 \addlinespace
-\textbf{Inspección del Sistema en Vivo} & \texttt{lsof}, \texttt{netstat}, \texttt{ps}, \texttt{lastcomm}, \texttt{last}, \texttt{nc}. Monitoreo de descriptores de archivos abiertos, tablas de conexiones de red y sesiones activas. \\
+\textbf{Inspección del sistema en vivo} & \texttt{lsof}, \texttt{netstat}, \texttt{ps}, \texttt{lastcomm}, \texttt{last}, \texttt{nc}. Monitoreo de descriptores de archivos abiertos, tablas de conexiones de red y sesiones activas. \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Clasificación taxonómica de las herramientas de investigación utilizadas.}
 \label{tab:herramientas_forenses}
 \end{table}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: Adquisición de Memoria Volátil]
-En 2004, la adquisición de memoria RAM viva estaba en una fase incipiente (herramientas experimentales como \texttt{fmem} o lecturas directas con \texttt{dd} sobre el dispositivo \texttt{/dev/mem}). Hoy en día, la captura de memoria volátil mediante controladores del kernel como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior interrogación con marcos avanzados como \textit{Volatility 3} constituyen el primer paso ineludible en la respuesta a incidentes, permitiendo recuperar claves de cifrado, conexiones de red activas en memoria e inyecciones de código que jamás tocan el disco duro.
+\begin{perspectiva20}[Perspectiva y lección técnica: adquisición de memoria volátil]
+En investigaciones periciales de sistemas Unix/Linux, la adquisición de memoria RAM viva estaba en una fase incipiente. Hoy en día, la captura de memoria volátil mediante controladores del kernel como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior interrogación con marcos avanzados como \textit{Volatility 3} constituyen el primer paso ineludible en la respuesta a incidentes, permitiendo recuperar claves de cifrado, conexiones de red activas en memoria e inyecciones de código que jamás tocan el disco duro.
 \end{perspectiva20}

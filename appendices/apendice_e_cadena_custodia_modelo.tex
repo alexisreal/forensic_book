@@ -1,57 +1,57 @@
-\chapter{Plantilla y Formato de Cadena de Custodia Pericial}
+\chapter{Plantilla y formato de cadena de custodia pericial}
 
-La validez jurídica de un dictamen forense informático ante un tribunal de justicia o en una auditoría corporativa de cumplimiento descansa en la demostración ininterrumpida de la **cadena de custodia**. Este registro documental acredita quién recolectó la evidencia, en qué fecha y condiciones, cómo fue resguardada, quién tuvo acceso a ella y mediante qué algoritmos matemáticos se garantiza que no sufrió alteración alguna desde el momento de su hallazgo hasta su exhibición en juicio.
+La validez jurídica de un dictamen forense informático ante un tribunal de justicia o en una auditoría corporativa de cumplimiento descansa en la demostración ininterrumpida de la \textbf{cadena de custodia}. Este registro documental acredita quién recolectó la evidencia, en qué fecha y condiciones, cómo fue resguardada, quién tuvo acceso a ella y mediante qué algoritmos matemáticos se garantiza que no sufrió alteración alguna desde el momento de su hallazgo hasta su exhibición en juicio.
 
 En este apéndice se proporciona un modelo formal de formato de cadena de custodia basado en las directrices de la norma internacional \textbf{ISO/IEC 27037:2012}.
 
-\section{Registro de Identificación de Evidencia Digital}
+\section{Registro de identificación de evidencia digital}
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|l|p{10cm}|}
+\begin{tabularx}{\textwidth}{|l|X|}
 \hline
-\textbf{Número de Expediente / Caso:} & EXP-FOR-2004-0418-UNIV \\ \hline
-\textbf{Fecha y Hora de Fijación:} & 28 de abril de 2004 --- 11:30 horas (CST) \\ \hline
-\textbf{Lugar de Aseguramiento:} & Centro de Cómputo, Edificio Central, Campus Universitario \\ \hline
-\textbf{Perito / Investigador Responsable:} & Alexis Real Santillán \\ \hline
-\textbf{Tipo de Evidencia Material:} & Disco Duro Magnético Interno \\ \hline
-\textbf{Fabricante y Modelo:} & Seagate Barracuda ATA-66 / IDE \\ \hline
-\textbf{Número de Serie (S/N):} & 3GH01984-2000-IDE \\ \hline
-\textbf{Capacidad Nominal de Almacenamiento:} & 20.4~GB (40,000,000 sectores de 512 bytes) \\ \hline
-\textbf{Estado Físico del Dispositivo:} & Íntegro, sin golpes visibles ni signos de apertura mecánica \\ \hline
-\end{tabular}
+\textbf{Número de expediente / caso:} & EXP-FOR-2004-0418-UNIV \\ \hline
+\textbf{Fecha y hora de fijación:} & 28 de abril de 2004 --- 11:30 horas (CST) \\ \hline
+\textbf{Lugar de aseguramiento:} & Centro de Cómputo, Edificio Central, Campus Universitario \\ \hline
+\textbf{Responsable del aseguramiento:} & Alexis Real Santillán (Administrador de Sistemas) \\ \hline
+\textbf{Tipo de evidencia material:} & Disco duro magnético interno \\ \hline
+\textbf{Fabricante y modelo:} & Seagate Barracuda ATA-66 / IDE \\ \hline
+\textbf{Número de serie (S/N):} & 3GH01984-2000-IDE \\ \hline
+\textbf{Capacidad nominal:} & 20.4~GB (40,000,000 sectores de 512 bytes) \\ \hline
+\textbf{Estado físico del dispositivo:} & Íntegro, sin golpes visibles ni signos de apertura mecánica \\ \hline
+\end{tabularx}
 \caption{Cédula de identificación del indicio material.}
 \end{table}
 
-\section{Preservación Criptográfica (Integridad de la Imagen Forense)}
+\section{Preservación criptográfica (integridad de la imagen forense)}
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{|l|p{10cm}|}
+\begin{tabularx}{\textwidth}{|l|X|}
 \hline
-\textbf{Método de Adquisición:} & Clonación física bit a bit mediante comando \texttt{dd} con bloque de 4096 bytes sobre duplicadora de hardware con bloqueador de escritura (\textit{write-blocker}) \\ \hline
-\textbf{Nombre del Archivo de Imagen:} & \texttt{helios-master-dd.img} \\ \hline
-\textbf{Huella Hash MD5 (Medio Original):} & \texttt{e4d8cb98f00b21a89c74120011bb9a44} \\ \hline
-\textbf{Huella Hash MD5 (Copia Forense):} & \texttt{e4d8cb98f00b21a89c74120011bb9a44} \\ \hline
-\textbf{Huella Hash SHA-256 (Copia Forense):} & \texttt{8f4a21cb099182374bcde811009124aa912837bcde81...} \\ \hline
-\textbf{Resultado de Verificación de Integridad:} & \textbf{IDÉNTICA (100\% de correspondencia bit a bit)} \\ \hline
-\end{tabular}
+\textbf{Método de adquisición:} & Clonación física bit a bit mediante comando \texttt{dd} con bloque de 4096 bytes sobre duplicadora de hardware con bloqueador de escritura (\textit{write-blocker}) \\ \hline
+\textbf{Nombre del archivo de imagen:} & \texttt{helios-master-dd.img} \\ \hline
+\textbf{Huella hash MD5 (medio original):} & \texttt{e4d8cb98f00b21a89c74120011bb9a44} \\ \hline
+\textbf{Huella hash MD5 (copia forense):} & \texttt{e4d8cb98f00b21a89c74120011bb9a44} \\ \hline
+\textbf{Huella hash SHA-256 (copia forense):} & \texttt{8f4a21cb099182374bcde811009124aa912837bcde81...} \\ \hline
+\textbf{Resultado de verificación:} & \textbf{IDÉNTICA (100\% de correspondencia bit a bit)} \\ \hline
+\end{tabularx}
 \caption{Certificación de integridad criptográfica de la réplica forense.}
 \end{table}
 
-\section{Control de Trazabilidad y Entrega-Recepción}
+\section{Control de trazabilidad y entrega-recepción}
 
 \begin{table}[htbp]
 \centering
-\footnotesize
-\begin{tabular}{|c|c|p{4cm}|p{4cm}|p{2cm}|}
+\scriptsize
+\begin{tabularx}{\textwidth}{|l|l|X|X|p{2.2cm}|}
 \hline
-\textbf{Fecha / Hora} & \textbf{Fase} & \textbf{Entrega (Nombre y Firma)} & \textbf{Recibe (Nombre y Firma)} & \textbf{Propósito} \\ \hline
-28/04/2004 12:00 & Traslado & Perito Alexis Real Santillán & Perito Alexis Real Santillán & Transporte en bolsa antiestática al lab \\ \hline
-28/04/2004 13:00 & Resguardo & Perito Alexis Real Santillán & Bóveda de Evidencias (Caja Fuerte) & Custodia física del medio original \\ \hline
-29/04/2004 09:00 & Examen & Bóveda de Evidencias & Perito Alexis Real Santillán & Extracción de copia forense para análisis \\ \hline
-\end{tabular}
+\textbf{Fecha / hora} & \textbf{Fase} & \textbf{Entrega (nombre y firma)} & \textbf{Recibe (nombre y firma)} & \textbf{Propósito} \\ \hline
+28/04/2004 12:00 & Traslado & Alexis Real Santillán & Alexis Real Santillán & Transporte en bolsa antiestática \\ \hline
+28/04/2004 13:00 & Resguardo & Alexis Real Santillán & Bóveda de evidencias & Custodia física del medio original \\ \hline
+29/04/2004 09:00 & Examen & Bóveda de evidencias & Alexis Real Santillán & Extracción de copia forense para análisis \\ \hline
+\end{tabularx}
 \caption{Registro continuo de transferencias y custodia de indicios.}
 \end{table}

@@ -1,4 +1,4 @@
-\chapter{Detección Temprana y Artefactos en Vivo}
+\chapter{Detección temprana y artefactos en vivo}
 
 La detección inicial de una intrusión suele manifestarse a través de discrepancias sutiles en la operación cotidiana del sistema. A mediados de abril de 2004, la administración de cómputo identificó la presencia de archivos con permisos especiales y propietarios no autorizados en ubicaciones reservadas al sistema. Este capítulo documenta las primeras acciones de respuesta en vivo y el inventario preliminar de artefactos anómalos.
 
@@ -6,7 +6,7 @@ La detección inicial de una intrusión suele manifestarse a través de discrepa
 El directorio \texttt{/dev} fue históricamente el refugio predilecto de los intrusos en sistemas Unix/Linux. Dado que alberga cientos de archivos especiales de bloques y caracteres, los atacantes solían crear subdirectorios camuflados con nombres de dispositivos virtuales (como \texttt{/dev/ptyp} o \texttt{/dev/...}) para almacenar herramientas de compilación, \textit{sniffers} y ejecutables con bit SUID activado.
 \end{notaforense}
 
-\section{Detección Inicial: Archivos con Permisos SUID y SGID}
+\section{Detección inicial: archivos con permisos SUID y SGID}
 
 A mediados del mes de abril la administración de cómputo descubrió
 que el equipo estudiado tenía sembrados programas con permisos de
@@ -21,12 +21,12 @@ de los usuarios.} mantenía en sus directorios privados ejecutables con permisos
 Los resultados de búsqueda de archivos \textbf{SUID} y \textbf{SGID} fuera de lo común en toda la máquina
 son los siguientes:
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 702242 92 -rwsr-sr-x 1 root root 88531 Feb 11 1999 /home/staff/duende/prog/bin/registro
 620791 20 -rwsrwsr-x 1 root root 18256 Jan 9 2000 /home/staff/duende/prog/gtk/registros
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 Hasta este momento no se sospechaba en particular del usuario duende o 500, que
 para la máquina y nosotros son y serán idénticamente el mismo.\footnote{
@@ -34,7 +34,7 @@ Usaremos indistintamente el número de identificación del sistema (id) o el
 nombre del usuario según sea el resultado de cada tipo de búsqueda o
 estudio.} 
 
-\section{Presencia Anómala en Directorios del Sistema}
+\section{Presencia anómala en directorios del sistema}
 
 En seguida se procedió a buscar archivos que pertenecieran a usuarios distintos de \texttt{root} o 0 (que son idénticamente el mismo) y que
 estuvieran guardados en sitios impropios, como los directorios de
@@ -44,7 +44,7 @@ Los archivos no pertenecientes a root que se encuentran en los árboles
 de directorios del sistema son los siguientes:
 \vspace{3mm}
 
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 501289   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:18 ./usr/bin/top
 501292   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:19 ./usr/bin/pstree
@@ -67,7 +67,7 @@ de directorios del sistema son los siguientes:
 130458    4 -rwxr-xr-x   1 500      users          65 Mar  8 06:12 ./dev/.libtp
 533480    4 drwxr-xr-x   2 500      users        4096 May  9 19:05 ./dev/zqft4
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{3mm}
 
 Ninguno de los programas que aparecen en la lista debe de pertenecer a alguno de
@@ -87,7 +87,7 @@ Los archivos:
 501291   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/netstat
 227355  708 -rwxr-xr-x   1 500      users      718863 Apr 11 16:13 ./bin/sysinit
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 son archivos muy importantes para el sistema que tienen
@@ -99,7 +99,7 @@ en un momento determinado.
 
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 130454    4 -rwxr-xr-x   1 500      users          36 Nov 14  2002 ./dev/.libn
 130456    4 -rwxr-xr-x   1 500      users          66 Mar  8 06:12 ./dev/.libpt
@@ -107,7 +107,7 @@ en un momento determinado.
 130458    4 -rwxr-xr-x   1 500      users          65 Mar  8 06:12 ./dev/.libtp
 533480    4 drwxr-xr-x   2 500      users        4096 May  9 19:05 ./dev/zqft4
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 no deberían existir en un sistema normal, y el punto antes del nombre
@@ -116,13 +116,13 @@ indica que el archivo es oculto.\\
  Los archivos:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 227367  392 -rwxr-xr-x   1 500      users      395235 Apr 15 20:23 ./usr/lib/popclean
 227360    4 -rwxr-xr-x   1 500      users        1013 Apr 15 20:23 ./usr/local/lib/dsniff.services
 227358    4 -rwxr-xr-x   1 500      users         236 Apr 15 20:23 ./etc/cron.daily/dnsquery
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 son muy sospechosos y serán analizados con detalle pues están
@@ -154,7 +154,7 @@ se intenta eliminar en un ataque informático.
  \texttt{.history} es la bitácora del \textbf{shell} \texttt{tcsh}, y nos muestra comandos
 normales pero antiguos y escasos. Quizá se limpio intencionalmente.
 
- \section{Auditoría y Análisis de Historiales de Comandos}
+ \section{Auditoría y análisis de historiales de comandos}
 
 Dado que los registros estáticos no proporcionaban información en tiempo real sobre la actividad del
 usuario, se procedió a revisar bitácoras existentes poco conocidas por
@@ -170,7 +170,7 @@ Los resultados de revisar la bitácora \texttt{history} en el directorio \texttt
 la siguiente:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 [Dir Hist Directorio Personal]
 0=/home/staff/duende/.gnome-desktop/Directorio Personal
@@ -328,7 +328,7 @@ la siguiente:
 59=cd /var/log
 
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
  
  La última fecha de modificación de este archivo es el 27 de abril,
@@ -336,11 +336,11 @@ esto indica que el programa fue usado hasta el último día que estuvo
 activo el servidor.
  
  \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 -rw-------    1 500      500          7676 Apr 27 04:29 .mc/history
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Este archivo nos brinda una gran cantidad de evidencia que muestra
@@ -369,291 +369,72 @@ root. Esta línea es señal inequívoca de que usuario tenía acceso a la
 cuenta root, pues solo root puede hacer este tipo de cambios.
 
 
-A continuación, se comentarán algunas líneas importantes en esta
-bitácora:
- 
 
- Se accedió al archivo .bash\_history.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    56=.bash_history
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}    
- Se accedió al archivo pop.log.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    57=pop.log
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se accedió a los archivos test.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    59=test*
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se accedió al directorio root.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    2=/root
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se revisó el contenido de un directorio instalado para auditar el
-sistema, y cuya función sera explicada mas adelante.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    3=/root/chkrootkit-0.40
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- 
- Se accedió a otros directorios en \texttt{/root}
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    5=/root/helios-rh
-    28=/root/archivos
-    29=/root
-    30=/root/pine
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se accedió a \texttt{/sbin} y \texttt{/tmp}, después se vera el porque.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    33=/sbin
-    35=/tmp
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se ingresó al directorio \texttt{/etc/cron.d} y \texttt{/etc/cron.daily}, estos son
-directorios donde se alojan las tareas programadas para ejecutarse periódicamente, en este caso
-a diario.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    38=/etc/cron.d
-    40=/etc/cron.daily
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se ingresó a \texttt{/usr/lib}, donde se alojan las bibliotecas de
- programación.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]    
-    44=/usr/lib
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se accedió al directorio \texttt{xm} en su home, directorio que se estudiará
- más adelante.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]    
-    49=/home/staff/duende/xm
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}    
- Se desempaquetó \texttt{o0o.tar}.    
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    51=/home/staff/duende/o0o.tar#utar
-    52=/home/staff/duende/o0o.tar#utar/s8exp
-    53=/home/staff/duende/o0o.tar#utar
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
+\subsection{Análisis detallado de las entradas recuperadas}
 
- Accedió a \texttt{/var/mail}, el directorio del correo, quizá con la intención
-de leer correo ajeno o buscar información escondida ahí, como se vera
-después.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    56=/var/mail
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}    
-Se accedió a \texttt{/var/log}, el directorio donde se registra la actividad de
-la máquina, quizá con la intención de revisar las bitácoras o eliminar
-información almacenada ahí.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]    
-    59=/var/log
+A partir de la bitácora de Midnight Commander, se identificaron múltiples patrones de actividad anómala que revelan con precisión las intenciones del operador:
 
-[Dir Hist New Right Panel]
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
-Se accedió a los directorios de proa, zena y zopilote.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
+\subsubsection{Inspección de historiales y bitácoras del sistema}
 
-    23=/home/est/proa
-    25=/home/est/zopilote
-    26=/home/est/proa
-    27=/home/est/zopilote
-    29=/home/est/zena
-    31=/home/est/zena
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
-Se ejecutó un programa oculto en \texttt{/tmp}, directorio donde la máquina
-pone archivos temporales que son eliminados siempre que reinicia el
-equipo.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+El usuario examinó activamente los registros donde habitualmente quedan asentadas las conexiones y comandos:
 \begin{lstlisting}[style=terminal]
-    32=/tmp
-    33=/tmp/.sxp
-    35=/home/est/zena
+56=.bash_history
+57=pop.log
+59=test*
+56=/var/mail
+59=/var/log
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}    
- Se accedió al directorio \texttt{prog/c/lc}, donde supuestamente hay programas
-que sirven para el análisis de secuencias genéticas y programas
-hechos por el propio usuario duende.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    44=/home/staff/duende/prog/c/lc
-    46=/home/staff/duende/prog/c/uno
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
+El interés por \texttt{.bash\_history} y \texttt{pop.log} sugiere la intención de verificar si sus sesiones previas habían dejado rastro o de auditar la actividad de otros usuarios del servidor.
 
-Se accedió al directorio \texttt{/dev/zqft4}, directorio sospechoso y que no
-debería de existir en ese lugar.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    48=/dev/zqft4
-    
+\subsubsection{Exploración de rutas restringidas y herramientas de auditoría}
 
-[cmdline]
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se trató de visualizar una imagen que pertenece al usuario brenton, y por
-consiguiente debió de ser sustraída de sus documentos.
- \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+El operador navegó sistemáticamente por directorios reservados con exclusividad al superusuario:
 \begin{lstlisting}[style=terminal]
-    3=ee ladiva.rgb 
+2=/root
+3=/root/chkrootkit-0.40
+5=/root/helios-rh
+28=/root/archivos
+30=/root/pine
+38=/etc/cron.d
+40=/etc/cron.daily
+44=/usr/lib
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
-En estas líneas se editó y compilo un programa en \texttt{/tmp}, después se
-corrió el \textit{script} \texttt{fixunix.sh}
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    9=cd temp
-    10=make
-    11=make -f makefile.linux
-    12=vi makefile.linux 
-    13=make -f makefile.linux
-    14=sh fixunix.sh 
-    15=cp Makefile.unx Makefile
-    16=make
+Resulta de máxima gravedad el acceso al directorio \texttt{/root/chkrootkit-0.40}: el intruso detectó que el administrador había instalado una herramienta de detección de rootkits y procedió a inspeccionar su configuración para evaluar si su presencia encubierta podía ser descubierta. Asimismo, la revisión de \texttt{/etc/cron.daily} denota la búsqueda de mecanismos para garantizar la persistencia de sus procesos.
 
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se ingresó al directorio \texttt{bajar} dentro de \texttt{/home/staff/duende}, y de ahí
-de regreso a \texttt{/tmp}, parece que el usuario se hallaba muy nervioso pues se
-equivoca con mucha frecuencia. Continua el patrón anterior de ingresos
-a directorios. Se obtuvo información del sistema como la fecha, uso
-del disco y usuarios conectados.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    18=cd bajar
-    20=cd /usr/local/include
-    21=cd bajar
-    22=[6~[6~[6~
-    23=cd
-    24=cd /tmp
-    25=ls -lF
-    26=more sm 
-    27=less sm 
-    28=ls -lF
-    29=cd /home/est/proa
-    30=[21~0
-    31=cd /tmp
-    32=qdate
-    33=date
-    34=[21~0
-    35=cd /home/est/zena
-    36=cd /tmp
-    37=cd /home/est/zena
-    38=cd /tmp
-    39=du -h
-    40=w
-    41=cd /home/staff
-    42=cd /tmp
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- En estas líneas se leyó el contenido de \texttt{/etc/shadow}, el archivo de
-contraseñas. Esto es signo de que el usuario tenía acceso a funciones
-de root. Luego se fue a \texttt{/var/log} para revisar los registros del
-sistema.
+\subsubsection{Pivoteo sobre cuentas de estudiantes y rutas ocultas}
 
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+En el panel secundario del navegador se constata la navegación cruzada entre los directorios personales de diversas cuentas que presentaban signos de compromiso:
 \begin{lstlisting}[style=terminal]
-    43=cd /etc
-    44=less shadow
-    45=cd /var/log
-    46=cd /dev
+23=/home/est/proa
+25=/home/est/zopilote
+29=/home/est/zena
+33=/tmp/.sxp
+48=/dev/zqft4
+49=/home/staff/duende/xm
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
- Se listó el archivo \texttt{dnsquery}, y luego se intentó cambiar el
-propietario de ese archivo de duende a root. Lo anterior es muestra
-de los atributos de root de este usuario. Estas líneas muestran el
-innegable intento por parte del usuario de ocultar y eliminar
-evidencias.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    47=ls -lFa dnsquery 
-    48=cd /etc
-    49=chown root.root dnsquery 
-    50=cd /home/staff/duende/
-    51=cd /dev
-    52=cd
-    53=ld -lFa dnsquery 
-    54=ls -lFa dnsquery 
-    55=cd
-    56=date
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
-Se revisó el directorio \texttt{/var/mail}, y se listó el archivo \texttt{.bash\_history}
-dentro de el, este archivo no debería estar ahí y es por demás
-sospechoso.
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\begin{lstlisting}[style=terminal]
-    57=cd /var/mail
-    58=ls -lFa .bash_history 
-    59=cd /var/log
-\end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
+El acceso a \texttt{/dev/zqft4} reviste particular trascendencia pericial, al tratarse de un directorio camuflado como dispositivo de cinta magnética en el árbol \texttt{/dev}, utilizado como almacén encubierto de binarios troyanizados.
 
+\subsubsection{Desempaquetado de herramientas de explotación y compilación}
+
+La bitácora documentó la manipulación de paquetes comprimidos y la compilación de ejecutables en áreas temporales:
+\begin{lstlisting}[style=terminal]
+51=/home/staff/duende/o0o.tar#utar
+52=/home/staff/duende/o0o.tar#utar/s8exp
+9=cd temp
+10=make
+11=make -f makefile.linux
+14=sh fixunix.sh
+\end{lstlisting}
+El archivo \texttt{o0o.tar} contenía las herramientas de explotación local de kernel (Suckit y scripts auxiliares). La secuencia de compilación en \texttt{/tmp} confirma la preparación y ajuste de binarios a la arquitectura del sistema analizado.
+
+\subsubsection{Uso de privilegios de root y alteración de evidencias}
+
+El bloque final de comandos ejecutados en la consola confirma sin ambigüedad que el usuario operaba con privilegios plenos de administración:
+\begin{lstlisting}[style=terminal]
+43=cd /etc
+44=less shadow
+47=ls -lFa dnsquery
+49=chown root.root dnsquery
+58=ls -lFa .bash_history
+\end{lstlisting}
+La lectura directa del archivo \texttt{/etc/shadow} solo es técnicamente posible para la cuenta \texttt{root}. Asimismo, el comando \texttt{chown root.root dnsquery} demuestra el intento deliberado por transferir la propiedad del archivo malicioso \texttt{dnsquery} (originalmente creado bajo el usuario \texttt{duende}) al superusuario, buscando enmascararlo entre los programas legítimos del sistema operativo.

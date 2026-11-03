@@ -1,8 +1,8 @@
-\chapter{Detección de Binarios Troyanizados y Rootkits}
+\chapter{Detección de binarios troyanizados y rootkits}
 
 Los \textit{rootkits} a nivel de espacio de usuario (\textit{userland rootkits}) operaban reemplazando los binarios estándar de administración (como \texttt{ps}, \texttt{ls}, \texttt{netstat}, \texttt{find} y \texttt{login}) por versiones adulteradas que filtraban deliberadamente los procesos del atacante, ocultaban directorios maliciosos y abrían puertas traseras protegidas por contraseñas predefinidas.
 
-\section{Escaneo Heurístico y Detección de Firmas de Malware}
+\section{Escaneo heurístico y detección de firmas de malware}
 
 Muchos de los programas examinados presentaban estructuras anómalas y cadenas de texto no convencionales en sus secciones de código. Por esta razón, se procedió a escanear exhaustivamente la imagen del disco mediante la solución antivirus \texttt{f-prot} para sistemas Unix/Linux. 
 
@@ -59,7 +59,7 @@ Descubierto originalmente en septiembre de 2001, \textbf{Unix/RST.A} representó
 
 Asimismo, se detectaron 115 programas infectados dentro del directorio personal del usuario \texttt{duende}, principalmente en carpetas que simulaban almacenar código fuente de investigación académica. Es relevante señalar que las fechas de modificación de estos binarios correspondían al 24 de abril, mientras que los archivos fuente asociados presentaban marcas temporales de 2001. La alteración de binarios críticos en directorios del sistema (\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}) demostró una manipulación intencional que demandó el uso efectivo de privilegios de superusuario (\texttt{root}). En contraste, la misma prueba ejecutada sobre el sistema de control del laboratorio no arrojó ninguna alerta de infección.
 
-\section{Persistencia Mediante Atributos Inmutables de Ext2 (\texttt{chattr +i})}
+\section{Persistencia mediante atributos inmutables de Ext2 (\texttt{chattr +i})}
 
 Uno de los mecanismos de evasión más sofisticados observados durante la pericia fue la manipulación de las banderas extendidas del sistema de archivos Ext2. Mediante el comando \texttt{lsattr}, se identificó que dieciocho archivos estratégicos contaban con atributos de inmutabilidad y adición forzada activados.
 

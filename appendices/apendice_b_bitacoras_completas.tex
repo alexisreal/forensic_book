@@ -1,10 +1,10 @@
-\chapter{Transcripción y Compendio de Bitácoras}
+\chapter{Transcripción y compendio de bitácoras}
 
 A lo largo de la investigación forense se procesaron decenas de miles de líneas de registros de auditoría. Para mantener la legibilidad y el ritmo pedagógico de la obra, los capítulos principales incluyen únicamente los extractos y discrepancias fundamentales.
 
 En este apéndice se preserva la estructura de los registros más representativos para fines de análisis comparativo y práctica pericial.
 
-\section{Estructura de Registros de Autenticación (wtmp / last)}
+\section{Estructura de registros de autenticación (\texttt{wtmp} / \texttt{last})}
 Los registros de conexión revelan la alternancia entre sesiones legítimas del usuario y accesos clandestinos a través de direcciones de acceso conmutado y DSL:
 \begin{lstlisting}[style=terminal]
 duende   pts/2        198.51.100.61    Mon Apr 12 18:34 - 19:12  (00:38)
@@ -13,7 +13,7 @@ duende   ftp          203.0.113.124    Tue Apr 13 02:11 - 02:15  (00:04)
 duende   pts/0        198.51.100.156   Tue Apr 13 02:16 - 03:40  (01:24)
 \end{lstlisting}
 
-\section{Registros de Transferencia FTP (xferlog)}
+\section{Registros de transferencia FTP (\texttt{xferlog})}
 El servicio FTP fue el vector primordial de descarga de paquetes comprimidos (\texttt{.tar.gz}) que contenían el código fuente de los servidores IRC y los scripts de compilación automática.
 \begin{lstlisting}[style=terminal]
 Tue Apr 13 02:12:04 2004 1 203.0.113.124 152841 /home/duende/b.tar.gz b _ i r duende ftp 0 * c

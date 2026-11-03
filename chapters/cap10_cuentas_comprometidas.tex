@@ -1,4 +1,4 @@
-\chapter{Análisis Forense de Cuentas Comprometidas}
+\chapter{Análisis forense de cuentas comprometidas}
 
 La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslabón más débil de su cadena de credenciales. El análisis forense de los directorios personales de los usuarios afectados reveló el mecanismo de acceso inicial y el depósito de herramientas auxiliares que permitieron la consolidación de la presencia no autorizada.
 
@@ -11,134 +11,134 @@ Al inspeccionar las carpetas personales (\texttt{/home/<usuario>}), el perito bu
 \end{itemize}
 \end{notaforense}
 
-\section{Inspección Forense de Directorios de Cuentas Comprometidas}
+\section{Inspección forense de directorios de cuentas comprometidas}
 
  Contenido resumido del directorio proa:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
-?drwxr-xr-x 10 523      523         4096 Apr 16 22:16 ...                                                                                    ?
-?drwxr-xr-x  3 523      523         4096 Apr 16 21:33 .king                                                                                  ?
-?drwx------  4 523      523         4096 Apr 15 22:20 emech-2.8.3                                                                            ?
-?drwx------  2 523      523         4096 Feb  8  2002 ex                                                                                     ?
-?drwxr-xr-x  3 523      523         4096 Apr  9 20:25 king                                                                                   ?
-?drwxr-xr-x  2 523      523         4096 Jan 15  2001 proa                                                                                   ?
-?drwxr-xr-x  8 523      523         4096 Apr 12 05:33 psybnc                                                                                 ?
-?-rw-------  1 523      523          404 Apr  9 20:19 .bash_history                                                                          ?
-?-rw-r--r--  1 523      523           24 Jan 15  2001 .bash_logout                                                                           ?
-?-rw-r--r--  1 523      523          230 Jan 15  2001 .bash_profile                                                                          ?
-?-rw-r--r--  1 523      523          124 Jan 15  2001 .bashrc                                                                                ?
-?-rw-r--r--  1 523      523       200419 Apr 20 00:00 EriN[ca].seen                                                                          ?
-?-rw-r--r--  1 523      523       184395 Apr 20 00:00 atlas`.seen                                                                            ?
-?-rw-r--r--  1 523      523          269 Apr 18 20:57 LinkEvents                                                                             ?
-?-rw-r--r--  1 523      523       134211 Apr 10 23:56 Xeta.gz                                                                                ?
-?-rw-r--r--  1 523      523          143 Apr 20 00:00 bot.users                                                                              ?
-?-rw-r--r--  1 523      523        61440 Mar 15 23:40 ex.tar                                                                                 ?
-?-rwxr-xr-x  1 523      523       466184 Apr 15 23:39 in.ftpd                                                                                ?
-?-rw-r--r--  1 523      523           67 Jan 15  2001 introcd1.ram                                                                           ?
-?-rw-r--r--  1 523      523           67 Jan 15  2001 introcd2.ram                                                                           ?
-?-rw-r--r--  1 523      523           56 Jan 15  2001 martin990909.cgi                                                                       ?
-?-rw-r--r--  1 523      523         1054 Apr 20 00:00 mech.levels                                                                            ?
-?-rw-------  1 523      523            5 Apr 16 20:51 mech.pid
-?-rw-r--r--  1 523      523          448 Apr 20 00:00 mech.session                                                                           ?
-?-rw-r--r--  1 523      523         3989 Apr 11 21:37 mech.set                                                                               ?
-?-rw-r--r--  1 523      523       174080 Dec  5  2002 o0o.tar                                                                                ?
-?-rw-r--r--  1 523      523          916 Apr 16 23:10 pEpE[mx].seen                                                                          ?
-?-rw-r-----  1 523      523        37210 Apr 16 10:01 passwd                                                                                 ?
-?-rw-r--r--  1 523      523       970089 Oct 28  2000 psyBNC2.2.1-linux-i86-static.tar.gz                                                    ?
-?-rw-r--r--  1 523      523       200679 Nov  5  2000 psyBNC2.2.1.tar.gz                                                                     ?
-?-rw-r--r--  1 523      523       200798 Apr 14  2001 psyBNC2.2.2.tar.gz                                                                     ?
-?-rw-r--r--  1 523      523       200798 Apr 14  2001 psyBNC2.2.2.tar.gz.1                                                                   ?
-?-rw-r--r--  1 523      523      1546240 Feb 13 10:13 psyBNC2.3.1.tar                                                                        ?
-?-rw-r--r--  1 523      523       312188 Aug 17  2002 psyBNC2.3.1.tar.gz                                                                     ?
-?-rw-r--r--  1 523      523           77 Mar  9 23:40 psybnc.conf 
+drwxr-xr-x 10 523      523         4096 Apr 16 22:16 ...
+drwxr-xr-x  3 523      523         4096 Apr 16 21:33 .king
+drwx------  4 523      523         4096 Apr 15 22:20 emech-2.8.3
+drwx------  2 523      523         4096 Feb  8  2002 ex
+drwxr-xr-x  3 523      523         4096 Apr  9 20:25 king
+drwxr-xr-x  2 523      523         4096 Jan 15  2001 proa
+drwxr-xr-x  8 523      523         4096 Apr 12 05:33 psybnc
+-rw-------  1 523      523          404 Apr  9 20:19 .bash_history
+-rw-r--r--  1 523      523           24 Jan 15  2001 .bash_logout
+-rw-r--r--  1 523      523          230 Jan 15  2001 .bash_profile
+-rw-r--r--  1 523      523          124 Jan 15  2001 .bashrc
+-rw-r--r--  1 523      523       200419 Apr 20 00:00 EriN[ca].seen
+-rw-r--r--  1 523      523       184395 Apr 20 00:00 atlas`.seen
+-rw-r--r--  1 523      523          269 Apr 18 20:57 LinkEvents
+-rw-r--r--  1 523      523       134211 Apr 10 23:56 Xeta.gz
+-rw-r--r--  1 523      523          143 Apr 20 00:00 bot.users
+-rw-r--r--  1 523      523        61440 Mar 15 23:40 ex.tar
+-rwxr-xr-x  1 523      523       466184 Apr 15 23:39 in.ftpd
+-rw-r--r--  1 523      523           67 Jan 15  2001 introcd1.ram
+-rw-r--r--  1 523      523           67 Jan 15  2001 introcd2.ram
+-rw-r--r--  1 523      523           56 Jan 15  2001 martin990909.cgi
+-rw-r--r--  1 523      523         1054 Apr 20 00:00 mech.levels
+-rw-------  1 523      523            5 Apr 16 20:51 mech.pid
+-rw-r--r--  1 523      523          448 Apr 20 00:00 mech.session
+-rw-r--r--  1 523      523         3989 Apr 11 21:37 mech.set
+-rw-r--r--  1 523      523       174080 Dec  5  2002 o0o.tar
+-rw-r--r--  1 523      523          916 Apr 16 23:10 pEpE[mx].seen
+-rw-r-----  1 523      523        37210 Apr 16 10:01 passwd
+-rw-r--r--  1 523      523       970089 Oct 28  2000 psyBNC2.2.1-linux-i86-static.tar.gz
+-rw-r--r--  1 523      523       200679 Nov  5  2000 psyBNC2.2.1.tar.gz
+-rw-r--r--  1 523      523       200798 Apr 14  2001 psyBNC2.2.2.tar.gz
+-rw-r--r--  1 523      523       200798 Apr 14  2001 psyBNC2.2.2.tar.gz.1
+-rw-r--r--  1 523      523      1546240 Feb 13 10:13 psyBNC2.3.1.tar
+-rw-r--r--  1 523      523       312188 Aug 17  2002 psyBNC2.3.1.tar.gz
+-rw-r--r--  1 523      523           77 Mar  9 23:40 psybnc.conf 
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em} 
 
  Contenido resumido del directorio zena:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
-?drwxr-xr-x  9 521      521         4096 Apr 23 19:59 psybnc                                                                                 ?
-?drwxr-xr-x  3 521      521         4096 Apr 21 20:22 zena                                                                                   ?
-?-rw-------  1 521      521          284 Apr 24 00:29 .bash_history                                                                          ?
-?-rw-r--r--  1 521      521           24 Jan 15  2001 .bash_logout                                                                           ?
-?-rw-r--r--  1 521      521          230 Jan 15  2001 .bash_profile                                                                          ?
-?-rw-r--r--  1 521      521          124 Jan 15  2001 .bashrc                                                                                ?
-?-rw-r--r--  1 521      521       200798 Mar 19 18:41 psyBNC2.2.2.tar.gz
+drwxr-xr-x  9 521      521         4096 Apr 23 19:59 psybnc
+drwxr-xr-x  3 521      521         4096 Apr 21 20:22 zena
+-rw-------  1 521      521          284 Apr 24 00:29 .bash_history
+-rw-r--r--  1 521      521           24 Jan 15  2001 .bash_logout
+-rw-r--r--  1 521      521          230 Jan 15  2001 .bash_profile
+-rw-r--r--  1 521      521          124 Jan 15  2001 .bashrc
+-rw-r--r--  1 521      521       200798 Mar 19 18:41 psyBNC2.2.2.tar.gz
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Contenido resumido del directorio zopilote:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
-?drwxr-xr-x  5 1019     1019        4096 Apr  8 23:20 emech                                                                                  ?
-?drwx------  2 1019     1019        4096 Feb  8  2002 ex                                                                                     ?
-?drwxr-xr-x 10 1019     1019        4096 Mar 31 02:13 psybnc                                                                                 ?
-?-rw-------  1 1019     1019          74 Apr  4 21:24 .bash_history                                                                          ?
-?-rw-r--r--  1 1019     1019          24 Jan 15  2001 .bash_logout                                                                           ?
-?-rw-r--r--  1 1019     1019         230 Jan 15  2001 .bash_profile                                                                          ?
-?-rw-r--r--  1 1019     1019         124 Jan 15  2001 .bashrc                                                                                ?
-?-rw-r--r--  1 1019     1019       61440 Mar 31 00:06 ex.tar                                                                                 ?
-?-rw-r-----  1 1019     1019      178862 Jan 29 07:50 mech-linux.tar.gz                                                                      ?
-?-rw-r--r--  1 1019     1019     1546240 Mar 30 23:01 psyBNC2.3.1.tar
+drwxr-xr-x  5 1019     1019        4096 Apr  8 23:20 emech
+drwx------  2 1019     1019        4096 Feb  8  2002 ex
+drwxr-xr-x 10 1019     1019        4096 Mar 31 02:13 psybnc
+-rw-------  1 1019     1019          74 Apr  4 21:24 .bash_history
+-rw-r--r--  1 1019     1019          24 Jan 15  2001 .bash_logout
+-rw-r--r--  1 1019     1019         230 Jan 15  2001 .bash_profile
+-rw-r--r--  1 1019     1019         124 Jan 15  2001 .bashrc
+-rw-r--r--  1 1019     1019       61440 Mar 31 00:06 ex.tar
+-rw-r-----  1 1019     1019      178862 Jan 29 07:50 mech-linux.tar.gz
+-rw-r--r--  1 1019     1019     1546240 Mar 30 23:01 psyBNC2.3.1.tar
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Contenido resumido del directorio lllll:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
-?drwxr-xr-x  3 1040     1040        4096 Apr 23 22:33 ...                                                                                    ?
-?drwx------  2 1040     1040        4096 Feb  8  2002 ex                                                                                     ?
-?-rw-------  1 1040     1040          51 Apr 23 22:30 .bash_history                                                                          ?
-?-rw-r--r--  1 1040     1040          24 Jan 15  2001 .bash_logout                                                                           ?
-?-rw-r--r--  1 1040     1040         230 Jan 15  2001 .bash_profile                                                                          ?
-?-rw-r--r--  1 1040     1040         124 Jan 15  2001 .bashrc                                                                                ?
-?-rw-r--r--  1 1040     1040         364 Jan 15  2001 dead.letter                                                                            ?
-?-rw-r--r--  1 1040     1040       61440 Apr 21 20:37 o0o.tar
+drwxr-xr-x  3 1040     1040        4096 Apr 23 22:33 ...
+drwx------  2 1040     1040        4096 Feb  8  2002 ex
+-rw-------  1 1040     1040          51 Apr 23 22:30 .bash_history
+-rw-r--r--  1 1040     1040          24 Jan 15  2001 .bash_logout
+-rw-r--r--  1 1040     1040         230 Jan 15  2001 .bash_profile
+-rw-r--r--  1 1040     1040         124 Jan 15  2001 .bashrc
+-rw-r--r--  1 1040     1040         364 Jan 15  2001 dead.letter
+-rw-r--r--  1 1040     1040       61440 Apr 21 20:37 o0o.tar
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Contenido resumido del directorio duende:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
-?-rw-r--r--  1 500      500       174080 Dec  5  2002 o0o.tar                                                                                ?
-?-rw-r--r--  1 500      500          707 May  8  2001 dump.sh
+-rw-r--r--  1 500      500       174080 Dec  5  2002 o0o.tar
+-rw-r--r--  1 500      500          707 May  8  2001 dump.sh
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 
  Los archivo oOo.tar se repiten en varios de los directorios. El contenido de este paquete es:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 drwx------ scott/users       0 2002-02-08 07:09:51 ex/
 -rwx------ scott/users   14361 2002-02-08 07:09:35 ex/ep
 -rwx------ scott/users   14543 2002-02-08 07:09:39 ex/rh
 -rwx------ scott/users   23577 2002-02-08 07:09:45 ex/sd
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Estos paquetes contienen ejecutables dentro de un directorio llamado
  \texttt{ex/}. Verifiquemos la función de estos programas:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 ep: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
     not stripped
@@ -147,14 +147,14 @@ rh: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked
 sd: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked (uses shared libs), 
     not stripped
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 \texttt{ex/ep}
 
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /lib/ld-linux.so.2
 __gmon_start__
@@ -198,13 +198,13 @@ ptrace: PTRACE_DETACH
 d0h! error!
 /bin/sh
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 \texttt{ex/rh}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal] 
 /lib/ld-linux.so.2
 __gmon_start__
@@ -249,13 +249,13 @@ LD_DEBUG
 /usr/bin/newgrp
 Rhn/shh//bi
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 \texttt{ex/sd}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /lib/ld-linux.so.2
 __gmon_start__
@@ -399,7 +399,7 @@ Thanx for choosing sd's products ;)
 /usr/sbin/sendmail
 /tmp/.sxp
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Estos programas explotan vulnerabilidades del servidor de correo y
@@ -414,16 +414,16 @@ por el.\\
 \texttt{oOo.tar}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
-?-rw-------  1 root     root        2086 Dec  5  2002 S8EXP                                                                                  ?
-?-rwxr-xr-x  1 root     root        9320 Nov  7  2002 final                                                                                  ?
-?-rw-------  1 root     root        2987 Dec  5  2002 final.c                                                                                ?
-?-rw-------  1 root     root        1947 Dec  5  2002 flkm.c                                                                                 ?
-?-rw-r--r--  1 root     root       78450 Nov  7  2002 flkm32                                                                                 ?
-?-rw-r--r--  1 root     root       68352 Nov  7  2002 flkm64
+-rw-------  1 root     root        2086 Dec  5  2002 S8EXP
+-rwxr-xr-x  1 root     root        9320 Nov  7  2002 final
+-rw-------  1 root     root        2987 Dec  5  2002 final.c
+-rw-------  1 root     root        1947 Dec  5  2002 flkm.c
+-rw-r--r--  1 root     root       78450 Nov  7  2002 flkm32
+-rw-r--r--  1 root     root       68352 Nov  7  2002 flkm64
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
  
  Este es idénticamente el mismo que el oOo.tar que esta en el
@@ -434,7 +434,7 @@ por el.\\
  
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
  /usr/lib/ld.so.1
 system
@@ -499,7 +499,7 @@ SUCCESS! Enjoy RootShell!
 /bin/sh
 fail!
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Este es el contenido de un \textit{exploit} de sendmail.\\
@@ -508,7 +508,7 @@ fail!
  Contenido de \texttt{dump.sh}:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal] 
 #!/bin/sh
 
@@ -544,7 +544,7 @@ sleep 5
 /tmp/sush
 id
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Es el contenido de un \textit{script} que da acceso a un \textbf{shell} de root de
@@ -556,28 +556,28 @@ que ejecutan un servidor de \textbf{IRC} y contienen servidores de \texttt{FTP} 
 \texttt{telnet}. El contenido de estos directorios es el siguiente:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 drwxr-xr-x  3 1040     1040        4096 Apr 23 22:33 ..                                                                                     ?
-?drwxr-xr-x  2 1040     1040        4096 Oct 21  2000 help                                                                                   ?
-?drwxr-xr-x  2 1040     1040        4096 Apr 23 22:34 log                                                                                    ?
-?drwxr-xr-x  3 1040     1040        4096 Oct 21  2000 menuconf                                                                               ?
-?drwxr-xr-x  2 1040     1040        4096 Apr 23 22:42 motd                                                                                   ?
-?drwxr-xr-x  3 1040     1040        4096 Jul 30  2000 scripts                                                                                ?
-?drwxr-xr-x  2 1040     1040        4096 Oct 21  2000 tools                                                                                  ?
-?-rw-r--r--  1 1040     1040       18124 Oct 28  2000 CHANGES                                                                                ?
-?-rw-------  1 1040     1040       17982 May 16  1997 COPYING                                                                                ?
-?-rw-r--r--  1 1040     1040        2660 Aug  8  2000 FAQ                                                                                    ?
-?-rw-r--r--  1 1040     1040         394 Oct 28  2000 Makefile                                                                               ?
-?-rw-r--r--  1 1040     1040       36075 Oct 28  2000 README                                                                                 ?
-?-rw-r--r--  1 1040     1040          76 Oct 28  2000 TODO                                                                                   ?
-?-rwxr-xr-x  1 1040     1040      537712 Apr 23 22:33 in.ftpd                                                                                ?
-?-rw-------  1 1040     1040         716 Apr 23 22:42 psybnc.conf                                                                            ?
-?-rw-------  1 1040     1040         716 Apr 23 22:42 psybnc.conf.old                                                                        ?
-?-rw-------  1 1040     1040           7 Apr 23 22:33 psybnc.pid                                                                             ?
-?-rwxr-xr-x  1 1040     1040         369 Aug  8  2000 psybncchk
+drwxr-xr-x  2 1040     1040        4096 Oct 21  2000 help
+drwxr-xr-x  2 1040     1040        4096 Apr 23 22:34 log
+drwxr-xr-x  3 1040     1040        4096 Oct 21  2000 menuconf
+drwxr-xr-x  2 1040     1040        4096 Apr 23 22:42 motd
+drwxr-xr-x  3 1040     1040        4096 Jul 30  2000 scripts
+drwxr-xr-x  2 1040     1040        4096 Oct 21  2000 tools
+-rw-r--r--  1 1040     1040       18124 Oct 28  2000 CHANGES
+-rw-------  1 1040     1040       17982 May 16  1997 COPYING
+-rw-r--r--  1 1040     1040        2660 Aug  8  2000 FAQ
+-rw-r--r--  1 1040     1040         394 Oct 28  2000 Makefile
+-rw-r--r--  1 1040     1040       36075 Oct 28  2000 README
+-rw-r--r--  1 1040     1040          76 Oct 28  2000 TODO
+-rwxr-xr-x  1 1040     1040      537712 Apr 23 22:33 in.ftpd
+-rw-------  1 1040     1040         716 Apr 23 22:42 psybnc.conf
+-rw-------  1 1040     1040         716 Apr 23 22:42 psybnc.conf.old
+-rw-------  1 1040     1040           7 Apr 23 22:33 psybnc.pid
+-rwxr-xr-x  1 1040     1040         369 Aug  8  2000 psybncchk
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  El objeto de estos programas es ofrecer el servicio de charlas en línea \textbf{IRC} para la red

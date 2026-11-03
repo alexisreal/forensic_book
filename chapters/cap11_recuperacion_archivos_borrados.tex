@@ -1,4 +1,4 @@
-\chapter{Recuperación de Archivos Eliminados e Inodos Huérfanos}
+\chapter{Recuperación de archivos eliminados e inodos huérfanos}
 
 Cuando un intruso advierte la posibilidad de ser detectado o concluye una fase de su ataque, suele ejecutar comandos de borrado (\texttt{rm -rf}) para suprimir sus herramientas y bitácoras intermedias. Sin embargo, en el sistema de archivos Ext2/Ext3, la eliminación de un archivo desasocia el inodo del directorio pero mantiene intactos los bloques de datos en el disco magnético hasta que son reutilizados por nuevas operaciones de escritura.
 
@@ -30,30 +30,30 @@ Mediante herramientas forenses como \texttt{ils} (para listar inodos desasociado
 \draw[draw=gray!30, fill=gray!2, rounded corners=4pt] (-0.5, 2.5) rectangle (11.5, 5.0);
 \node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.3, 4.8) {Estado Activo: Archivo Vinculado al Directorio};
 
-\node[dentry] (d1) at (1.5, 3.5) {\textbf{Entrada Directorio}\\texttt{mc.pipe.12891}\\    iny Inodo: 130461};
-\node[inodebox] (i1) at (5.5, 3.5) {\textbf{Inodo 130461 (Ext2)}\\    iny \texttt{i\_links\_count = 1}, \texttt{i\_dtime = 0}\\    iny Punteros directos a bloques};
-\node[blockbox] (b1) at (9.8, 3.5) {\textbf{Sectores de Datos (Disco)}\\    iny Contenido: \texttt{dnsquery}, \texttt{sysinit}...\\    iny Bitmap: Bloques Ocupados};
+\node[dentry] (d1) at (1.5, 3.5) {\textbf{Entrada de directorio}\\\scriptsize \texttt{mc.pipe.12891}\\\tiny Inodo: 130461};
+\node[inodebox] (i1) at (5.5, 3.5) {\textbf{Inodo 130461 (Ext2)}\\\tiny \texttt{i\_links\_count = 1}, \texttt{i\_dtime = 0}\\\tiny Punteros directos a bloques};
+\node[blockbox] (b1) at (9.8, 3.5) {\textbf{Sectores de datos (disco)}\\\tiny Contenido: \texttt{dnsquery}, \texttt{sysinit}...\\\tiny Bitmap: bloques ocupados};
 
-\draw[pointer] (d1) -- (i1) node[midway, above, font=    iny] {Vínculo};
-\draw[pointer] (i1) -- (b1) node[midway, above, font=    iny] {Punteros};
+\draw[pointer] (d1) -- (i1) node[midway, above=2pt, font=\tiny] {Vínculo};
+\draw[pointer] (i1) -- (b1) node[midway, above=2pt, font=\tiny] {Punteros};
 
 % Estado 2: Archivo Eliminado (unlink)
 \draw[draw=gray!30, fill=gray!2, rounded corners=4pt] (-0.5, -0.6) rectangle (11.5, 1.9);
-\node[font=\bfseries\small\color{accent}, anchor=north west] at (-0.3, 1.7) {Estado Post-Eliminación: Inodo Huérfano y Bloques no Asignados};
+\node[font=\bfseries\small\color{accent}, anchor=north west] at (-0.3, 1.7) {Estado post-eliminación: inodo huérfano y bloques no asignados};
 
-\node[dentry, draw=gray!40, text=gray] (d2) at (1.5, 0.4) {\textbf{Entrada Desasociada}\\texttt{[Entrada Borrada]}\\    iny Inodo: 0};
-\node[inodebox, draw=accent, fill=accent!5] (i2) at (5.5, 0.4) {\textbf{Inodo Huérfano}\\    iny \texttt{i\_links\_count = 0}, \texttt{i\_dtime = Epoch}\\    iny Punteros a bloques borrados};
-\node[blockbox, draw=accent, fill=retobg] (b2) at (9.8, 0.4) {\textbf{Espacio No Asignado}\\    iny \textbf{¡Datos magnéticos intactos!}\\    iny Recuperable vía \textit{Carving}};
+\node[dentry, draw=gray!40, text=gray] (d2) at (1.5, 0.4) {\textbf{Entrada desasociada}\\\scriptsize \texttt{[Entrada borrada]}\\\tiny Inodo: 0};
+\node[inodebox, draw=accent, fill=accent!5] (i2) at (5.5, 0.4) {\textbf{Inodo huérfano}\\\tiny \texttt{i\_links\_count = 0}, \texttt{i\_dtime = Epoch}\\\tiny Punteros a bloques borrados};
+\node[blockbox, draw=accent, fill=retobg] (b2) at (9.8, 0.4) {\textbf{Espacio no asignado}\\\tiny Datos magnéticos intactos\\\tiny Recuperable vía \textit{carving}};
 
 \draw[draw=gray!40, dashed] (d2) -- (i2);
-\draw[delpointer] (i2) -- (b2) node[midway, above, font=    iny\bfseries\color{accent}] {Carving / \texttt{icat}};
+\draw[delpointer] (i2) -- (b2) node[midway, above=2pt, font=\tiny\bfseries\color{accent}] {Carving / \texttt{icat}};
 
 \end{tikzpicture}
 \caption{Mecánica interna de desasociación (\textit{unlink}) y preservación de bloques huérfanos en el sistema de archivos Ext2.}
 \label{fig:ext2_deletion_carving}
 \end{figure}
 
-\section{Recuperación de Inodos Huérfanos y Datos No Asignados (\textit{Carving})}
+\section{Recuperación de inodos huérfanos y datos no asignados (\textit{carving})}
 
 
  Se recuperó el contenido de archivos en el disco duro que fueron
@@ -74,7 +74,7 @@ método de análisis general.
  Archivos sospechosos de entre 300,000 recuperados.
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 {\footnotesize
 \begin{lstlisting}[style=terminal]
 r / r    /dev/zqft4/algo              2003.05.10 00:05:03 (cst)    2003.05.10 00:05:03 (cst)    
@@ -97,7 +97,7 @@ f / r              mc.pipe.12891      2003.03.08 12:13:10 (cst)              200
                                 130461 (realloc)
 \end{lstlisting}
 }
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Los archivos anteriores son logs del sistema y ejecutables de \textbf{IRC}. Lo
@@ -113,7 +113,7 @@ como parte del paquete de explotación contra el servicio \texttt{sendmail} en e
  Su contenido es el siguiente:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 {\footnotesize
 \begin{lstlisting}[style=terminal]
 linux
@@ -129,7 +129,7 @@ popclean
 ecko
 \end{lstlisting}
 }
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Esto demuestra de manera incontrovertible que el 11 de abril, el usuario \texttt{duende}

@@ -1,24 +1,24 @@
-\chapter{Topología y Entorno Tecnológico}
+\chapter{Topología y entorno tecnológico}
 
-El punto de partida de toda investigación pericial informática exige una caracterización minuciosa del objetivo: su arquitectura de hardware, sistema operativo, topología de red y los servicios expuestos al momento del incidente. En el contexto tecnológico de 2004, los servidores departamentales solían asumir roles múltiples y concurrentes (servidor de correo electrónico, servidor de archivos compartidos mediante NFS y Samba, y estación de cálculo con soporte para entornos gráficos X11), lo que ampliaba notablemente su superficie de ataque y complejizaba la delimitación pericial.
+El punto de partida de toda investigación pericial informática exige una caracterización minuciosa del objetivo: su arquitectura de hardware, sistema operativo, topología de red y los servicios expuestos al momento del incidente. En el contexto tecnológico en que ocurrieron los hechos, los servidores departamentales solían asumir roles múltiples y concurrentes (servidor de correo electrónico, servidor de archivos compartidos mediante NFS y Samba, y estación de cálculo con soporte para entornos gráficos X11), lo que ampliaba notablemente su superficie de ataque y complejizaba la delimitación pericial.
 
-\begin{notaforense}[Contexto de Infraestructura en 2004]
-El servidor estudiado representaba el estándar de cómputo de alto rendimiento departamental a principios de la década del 2000: una arquitectura x86 monoprocesador Intel Pentium III sobre bus PCI y almacenamiento magnético IDE/ATA, enlazada mediante conmutadores Fast Ethernet (100~Mbps) a una red universitaria con direccionamiento IPv4 público directo y sin cortafuegos de aplicación perimetrales.
+\begin{notaforense}[Contexto de infraestructura de producción]
+El servidor estudiado representaba el estándar de cómputo de alto rendimiento departamental de la época: una arquitectura x86 monoprocesador Intel Pentium III sobre bus PCI y almacenamiento magnético IDE/ATA, enlazada mediante conmutadores Fast Ethernet (100~Mbps) a una red universitaria con direccionamiento IPv4 público directo y sin cortafuegos de aplicación perimetrales.
 \end{notaforense}
 
-\section{Ficha Técnica del Sistema Objetivo}
+\section{Ficha técnica del sistema objetivo}
 
 El sistema objeto de la investigación forense corresponde al servidor principal del departamento, identificado en este informe bajo el seudónimo técnico \texttt{helios}. Las características de hardware y plataforma base se detallan en el Cuadro~\ref{tab:ficha_victima1}.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{ll}
-    oprule
-\textbf{Parámetro} & \textbf{Especificación Técnica} \\
+\begin{tabularx}{\textwidth}{@{} l X @{}}
+\toprule
+\textbf{Parámetro} & \textbf{Especificación técnica} \\
 \midrule
 Nombre de host (\textit{hostname}) & \texttt{helios} \\
-Dominio institucional & \texttt{ifm.lab.edu.mx} \\
+Dominio de red & \texttt{ifm.lab.edu.mx} \\
 Dirección IP asignada & \texttt{192.0.2.10} \\
 Funciones principales & Servidor de correo, servidor de archivos, servidor gráfico X11 \\
 Fabricante y chasis & Servidor ensamblado de arquitectura abierta \\
@@ -27,95 +27,95 @@ Memoria volátil (RAM) & 256~MB SDRAM \\
 Almacenamiento masivo & Disco duro IDE ATA-66 de 20~GB \\
 Sistema operativo base & GNU/Linux Debian 3.0-r1 (\textit{Woody}) \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Especificaciones técnicas del servidor evaluado (\texttt{helios}).}
 \label{tab:ficha_victima1}
 \end{table}
 
-\section{Ubicación Física y Topología de Red}
+\section{Ubicación física y topología de red}
 
-El equipo analizado se encontraba físicamente instalado en el centro de cómputo departamental del edificio central del campus universitario. La interconexión física hacia la infraestructura general de la institución se realizaba a través de una tarjeta de interfaz de red Fast Ethernet (100~Mbps) conectada directamente a un conmutador (\textit{switch}) central mediante cableado estructurado en topología de estrella, conforme al esquema presentado en la Figura~\ref{fig:topologia_red}.
+El equipo analizado se encontraba físicamente instalado en el centro de cómputo departamental del campus universitario. La interconexión física hacia la infraestructura general de la institución se realizaba a través de una tarjeta de interfaz de red Fast Ethernet (100~Mbps) conectada directamente a un conmutador (\textit{switch}) central mediante cableado estructurado en topología de estrella, conforme al esquema presentado en la Figura~\ref{fig:topologia_red}.
 
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-    scale=0.92,
+    scale=0.86,
     every node/.style={transform shape, font=\sffamily},
-    netbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.7cm, minimum height=1.4cm},
-    serverbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.2cm, minimum height=1.6cm},
-    routerbox/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.1cm},
-    cloudnode/.style={draw=primary!60, fill=blue!5, rounded corners=10pt, align=center, minimum width=4.0cm, minimum height=1.1cm},
+    netbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.9cm, minimum height=1.5cm},
+    serverbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.3cm, minimum height=1.7cm},
+    routerbox/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, minimum width=3.0cm, minimum height=1.1cm},
+    cloudnode/.style={draw=primary!60, fill=blue!5, rounded corners=8pt, align=center, minimum width=4.5cm, minimum height=1.1cm},
     line/.style={draw=secondary, thick, -{Stealth[length=2.5mm]}},
     busline/.style={draw=primary, ultra thick},
     trustline/.style={draw=accent, thick, dashed, {Stealth[length=2.5mm]}-{Stealth[length=2.5mm]}}
 ]
 
 % Nodos superiores
-\node[cloudnode] (inet) at (5, 5.8) {\small\textbf{Internet / Red Dorsal UMSNH}\\\scriptsize Conexiones de ISP (Prodigy / Telemedia)};
-\node[routerbox] (gw) at (5, 4.2) {\small\textbf{Pasarela Perimetral}\\\scriptsize 192.0.2.1 / \texttt{gw.ifm.lab.edu.mx}};
+\node[cloudnode] (inet) at (6.0, 5.8) {\small\textbf{Internet / Red Dorsal Institucional}\\\scriptsize Conexiones de ISP externas};
+\node[routerbox] (gw) at (6.0, 4.3) {\small\textbf{Pasarela Perimetral}\\\scriptsize 192.0.2.1 / \texttt{gw.ifm.lab.edu.mx}};
 
 % Bus del Switch Fast Ethernet
 \coordinate (busL) at (0.2, 2.9);
-\coordinate (busR) at (9.8, 2.9);
-\draw[busline] (busL) -- (busR) node[pos=0.03, above, font=\scriptsize\bfseries\color{primary}] {Conmutador Fast Ethernet 100 Mbps (VLAN Única)};
+\coordinate (busR) at (11.8, 2.9);
+\draw[busline] (busL) -- (busR) node[pos=0.03, above, font=\scriptsize\bfseries\color{primary}] {Conmutador Fast Ethernet 100 Mbps (VLAN única)};
 
 % Conexión Gateway a Bus
 \draw[line] (inet) -- (gw);
-\draw[draw=secondary, thick] (gw) -- (5, 2.9);
+\draw[draw=secondary, thick] (gw) -- (6.0, 2.9);
 
-% Servidores bajo el bus
-\node[serverbox] (helios) at (2.0, 1.0) {
+% Servidores bajo el bus con espaciado generoso
+\node[serverbox] (helios) at (1.9, 0.9) {
     \textbf{helios} (\textit{Objetivo})\\
     \scriptsize 192.0.2.10 (Debian 3.0)\\
-        iny NFS, Mail, X11, FTP, SSH
+    \tiny NFS, Mail, X11, FTP, SSH
 };
 
-\node[netbox] (atlas) at (5.3, 1.0) {
+\node[netbox] (atlas) at (6.0, 0.9) {
     \textbf{atlas} (\textit{Secundario})\\
     \scriptsize 192.0.2.20 (Debian 3.0)\\
-        iny Servidor Cómputo / Telnet
+    \tiny Servidor Cómputo / Telnet
 };
 
-\node[netbox] (io) at (8.4, 1.0) {
+\node[netbox] (io) at (10.1, 0.9) {
     \textbf{io} (\textit{Correo / Webmail})\\
     \scriptsize 192.0.2.25 (FreeBSD)\\
-        iny Sendmail, IMAP, OpenWebMail
+    \tiny Sendmail, IMAP, OpenWebMail
 };
 
 % Conexiones verticales al bus
-\draw[draw=secondary, thick] (helios.north) -- (2.0, 2.9);
-\draw[draw=secondary, thick] (atlas.north) -- (5.3, 2.9);
-\draw[draw=secondary, thick] (io.north) -- (8.4, 2.9);
+\draw[draw=secondary, thick] (helios.north) -- (1.9, 2.9);
+\draw[draw=secondary, thick] (atlas.north) -- (6.0, 2.9);
+\draw[draw=secondary, thick] (io.north) -- (10.1, 2.9);
 
-% Relación de confianza NFS/Samba entre helios y atlas
-\draw[trustline] (helios.east) -- (atlas.west) node[midway, below, font=    iny\bfseries\color{accent}] {NFS / NIS Trust};
+% Relación de confianza NFS/Samba entre helios y atlas con espacio suficiente
+\draw[trustline] (helios.east) -- (atlas.west) node[midway, below=2pt, font=\tiny\bfseries\color{accent}] {NFS / NIS Trust};
 
 % Estaciones de trabajo inferiores
-\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws1) at (1.2, -1.1) {\textbf{Estación X11}\\192.0.2.29};
-\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws2) at (4.0, -1.1) {\textbf{Terminales Lab}\\192.0.2.30 / .67};
-\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws3) at (7.6, -1.1) {\textbf{Estación Admin}\\192.0.2.89};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.5cm] (ws1) at (1.9, -1.2) {\textbf{Estación X11}\\192.0.2.29};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.5cm] (ws2) at (6.0, -1.2) {\textbf{Terminales Lab}\\192.0.2.30 / .67};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.5cm] (ws3) at (10.1, -1.2) {\textbf{Estación Admin}\\192.0.2.89};
 
-\draw[draw=secondary!70, dashed] (ws1.north) -- (1.2, 0.1) -- (2.0, 0.1);
-\draw[draw=secondary!70, dashed] (ws2.north) -- (4.0, 0.1) -- (5.3, 0.1);
-\draw[draw=secondary!70, dashed] (ws3.north) -- (7.6, 2.9);
+\draw[draw=secondary!70, dashed] (ws1.north) -- (helios.south);
+\draw[draw=secondary!70, dashed] (ws2.north) -- (atlas.south);
+\draw[draw=secondary!70, dashed] (ws3.north) -- (io.south);
 
 \end{tikzpicture}
 \caption{Topología pericial y arquitectura de interconexión de la red departamental.}
 \label{fig:topologia_red}
 \end{figure}
 
-Desde el punto de vista funcional y de almacenamiento, el servidor mantenía montajes de red compartidos vía NFS (\textit{Network File System}) y Samba con el servidor secundario \texttt{atlas} (\texttt{192.0.2.20}), permitiendo a profesores, investigadores y estudiantes el acceso interactivo a sus directorios personales tanto a través de sesiones remotas de consola (mediante SSH y Telnet/FTP tradicional) como mediante terminales gráficas remotas vía XDMCP. 
+Desde el punto de vista funcional y de almacenamiento, el servidor mantenía montajes de red compartidos vía NFS (\textit{Network File System}) y Samba con el servidor secundario \texttt{atlas} (\texttt{192.0.2.20}), permitiendo a usuarios autorizados el acceso interactivo a sus directorios personales tanto a través de sesiones remotas de consola (mediante SSH y Telnet/FTP tradicional) como mediante terminales gráficas remotas vía XDMCP. 
 
-\section{Matriz de Servicios Expuestos y Superficie de Ataque}
+\section{Matriz de servicios expuestos y superficie de ataque}
 
-La convergencia de servicios heterogéneos sobre un único host central constituía una práctica habitual de ahorro presupuestario en los centros universitarios de la época, pero multiplicaba exponencialmente los vectores de compromiso lateral, como se resume en el Cuadro~\ref{tab:servicios_expuestos}.
+La convergencia de servicios heterogéneos sobre un único host central constituía una práctica habitual en los centros de cómputo de la época, pero multiplicaba notablemente los vectores de compromiso lateral, como se resume en el Cuadro~\ref{tab:servicios_expuestos}.
 
 \begin{table}[htbp]
 \centering
 \small
-\begin{tabular}{llll}
-    oprule
-\textbf{Puerto / Protocolo} & \textbf{Servicio Daemon} & \textbf{Finalidad Operativa} & \textbf{Vector de Riesgo Evaluado} \\
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Puerto / protocolo} & \textbf{Servicio daemon} & \textbf{Finalidad operativa} & \textbf{Vector de riesgo evaluado} \\
 \midrule
 \texttt{21/tcp} & ProFTPD 1.2 & Transferencia de archivos & Fuerza bruta contra usuarios locales \\
 \texttt{22/tcp} & OpenSSH 3.4p1 & Acceso de administración & Exposición de sesiones interactivas \\
@@ -126,15 +126,15 @@ La convergencia de servicios heterogéneos sobre un único host central constitu
 \texttt{177/udp} & XDMCP (X Display) & Sesiones gráficas remotas & Conexión sin cifrado a escritorios X11 \\
 \texttt{2049/tcp,udp} & NFS (knfsd) & Montaje de \texttt{/home} entre nodos & Relación de confianza de UID en red \\
 \bottomrule
-\end{tabular}
+\end{tabularx}
 \caption{Matriz de puertos y servicios de red activos en \texttt{helios}.}
 \label{tab:servicios_expuestos}
 \end{table}
 
-\begin{retoforense}[Evaluación de la Superficie de Ataque]
+\begin{retoforense}[Evaluación de la superficie de ataque]
 A partir de la matriz de servicios expuestos en el Cuadro~\ref{tab:servicios_expuestos}, identifique qué protocolos transmitían credenciales en texto plano a través del segmento Ethernet compartido y deduzca qué impacto tenía esta debilidad frente a un atacante que hubiera obtenido acceso con privilegios de usuario regular sobre cualquier estación de trabajo del laboratorio.
 \end{retoforense}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: Topología y Perímetro]
-En 2004, era una práctica habitual conectar servidores de cómputo directamente con direcciones IP públicas sin capas de inspección profunda de paquetes ni arquitecturas de confianza cero (\textit{Zero Trust}). Actualmente, un sistema análogo operaría dentro de una nube privada virtual (VPC), aislado tras pasarelas seguras (\textit{bastion hosts}), balanceadores de carga con WAF, segmentación por microperímetros y autenticación reforzada mediante llaves criptográficas basadas en hardware (FIDO2/WebAuthn).
+\begin{perspectiva20}[Perspectiva y lección técnica: topología y perímetro]
+En sistemas de producción heredados, era una práctica habitual conectar servidores de cómputo directamente con direcciones IP públicas sin capas de inspección profunda de paquetes ni arquitecturas de confianza cero (\textit{Zero Trust}). Actualmente, un sistema análogo operaría dentro de una nube privada virtual (VPC), aislado tras pasarelas seguras (\textit{bastion hosts}), balanceadores de carga con WAF, segmentación por microperímetros y autenticación reforzada mediante llaves criptográficas basadas en hardware (FIDO2/WebAuthn).
 \end{perspectiva20}

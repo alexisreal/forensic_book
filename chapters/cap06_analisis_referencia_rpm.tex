@@ -1,4 +1,4 @@
-\chapter{Análisis Diferencial con el Sistema de Referencia}
+\chapter{Análisis diferencial con el sistema de referencia}
 
 El método de análisis forense comparativo consiste en contrastar el estado del sistema investigado contra una instalación limpia e idéntica montada en el laboratorio de referencia. En entornos GNU/Linux basados en RPM (Red Hat Package Manager), el comando \texttt{rpm -V} permite contrastar los tamaños de archivo, fechas de modificación, atributos y sumas de verificación MD5 respecto a la base de datos oficial del distribuidor.
 
@@ -6,20 +6,20 @@ El método de análisis forense comparativo consiste en contrastar el estado del
 
 
 
- \section{Cotejo de Binarios con chkrootkit y Base de Datos RPM}
+ \section{Cotejo de binarios con chkrootkit y base de datos RPM}
 
 Primero se revisaron los programas reportados por la utilidad \texttt{chkrootkit} como
 troyanizados. En total se estudiaron 1999 programas
 en el árbol de directorios del sistema.\\
 
- \subsection{Análisis Detallado del Binario \texttt{/bin/ps}}
+ \subsection{Análisis detallado del binario \texttt{/bin/ps}}
 
 \noindent\textbf{Ruta del archivo:} \texttt{/bin/ps}\\
  
  Análisis de cadenas de texto:
  
  
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /lib/ld-linux.so.2
 libc.so.6
@@ -54,7 +54,7 @@ egrep
 /dev/.pst
 %s%s | /bin/egrep -v "%s"
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  De estas cadenas lo sobresaliente es que el programa lee \texttt{/dev/.libpt}
@@ -64,12 +64,12 @@ ocultar la información que se le indique a voluntad o de forma
 automática.
 
 
-\subsection{Análisis Detallado del Binario \texttt{/bin/netstat}}
+\subsection{Análisis detallado del binario \texttt{/bin/netstat}}
 
 De forma análoga, el examen de cadenas sobre el ejecutable \texttt{/bin/netstat} desveló el mecanismo de filtrado de sockets de red:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /bin/su -
 /dev/.libn
@@ -80,7 +80,7 @@ egrep
 /dev/.nst
 %s%s | /bin/egrep -v "%s"
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  El anterior programa lee \texttt{/dev/.nst} y oculta el estado de la red según
@@ -90,7 +90,7 @@ egrep
 \texttt{/usr/bin/pstree}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /bin/su -
 /dev/.libtr
@@ -101,7 +101,7 @@ egrep
 /dev/.tree
 %s%s | /bin/egrep -v "%s"
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  El anterior lee \texttt{/dev/.libtr} y oculta procesos.
@@ -110,7 +110,7 @@ egrep
 \texttt{/bin/init}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 Can't open a tty, all in use ?
 Can't fork subshell, there is no way...
@@ -181,7 +181,7 @@ adduser
 mysql
 ssword:
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Esas cadenas se parecen a las de \texttt{/dev/zqft4/sk} ya antes mencionado,
@@ -190,13 +190,13 @@ identificación para cada archivo basado en análisis y sumas bit a
 bit. Si los números coinciden para dos archivos, estos son iguales.
 
  \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
  4237949f8b00fc64feb9b575a5f6e1dc  /dev/zqft4/sk
 
  4237949f8b00fc64feb9b575a5f6e1dc  /sbin/init
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 
@@ -222,40 +222,40 @@ La arquitectura de intercepción y evasión de Suckit en la memoria del kernel s
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-    scale=0.88,
+    scale=0.86,
     every node/.style={transform shape, font=\sffamily},
-    userbox/.style={draw=secondary, thick, fill=gray!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.0cm},
-    kernelbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=3.0cm, minimum height=1.1cm},
-    malbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.2cm, minimum height=1.1cm},
+    userbox/.style={draw=secondary, thick, fill=gray!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.2cm},
+    kernelbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.2cm},
+    malbox/.style={draw=accent, ultra thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.2cm},
     call/.style={draw=secondary, thick, -{Stealth[length=2.5mm]}},
     hookcall/.style={draw=accent, ultra thick, -{Stealth[length=2.5mm]}},
     retline/.style={draw=accent, thick, dashed, -{Stealth[length=2.5mm]}}
 ]
 
 % Zonas de memoria
-\draw[draw=secondary!40, fill=gray!3, rounded corners=4pt] (-0.5, 3.8) rectangle (10.5, 6.2);
-\node[font=\bfseries\small\color{secondary}, anchor=north west] at (-0.3, 6.0) {Espacio de Usuario (\textit{Userland})};
+\draw[draw=secondary!30, fill=gray!3, rounded corners=4pt] (-0.8, 3.3) rectangle (11.8, 5.8);
+\node[font=\bfseries\small\color{secondary}, anchor=north west] at (-0.6, 5.6) {Espacio de usuario (\textit{Userland})};
 
-\draw[draw=primary!40, fill=blue!2, rounded corners=4pt] (-0.5, -0.6) rectangle (10.5, 3.4);
-\node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.3, 3.2) {Espacio del Kernel (\textit{Kernelspace})};
+\draw[draw=primary!30, fill=blue!2, rounded corners=4pt] (-0.8, -0.7) rectangle (11.8, 2.9);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.6, 2.7) {Espacio del kernel (\textit{Kernelspace})};
 
 % Nodos en Userland
-\node[userbox] (admin) at (1.8, 4.8) {\textbf{Comandos del Admin}\\\scriptsize \texttt{ls}, \texttt{ps}, \texttt{netstat}};
-\node[malbox] (skloader) at (7.8, 4.8) {\textbf{Loader Suckit}\\\scriptsize \texttt{/sbin/init} (MD5: 423794...)};
+\node[userbox] (admin) at (1.3, 4.4) {\textbf{Comandos admin}\\\scriptsize \texttt{ls}, \texttt{ps}, \texttt{netstat}};
+\node[malbox] (skloader) at (9.7, 4.4) {\textbf{Loader Suckit}\\\scriptsize \texttt{/sbin/init} (parcheado)};
 
 % Nodos en Kernelspace
-\node[kernelbox] (idt) at (1.8, 2.0) {\textbf{Tabla IDT del Kernel}\\\scriptsize Localización de dirección base};
-\node[kernelbox] (sct) at (5.0, 2.0) {\textbf{sys\_call\_table[]}\\\scriptsize Punteros a Syscalls};
-\node[malbox] (hook) at (8.0, 0.6) {\textbf{Código Inyectado}\\\scriptsize Alocado con \texttt{kmalloc()}};
+\node[kernelbox] (idt) at (1.3, 1.3) {\textbf{Tabla IDT}\\\scriptsize Vector interrupciones};
+\node[kernelbox] (sct) at (5.3, 1.3) {\textbf{sys\_call\_table[]}\\\scriptsize Punteros syscalls};
+\node[malbox] (hook) at (9.7, 1.3) {\textbf{Código inyectado}\\\scriptsize Buffer con \texttt{kmalloc()}};
 
 % Flujo de ataque y hooking
-\draw[hookcall] (skloader.south) -- ++(0,-0.6) -| (hook.north) node[pos=0.25, right, font=    iny\bfseries\color{accent}] {Inyección vía \texttt{/dev/kmem}};
-\draw[call] (idt) -- (sct) node[midway, above, font=    iny] {Offset};
-\draw[hookcall] (sct.east) -| (hook.north west) node[pos=0.3, above, font=    iny\bfseries\color{accent}] {Hooking: \texttt{sys\_getdents64}};
+\draw[hookcall] (skloader.south) -- (hook.north) node[pos=0.15, right=4pt, font=\tiny\bfseries\color{accent}] {Inyección (\texttt{/dev/kmem})};
+\draw[call] (idt.east) -- (sct.west) node[midway, above=2pt, font=\tiny] {Offset};
+\draw[hookcall] (sct.east) -- (hook.west) node[midway, above=3pt, font=\tiny\bfseries\color{accent}] {Hooking};
 
-% Flujo de llamada de usuario
-\draw[call] (admin.south) -- (idt.north) node[midway, left, font=    iny] {Llamada \texttt{int 0x80}};
-\draw[retline] (hook.west) -| (admin.south east) node[pos=0.3, below, font=    iny\bfseries\color{accent}] {Filtra procesos y archivos con sufijo \texttt{!}};
+% Flujo de llamada de usuario y retorno filtrado
+\draw[call] ($(admin.south) + (-0.4, 0)$) -- ($(idt.north) + (-0.4, 0)$) node[pos=0.15, left=2pt, font=\tiny] {Syscall \texttt{int 0x80}};
+\draw[retline] (hook.south) -- ++(0, -0.45) -| ($(admin.south) + (0.4, 0)$) node[pos=0.35, below=2pt, font=\tiny\bfseries\color{accent}] {Filtra procesos y archivos con sufijo \texttt{!}};
 
 \end{tikzpicture}
 \caption{Mecanismo de inyección en memoria física y alteración de llamadas al sistema por el rootkit Suckit v1.3b.}
@@ -265,7 +265,7 @@ La arquitectura de intercepción y evasión de Suckit en la memoria del kernel s
 Se buscaron sistemáticamente en el almacenamiento los archivos ocultos que hicieran uso del sufijo de invisibilidad \texttt{!} configurado por Suckit, identificándose los siguientes componentes:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 485151   28 -rwxr-xr-x   1 root     root        27844 Apr  8 11:02 /sbin/init!
 533481   32 -rwxr-xr-x   1 root     root        31707 Apr  8 11:02 /dev/zqft4/bash!
@@ -274,7 +274,7 @@ Se buscaron sistemáticamente en el almacenamiento los archivos ocultos que hici
 533488   12 -rwxr-xr-x   1 root     root         9602 Apr  8 11:02 /dev/zqft4/clean!
 533490    4 -rwxr-xr-x   1 root     root           90 Apr 16 11:40 /dev/zqft4/smurf!
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Revisaremos estos programas.
@@ -284,12 +284,12 @@ Se buscaron sistemáticamente en el almacenamiento los archivos ocultos que hici
 Tipo de archivo:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /sbin/init!: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
 dynamically linked (uses shared libs), stripped
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Al revisar las cadenas de texto no encontramos nada extraño, y
@@ -300,7 +300,7 @@ init troyanizado.
 \texttt{/dev/zqft4/bash!}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 ka0sphere.freeftp.org
 ka0sphere.getmyip.com
@@ -428,7 +428,7 @@ NICK %s
 USER %s localhost localhost :%s
 ERROR
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Parece ser que el anterior \textbf{shell} tiene agregadas funciones de conexión
@@ -443,7 +443,7 @@ combinación con otros programas y no de manera individual.
 \texttt{/dev/zqft4/clean!}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 /var/log/messages
 /var/log/secure
@@ -478,7 +478,7 @@ mv secure.hm /var/log/secure
 mv xferlog.hm /var/log/xferlog
 mv maillog.hm /var/log/maillog
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Este programa elimina los registros del sistema que se le indiquen a

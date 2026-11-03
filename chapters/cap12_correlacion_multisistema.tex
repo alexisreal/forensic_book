@@ -1,4 +1,4 @@
-\chapter{Movimiento Lateral y Correlación Multisistema}
+\chapter{Movimiento lateral y correlación multisistema}
 
 Una intrusión rara vez permanece confinada a un único servidor cuando los sistemas comparten redes locales, montajes remotos NFS o esquemas de confianza entre cuentas de usuario. La correlación pericial con otros servidores del departamento permitió reconstruir la propagación lateral y confirmar la hipótesis sobre el origen de los accesos.
 
@@ -35,26 +35,26 @@ El mecanismo de pivoteo empleado por el intruso se ilustra en la Figura~\ref{fig
 \node[font=\bfseries\small\color{primary}, anchor=north west] at (5.0, 3.6) {Subred Interna IFM (\texttt{192.0.2.0/24})};
 
 % Nodos Externos
-\node[extbox] (attacker) at (1.8, 2.2) {\textbf{Operador / Intruso}\\\scriptsize Morelia, Michoacán\\    iny DSL Prodigy / Telemedia};
-\node[netcloud] (isp) at (1.8, 0.0) {\textbf{Pools de Acceso DSL}\\\scriptsize \texttt{200.78.118.x} / \texttt{203.0.113.89}};
+\node[extbox] (attacker) at (1.8, 2.2) {\textbf{Operador / Intruso}\\\scriptsize Conexión externa\\\tiny DSL Prodigy / Telemedia};
+\node[netcloud] (isp) at (1.8, 0.0) {\textbf{Pools de acceso DSL}\\\scriptsize \texttt{200.78.118.x} / \texttt{203.0.113.89}};
 
 % Nodos Internos
-\node[hostbox] (atlas) at (6.8, 2.2) {\textbf{atlas} (\textit{Pivote})\\\scriptsize \texttt{192.0.2.20}\\    iny SSH port 22};
-\node[targetbox] (helios) at (10.4, 0.6) {\textbf{helios} (\textit{Objetivo Central})\\\scriptsize \texttt{192.0.2.10}\\    iny Rootkit Suckit, Sniffer, NFS};
-\node[hostbox] (io) at (6.8, -1.2) {\textbf{io} (\textit{Correo})\\\scriptsize \texttt{192.0.2.25}\\    iny OpenWebMail, IMAP};
+\node[hostbox] (atlas) at (6.8, 2.2) {\textbf{atlas} (\textit{Pivote})\\\scriptsize \texttt{192.0.2.20}\\\tiny SSH port 22};
+\node[targetbox] (helios) at (10.4, 0.6) {\textbf{helios} (\textit{Objetivo central})\\\scriptsize \texttt{192.0.2.10}\\\tiny Rootkit Suckit, sniffer, NFS};
+\node[hostbox] (io) at (6.8, -1.2) {\textbf{io} (\textit{Correo})\\\scriptsize \texttt{192.0.2.25}\\\tiny OpenWebMail, IMAP};
 
 % Saltos
 \draw[hop1] (attacker) -- (isp);
-\draw[hop1] (isp.east) -| (atlas.south) node[pos=0.3, above, font=\scriptsize\bfseries\color{secondary}] {Salto 1: SSH Externo};
-\draw[hop2] (atlas.east) -| (helios.north) node[pos=0.3, above, font=\scriptsize\bfseries\color{accent}] {Salto 2: Pivoteo Interno (Red Local)};
-\draw[hop3] (atlas.south) -- (io.north) node[midway, right, font=    iny\bfseries\color{accent!70}] {Salto 3: Intento SSH \texttt{mherrera}};
+\draw[hop1] (isp.east) -| (atlas.south) node[pos=0.3, above, font=\scriptsize\bfseries\color{secondary}] {Salto 1: SSH externo};
+\draw[hop2] (atlas.east) -| (helios.north) node[pos=0.3, above, font=\scriptsize\bfseries\color{accent}] {Salto 2: Pivoteo interno};
+\draw[hop3] (atlas.south) -- (io.north) node[midway, right=2pt, font=\tiny\bfseries\color{accent!70}] {Salto 3: Intento SSH \texttt{mherrera}};
 
 \end{tikzpicture}
 \caption{Diagrama de movimiento lateral y técnica de pivoteo a través del servidor secundario \texttt{atlas}.}
 \label{fig:pivoteo_multisistema}
 \end{figure}
 
-\section{Movimiento Lateral y Vectores de Confianza Multisistema}
+\section{Movimiento lateral y vectores de confianza multisistema}
 
 
  \texttt{atlas} se revisó con minuciosidad pero solo serán incluídos los datos
@@ -64,24 +64,24 @@ El mecanismo de pivoteo empleado por el intruso se ilustra en la Figura~\ref{fig
  Programas sospechosos en el directorio \texttt{duende/} en \texttt{atlas}.
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 -rw-r--r--  1 500      500        61440 Apr 21 20:37 test.tar
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Contenido del paquete \texttt{test.tar}:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal] 
 drwx------ scott/users       0 2002-02-08 07:09:51 ex/
 -rwx------ scott/users   14361 2002-02-08 07:09:35 ex/ep
 -rwx------ scott/users   14543 2002-02-08 07:09:39 ex/rh
 -rwx------ scott/users   23577 2002-02-08 07:09:45 ex/sd
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Este archivo contiene los \textit{exploits} para \texttt{sendmail} y es idénticamente el
@@ -94,13 +94,13 @@ elimino. Además de hallarse un archivo borrado \texttt{o0o.tar} con el mismo
 estudiados.
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 d / d              ex/              2002.11.27 20:51:02 (cst)              2003.04.27 12:29:51 (cst)              
                         2003.04.23 00:39:37 (cst)              4096              512              
                         512             999703 (realloc)
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 
@@ -109,7 +109,7 @@ d / d              ex/              2002.11.27 20:51:02 (cst)              2003.
 \texttt{wtmp}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 duende  pts/7        Mon Apr 28 04:46 - 04:47  (00:00)     dsl-200-67-75-92.prodigy.net.mx
 duende  pts/6        Mon Apr 28 04:44 - 04:46  (00:02)     dsl-200-67-75-92.prodigy.net.mx
@@ -215,7 +215,7 @@ reboot   system boot  Fri Apr  4 21:00         (11+22:11)   2.4.18-686-smp
 zopilote pts/1        Fri Apr  4 01:27 - 01:32  (00:04)     dup-200-64-234-43.prodigy.net.mx
 zopilote pts/1        Wed Apr  2 03:05 - 03:06  (00:00)     gobmorelia34.terra.net.mx
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Se puede observar que los accesos de \texttt{zopilote}, \texttt{zena}, \texttt{proa} y \texttt{lllll}

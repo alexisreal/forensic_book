@@ -1,4 +1,4 @@
-\chapter{Minería y Correlación de Bitácoras del Sistema}
+\chapter{Minería y correlación de bitácoras del sistema}
 
 Las bitácoras de auditoría del sistema operativo (\texttt{/var/log/messages}, \texttt{secure}, \texttt{wtmp}, \texttt{xferlog}) ofrecen el testimonio cronológico de autenticaciones, conexiones externas y comandos privilegiados. En este capítulo se analizan las secuencias de eventos registradas, desentrañando además los intentos del atacante por limpiar y manipular los archivos de registro.
 
@@ -6,7 +6,7 @@ Las bitácoras de auditoría del sistema operativo (\texttt{/var/log/messages}, 
 El servicio estándar de registro (\texttt{syslogd} / RFC 3164) clasifica los eventos por origen (\textit{facility}: \texttt{auth}, \texttt{authpriv}, \texttt{daemon}, \texttt{kern}, \texttt{mail}) y nivel de severidad (\textit{severity}: \texttt{info}, \texttt{warning}, \texttt{err}, \texttt{alert}). En servidores aislados de la época sin reenvío remoto de registros (\textit{syslog forwarding} sobre UDP 514), el almacenamiento de las bitácoras residía exclusivamente en texto plano bajo \texttt{/var/log/}. En consecuencia, en cuanto un intruso adquiría privilegios de superusuario (\texttt{root}), podía alterar, truncar o reescribir selectivamente las bitácoras para borrar sus huellas (como se comprobó con la utilidad \texttt{clean!}). Por esta razón, el perito debe contrastar siempre las bitácoras en disco contra las líneas de tiempo de inodos (\textit{mactime}) y los registros binarios de contabilidad (\textit{accounting}).
 \end{notaforense}
 
-\section{Auditoría de Bitácoras del Sistema (\texttt{syslog}, \texttt{secure} y \texttt{xferlog})}
+\section{Auditoría de bitácoras del sistema (\texttt{syslog}, \texttt{secure} y \texttt{xferlog})}
 
 Las salidas están resumidas a lo mas esencial, algunas líneas se
 repiten cientos de veces pero solo se mostrarán tres o cuatro veces
@@ -15,7 +15,7 @@ para mostrar que son recurrentes.
 \texttt{auth.log}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 Apr  8 05:23:01 helios PAM_unix[1157]: (cron) session closed for user mail
 Apr  8 05:29:22 helios sshd[1232]: Did not receive identification string from 198.18.16.225
@@ -241,14 +241,14 @@ Apr 21 11:17:28 helios passwd[14564]: can't change pwd for `bin'
 Apr 21 11:17:33 helios passwd[14566]: can't change pwd for `proa'
 Apr 21 11:17:50 helios newgrp[14569]: unknown gid: 521
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 \texttt{daemon.log}
 
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 Apr  8 02:28:50 helios identd[32667]: started
 Apr  8 02:47:05 helios identd[32754]: started
@@ -584,7 +584,7 @@ Apr 15 18:25:13 helios identd[12457]: started
 Apr 15 18:28:02 helios telnetd[12373]: ttloop: peer died: EOF
 Apr 15 18:33:10 helios in.telnetd[12467]: connect from 198.18.44.222
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  En las líneas anteriores se observa la gran actividad de las cuentas
@@ -610,7 +610,7 @@ ya se enunciaron.
 \texttt{wtmp}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 duende  pts/0        Mon Apr 28 03:39 - 03:40  (00:00)     atlas.ifm.lab.edu.mx
 duende  pts/1        Sun Apr 27 22:27 - 22:29  (00:01)     atlas.ifm.lab.edu.mx
@@ -838,13 +838,13 @@ proa     ftp          Wed Apr  2 01:35 - 01:37  (00:01)     bambi.visi.com
 zopilote pts/3        Wed Apr  2 00:30 - 00:31  (00:01)     dup-200-64-234-8.prodigy.net.mx
 proa     pts/3        Wed Apr  2 00:29 - 00:29  (00:00)     dup-200-64-234-8.prodigy.net.mx
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Los accesos de duende aparecen a partir del 15 de abril en las bitácoras. 
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 zena     pts/12       Tue Apr 15 23:08 - down   (23:20)     host-203.0.113.89-cust.telemedia.net.mx
 proa     pts/12       Tue Apr 15 23:07 - 23:08  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
@@ -856,7 +856,7 @@ duende  pts/6        Tue Apr 15 22:56 - 22:59  (00:02)     atlas.ifm.lab.edu.mx
 proa     pts/6        Tue Apr 15 22:56 - 22:56  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
 proa     pts/6        Tue Apr 15 22:47 - 22:56  (00:08)     host-203.0.113.89-cust.telemedia.net.mx
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Esta entrada muestra que inmediatamente que proa sale de la máquina

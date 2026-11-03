@@ -1,4 +1,4 @@
-\chapter{Cronología Forense del Sistema de Archivos}
+\chapter{Cronología forense del sistema de archivos}
 
 La reconstrucción temporal de eventos constituye la columna vertebral del análisis pericial. El sistema de archivos almacena marcas de tiempo críticas para cada inodo que permiten reconstruir la secuencia causal de los hechos. Utilizando la herramienta \texttt{mactime} de \textit{The Coroner's Toolkit} (TCT) y \textit{The Sleuth Kit} (TSK), fue posible correlacionar con precisión de segundos cada acción ejecutada en el disco magnético.
 
@@ -12,7 +12,7 @@ Uno de los errores más comunes entre analistas noveles consiste en interpretar 
 \end{itemize}
 \end{notaforense}
 
-\section{Reconstrucción Cronológica del Sistema de Archivos (\textit{Timeline Analysis})}
+\section{Reconstrucción cronológica del sistema de archivos (\textit{timeline analysis})}
 
 El procedimiento pericial consiste en extraer y ordenar cronológicamente las marcas temporales de modificación (\textit{mtime}), acceso (\textit{atime}), cambio de inodo (\textit{ctime}) y borrado (\textit{dtime}) de la totalidad de inodos almacenados en el disco duro mediante la herramienta \texttt{ils} y \texttt{mactime}.
 
@@ -40,32 +40,32 @@ La secuencia temporal global derivada de esta correlación de inodos se sintetiz
 % 1. 8 de abril
 \draw[draw=primary, ultra thick] (1.0, 0.2) -- (1.0, -0.2) node[below=2pt, font=\scriptsize\bfseries] {8 de abril};
 \draw[conn] (1.0, 0.2) -- (1.0, 1.8);
-\node[evdark] at (1.0, 2.5) {\textbf{16:02:08}\\    iny Despliegue de Suckit (\texttt{sk}), parcheo de \texttt{init} y limpiador \texttt{clean!}};
+\node[evdark] at (1.0, 2.5) {\textbf{16:02:08}\\	iny Despliegue de Suckit (\texttt{sk}), parcheo de \texttt{init} y limpiador \texttt{clean!}};
 
 % 2. 11 de abril
 \draw[draw=primary, ultra thick] (3.2, 0.2) -- (3.2, -0.2) node[below=2pt, font=\scriptsize\bfseries] {11 de abril};
 \draw[conn] (3.2, -0.2) -- (3.2, -1.5);
-\node[eventnode] at (3.2, -2.2) {\textbf{16:18 - 21:19}\\    iny Troyanización de \texttt{top}, \texttt{pstree}, \texttt{getty} y scripts en \texttt{mc.pipe}};
+\node[eventnode] at (3.2, -2.2) {\textbf{16:18 - 21:19}\\	iny Troyanización de \texttt{top}, \texttt{pstree}, \texttt{getty} y scripts en \texttt{mc.pipe}};
 
 % 3. 15 de abril
 \draw[draw=primary, ultra thick] (5.5, 0.2) -- (5.5, -0.2) node[below=2pt, font=\scriptsize\bfseries] {15 de abril};
 \draw[conn] (5.5, 0.2) -- (5.5, 1.8);
-\node[eventnode] at (5.5, 2.5) {\textbf{22:47 - 23:08}\\    iny Conexiones de \texttt{proa} y \texttt{zena}. Primer ingreso de \texttt{duende} desde \texttt{atlas}};
+\node[eventnode] at (5.5, 2.5) {\textbf{22:47 - 23:08}\\	iny Conexiones de \texttt{proa} y \texttt{zena}. Primer ingreso de \texttt{duende} desde \texttt{atlas}};
 
 % 4. 18 de abril
 \draw[draw=primary, ultra thick] (7.7, 0.2) -- (7.7, -0.2) node[below=2pt, font=\scriptsize\bfseries] {18 de abril};
 \draw[conn] (7.7, -0.2) -- (7.7, -1.5);
-\node[eventnode] at (7.7, -2.2) {\textbf{22:37:42}\\    iny Ataques de autenticación contra servidor de correo \texttt{io} desde DSL Prodigy};
+\node[eventnode] at (7.7, -2.2) {\textbf{22:37:42}\\	iny Ataques de autenticación contra servidor de correo \texttt{io} desde DSL Prodigy};
 
 % 5. 22 de abril
 \draw[draw=primary, ultra thick] (9.8, 0.2) -- (9.8, -0.2) node[below=2pt, font=\scriptsize\bfseries] {22 de abril};
 \draw[conn] (9.8, 0.2) -- (9.8, 1.8);
-\node[evdark] at (9.8, 2.5) {\textbf{06:18:01}\\    iny Acceso limpio a cuenta \texttt{mherrera} en \texttt{io} y \texttt{BAD SU} a superusuario};
+\node[evdark] at (9.8, 2.5) {\textbf{06:18:01}\\	iny Acceso limpio a cuenta \texttt{mherrera} en \texttt{io} y \texttt{BAD SU} a superusuario};
 
 % 6. 24 de abril
 \draw[draw=primary, ultra thick] (11.6, 0.2) -- (11.6, -0.2) node[below=2pt, font=\scriptsize\bfseries] {24 de abril};
 \draw[conn] (11.6, -0.2) -- (11.6, -1.5);
-\node[eventnode] at (11.6, -2.2) {\textbf{Triage en Vivo}\\    iny Descubrimiento de SUIDs anómalos y congelación pericial};
+\node[eventnode] at (11.6, -2.2) {\textbf{Triage en Vivo}\\	iny Descubrimiento de SUIDs anómalos y congelación pericial};
 
 \end{tikzpicture}
 \caption{Reconstrucción cronológica pericial de los eventos clave obtenida mediante análisis de tiempos MAC.}
@@ -75,13 +75,13 @@ La secuencia temporal global derivada de esta correlación de inodos se sintetiz
 Ejemplo:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 {\footnotesize
 \begin{lstlisting}[style=terminal]
 Mon Jun 03 1991 15:44:40  1060 m.. -/-rw-r--r-- root  root 356082 /usr/share/texmf/metapost/base/rboxes.mp
 \end{lstlisting}
 }
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Las líneas de tiempo de helios son 701,707 y fueron clasificadas en
@@ -89,7 +89,7 @@ orden cronológico, así podemos reconstruir los sucesos sobre todos los
 archivos en el disco ya sean recuperables o no.
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 {\footnotesize
 \begin{lstlisting}[style=terminal]
 Tue Apr 08 2003 16:00:05  3383242 m.. -/-rw-r--r-- root     root     147500   /var/cache/apt/archives/
@@ -114,7 +114,7 @@ Tue Apr 08 2003 16:10:32    28472 ..c -/-rwxr-xr-x root     root     533487   /d
 Tue Apr 08 2003 16:11:17      236 m.c -/-rw------- root     mail     420675   /var/mail/.bash_history
 \end{lstlisting}
 }
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  De estas líneas se ve que varios de los programas estudiados fueron
@@ -122,7 +122,7 @@ modificados el 8 de abril a partir de las 16:02:08, es posible que
 esta haya sido su fecha de creación o instalación.
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 {\footnotesize
 \begin{lstlisting}[style=terminal]
 
@@ -301,7 +301,7 @@ Fri Apr 11 2003 21:19:01   171705 m.c -/-rwxr-xr-x root     root     225771   /u
                             58309 m.c -/-rwxr-xr-x root     root     225763   /usr/bin/host
 \end{lstlisting}
 }
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em} 
 
 La muestra es meramente representativa de varios cientos de archivos

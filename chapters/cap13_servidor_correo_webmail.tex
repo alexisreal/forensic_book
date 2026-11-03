@@ -1,4 +1,4 @@
-\chapter{Vectores en el Servidor de Correo y Webmail}
+\chapter{Vectores en el servidor de correo y webmail}
 
 Las aplicaciones de acceso a correo web en la década del 2000, desarrolladas con frecuencia como \textit{scripts} CGI en Perl o PHP sin suficiente validación de entradas ni protección contra sesiones concurrentes, representaban una superficie de ataque sumamente vulnerable. El servidor de correo departamental fue analizado minuciosamente para determinar si las intrusiones involucraron la interceptación de correspondencia electrónica.
 
@@ -10,7 +10,7 @@ El peritaje sobre plataformas de correo combina el análisis en dos niveles:
 \end{itemize}
 \end{notaforense}
 
-\section{Auditoría de Servicios de Correo Electrónico (POP3 y SMTP)}
+\section{Auditoría de servicios de correo electrónico (POP3 y SMTP)}
  
 
  El servidor de correo es io.ifm.lab.edu.mx, esta máquina provee acceso
@@ -20,7 +20,7 @@ El peritaje sobre plataformas de correo combina el análisis en dos niveles:
 \texttt{authlog}
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal] 
 Apr 18 22:37:42 io imapd[29834]: Login failed user=duende auth=duende 
                 host=dsl-200-78-118-131.prodigy.net.mx [198.51.100.131]
@@ -34,7 +34,7 @@ Apr 22 06:18:52 io last message repeated 2 times
 Apr 22 06:18:52 io sshd[5397]: Connection closed by 192.0.2.20
 Apr 22 08:00:01 io newsyslog[1695]: logfile turned over
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Estas líneas muestran intentos de acceso desde una cuenta dsl de
@@ -72,7 +72,7 @@ la actividad dentro de este programa con el fin de correlacionar eventos y busca
 
 Selección de entre 15,420 accesos.
  \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 
 Tue Apr  8 06:51:31 2003 - [21991] (198.51.100.87) duende - login - duende-session-0.85733055121182
@@ -352,7 +352,7 @@ Tue Apr 22 19:01:01 2003 - [13036] (198.51.100.98) duende - movemsg - move 1 old
     saved-messages
 Tue Apr 22 19:01:01 2003 - [13036] (198.51.100.98) duende - logout - duende-session-0.0720823633755607
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Los registros anteriores muestran que el usuario duende si es quien

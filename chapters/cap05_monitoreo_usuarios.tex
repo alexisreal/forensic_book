@@ -1,4 +1,4 @@
-\chapter{Monitoreo Activo y Análisis de Sesiones}
+\chapter{Monitoreo activo y análisis de sesiones}
 
 Una vez descubiertos los artefactos sin que el atacante advirtiera la intervención pericial, se tomó la decisión estratégica de establecer un monitoreo encubierto. A través de la supervisión de las sesiones interactivas asociadas a la cuenta sospechosa \texttt{duende}, el equipo de investigación pudo registrar en tiempo real las tácticas, técnicas y procedimientos (TTP) del intruso.
 
@@ -6,13 +6,13 @@ Una vez descubiertos los artefactos sin que el atacante advirtiera la intervenci
 En la respuesta pericial a incidentes, los investigadores enfrentan frecuentemente la disyuntiva entre desconectar el sistema de inmediato para detener el ataque o mantenerlo bajo observación controlada. La contención prematura alerta al atacante, quien puede destruir evidencias o activar rutinas de autodestrucción. Por el contrario, la supervisión en vivo permite documentar la identidad operativa, interceptar credenciales en vuelo y mapear la totalidad de la red comprometida. Esta táctica únicamente debe sostenerse si el equipo pericial puede garantizar que no se comprometerá la confidencialidad de datos de terceros ni se utilizará el servidor para vulnerar infraestructuras externas.
 \end{notaforense}
 
-\section{Supervisión Activa y Registro de Conexiones}
+\section{Supervisión activa y registro de conexiones}
 
 Se procedió a monitorear la actividad del usuario duende. La lista de
 accesos al sistema en el mes de abril es la siguiente:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 duende  pts/0        Sun Apr 27 20:39 - 20:40  (00:00)     atlas.ifm.lab.edu.mx
 duende  pts/1        Sun Apr 27 15:27 - 15:29  (00:01)     atlas.ifm.lab.edu.mx
@@ -93,7 +93,7 @@ duende  pts/7        Tue Apr 15 15:59 - 18:57  (02:57)     atlas.ifm.lab.edu.mx
 duende  pts/6        Tue Apr 15 15:56 - 15:59  (00:02)     atlas.ifm.lab.edu.mx
 
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 La actividad de este usuario es muy alta y no hay registro de accesos
@@ -133,7 +133,7 @@ miles de líneas que se consideran innecesarias y solo se exhibe una
 muestra ilustrativa):
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 
 sshd              SF    500      ??         0.75 secs Sat Apr 26 18:20
@@ -182,7 +182,7 @@ tcsh              S     500      tty1       0.10 secs Sat Apr 26 16:07
 ls                 F    500      tty1       0.00 secs Sat Apr 26 16:07
 hostname           F    500      tty1       0.00 secs Sat Apr 26 16:07
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  \texttt{lastcomm} muestra el comando ejecutado, quíen lo ejecutó y la hora 
@@ -206,14 +206,14 @@ Haciendo una revisión del disco duro en busca de archivos ocultos,
 se encontraron los siguientes:
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 241477   64 -rwxr-xr-x   1 root     root        58412 Oct 27  2001 /dev/.pst
 241498   92 -rwxr-xr-x   1 root     root        86892 Nov 23  2001 /dev/.nst
 225715   16 -rwxr-xr-x   1 root     root        13224 Mar  2  2002 /dev/.tree
 225524   32 -rwxr-xr-x   1 root     root        32236 Oct 27  2001 /dev/.tp
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  
@@ -223,12 +223,12 @@ La función de estos archivos se expone a continuación:
 \texttt{/dev/.pst}
 
  \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal] 
 .pst: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
 dynamically linked (uses shared libs), stripped
  \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  La consulta del encabezado binario mediante \texttt{file} confirmó que se trataba de un ejecutable nativo ELF para arquitectura x86 en Linux.
@@ -236,7 +236,7 @@ dynamically linked (uses shared libs), stripped
  Las líneas de texto en el archivo son:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 Linux version %d.%d.%d
 Compiled with: libc %d, internal version %d.%d
@@ -270,7 +270,7 @@ x  processes w/o controlling ttys     t  by tty
 Process selection options conflict.
 Internal error in ps! Please report this bug.
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Estas líneas muestran que el programa es en realidad \texttt{ps}, un programa
@@ -282,18 +282,18 @@ momento así como quíen los ejecutó.
 \texttt{/dev/.nst}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 .nst: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
 dynamically linked (uses shared libs), stripped
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Cadenas de texto en este programa:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 net-tools 1.60
 netstat 1.42 (2001-04-15)
@@ -323,7 +323,7 @@ usage: netstat [-veenNcCF] [<Af>] -r         netstat {-V|--version|-h|--help}
   <Socket>={-t|--tcp} {-u|--udp} {-w|--raw} {-x|--unix} --ax25 --ipx --netrom
 Usage: x25_route [-v] del Target[/mask] [dev] If
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Estas cadenas muestran que el programa es en realidad netstat. Netstat
@@ -334,19 +334,19 @@ importante para ocultar conexiones, siempre y cuando se sepa usar.
 \texttt{/dev/.tree}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 .tree: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, dynamically 
 linked (uses shared libs), stripped
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Las cadenas de texto en \texttt{.tree} son:
  
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 
 usage: pstree [ -a ] [ -c ] [ -h | -H pid ] [ -l ] [ -n ] [ -p ] [ -u ]
@@ -367,7 +367,7 @@ usage: pstree [ -a ] [ -c ] [ -h | -H pid ] [ -l ] [ -n ] [ -p ] [ -u ]
     user   show only trees rooted at processes of that user
 
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 Las líneas anteriores muestran que el programa es \texttt{pstree}. \texttt{pstree} 
@@ -387,7 +387,7 @@ los resultados fueron los siguientes:
 Usando \texttt{/dev/.tree}
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 [1minit,1)[0m  
   |-(keventd,2)
@@ -461,7 +461,7 @@ Usando \texttt{/dev/.tree}
   `-egrep,26825) -l ^[0-5]\040 /dev/.libn 
       `-(egrep,26826)
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
 
@@ -470,13 +470,13 @@ pstree del sistema, una de ellas es la siguiente:
 
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 -egrep,14928,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
             popclean|popclean|ps 
   |   `-(egrep,14929)
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  En esas líneas aparece una cadena donde se corren varios de los programas
@@ -486,7 +486,7 @@ estudiados, y nos indica claramente que fue ejecutado por el usuario duende.
  El \texttt{/dev/.pst}
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 USER       PID %CPU %MEM   VSZ  RSS TTY      STAT START   TIME COMMAND
 root         6  0.0  0.0     0    0 ?        SW   Apr23   0:04 [kupdated]
@@ -725,7 +725,7 @@ root      7728  0.0  0.0  1280  248 tty3     T    21:32   0:00          \_ /bin/
 root      7729  0.0  0.0     0    0 tty3     Z    21:32   0:00              \_ [egrep <defunct>]
 
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Aquí aparecen líneas muy interesantes. Aparece el número de proceso,
@@ -738,7 +738,7 @@ usuario venía desde la máquina llamada \texttt{atlas} y corrió esos procesos
 intencionalmente.
 
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 duende  12689  0.0  0.0  1284  252 ?        T    07:43   0:00 
                 /bin/egrep -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko
@@ -760,7 +760,7 @@ duende  14928  0.0  0.0  1284  252 ?        T    10:04   0:00 /bin/egrep -v egre
                :/usr/local/bin:/opt/kde/bin:/home/staff/duende/bin SSH_TTY=/dev/pts/9 _=/bin/egrep
 duende  14929  0.0  0.0     0    0 ?        Z    10:04   0:00  \_ [egrep <defunct>]
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  Los procesos anteriores ejecutan un \textit{script} que corre varios programas
@@ -780,7 +780,7 @@ sistema.
  Resultados de \texttt{chkrootkit}:
  
 \vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \begin{lstlisting}[style=terminal]
 Checking `basename'... INFECTED
 Checking `biff'... INFECTED
@@ -864,7 +864,7 @@ Checking `wted'... Checking `scalper'... not infected
 Checking `slapper'... not infected
 Checking `z2'... 
 \end{lstlisting}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+
 \vspace{1em}
 
  \texttt{chkrootkit} nos informa de la evidencia de infección con código no

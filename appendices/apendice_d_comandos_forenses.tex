@@ -1,10 +1,10 @@
-\chapter{Guía Rápida de Comandos Forenses en Consola GNU/Linux}
+\chapter{Guía rápida de comandos forenses en consola GNU/Linux}
 
 Este apéndice constituye una guía de referencia rápida (\textit{cheat sheet}) con los comandos esenciales que todo analista e investigador forense debe dominar al interactuar con sistemas basados en Unix y GNU/Linux, tanto en escenarios de respuesta en vivo (\textit{live response}) como en el examen estático de imágenes (\textit{dead-box forensics}).
 
-\section{Inspección y Triage del Sistema en Vivo}
+\section{Inspección y triage del sistema en vivo}
 
-\subsection{Procesos en Ejecución y Memoria Volátil}
+\subsection{Procesos en ejecución y memoria volátil}
 \begin{lstlisting}[style=terminal]
 # Listar todos los procesos con usuario, PID, consumo y linea de comando completa:
 ps auxwww
@@ -25,7 +25,7 @@ strings -a /proc/1234/environ | tr '\0' '\n'
 cat /proc/1234/maps
 \end{lstlisting}
 
-\subsection{Conexiones de Red y Sockets Activos}
+\subsection{Conexiones de red y sockets activos}
 \begin{lstlisting}[style=terminal]
 # Sockets TCP y UDP en escucha y establecidos con PID y nombre de proceso:
 netstat -tulpn
@@ -39,7 +39,7 @@ lsof -i -n -P
 tcpdump -i eth0 -nn -s 0 -w captura_incidente.pcap
 \end{lstlisting}
 
-\subsection{Búsqueda de Binarios Privilegiados y Atributos Especiales}
+\subsection{Búsqueda de binarios privilegiados y atributos especiales}
 \begin{lstlisting}[style=terminal]
 # Localizar todos los ejecutables con bit SUID o SGID en el sistema:
 find / -type f \( -perm -04000 -o -perm -02000 \) -exec ls -l {} \; 2>/dev/null
@@ -51,7 +51,7 @@ find /bin /sbin /usr/bin /usr/sbin /dev -not -user root -ls
 lsattr -aR /dev /bin /sbin /usr/lib /etc 2>/dev/null | grep -E "(\-i\-|\-a\-)"
 \end{lstlisting}
 
-\section{Análisis de Imágenes con The Sleuth Kit (TSK)}
+\section{Análisis de imágenes con The Sleuth Kit (TSK)}
 
 Cuando se analiza una copia binaria de un disco o partición (\texttt{disco.img}):
 
@@ -75,7 +75,7 @@ ils -r -m disco.img >> bodyfile.txt
 mactime -b bodyfile.txt -d -z CST > linea_tiempo.csv
 \end{lstlisting}
 
-\section{Verificación de Integridad y Detección de Alteraciones}
+\section{Verificación de integridad y detección de alteraciones}
 
 \begin{lstlisting}[style=terminal]
 # Calculo de huellas hash criptograficas para preservacion de custodia:

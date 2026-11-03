@@ -6,7 +6,10 @@
 \usepackage[utf8]{inputenc}
 \usepackage[T1]{fontenc}
 \usepackage[spanish,es-tabla,es-nodecimaldot]{babel}
-\usepackage{lmodern}
+\usepackage{tgpagella}
+\usepackage{tgheros}
+\usepackage{inconsolata}
+\usepackage{tabularx}
 
 % Geometría de página editorial (Estándar B5 / Crown Quarto para libros técnicos)
 \usepackage[
@@ -65,28 +68,28 @@
 % Configuración de listados de código y terminal
 \lstdefinestyle{terminal}{
     backgroundcolor=\color{terminalbg},
-    basicstyle=\ttfamily\scriptsize,
+    basicstyle=\ttfamily\fontsize{7.5}{9.2}\selectfont,
     breaklines=true,
     breakatwhitespace=false,
-    columns=fullflexible,
+    columns=flexible,
     keepspaces=true,
     frame=single,
     rulecolor=\color{terminalframe},
     numbers=none,
     showstringspaces=false,
     tabsize=4,
-    xleftmargin=3mm,
-    xrightmargin=3mm,
-    aboveskip=3mm,
-    belowskip=3mm
+    xleftmargin=2mm,
+    xrightmargin=2mm,
+    aboveskip=2.5mm,
+    belowskip=2.5mm
 }
 
 \lstdefinestyle{terminalnumbered}{
     backgroundcolor=\color{terminalbg},
-    basicstyle=\ttfamily\scriptsize,
+    basicstyle=\ttfamily\fontsize{7.5}{9.2}\selectfont,
     breaklines=true,
     breakatwhitespace=false,
-    columns=fullflexible,
+    columns=flexible,
     keepspaces=true,
     frame=single,
     rulecolor=\color{terminalframe},
@@ -95,10 +98,10 @@
     numbersep=5pt,
     showstringspaces=false,
     tabsize=4,
-    xleftmargin=6mm,
-    xrightmargin=3mm,
-    aboveskip=3mm,
-    belowskip=3mm
+    xleftmargin=5mm,
+    xrightmargin=2mm,
+    aboveskip=2.5mm,
+    belowskip=2.5mm
 }
 
 \lstset{style=terminal}
@@ -119,7 +122,7 @@
     before skip=4mm, after skip=4mm
 }
 
-\newtcolorbox{perspectiva20}[1][Perspectiva 20 Años Después]{
+\newtcolorbox{perspectiva20}[1][Perspectiva y Lección Técnica]{
     enhanced,
     colback=perspectivabg,
     colframe=perspectivaborder,
@@ -182,22 +185,22 @@
 
 % Formato de títulos de partes y capítulos
 \titleformat{\chapter}[display]
-    {\normalfont\sffamily\huge\bfseries\color{primary}}
+    {\normalfont\sffamily\huge\bfseries\color{primary}\raggedright}
     {\flushright\LARGE\color{secondary}Capítulo \thechapter}
     {1ex}
     {\titlerule[1.5pt]\vspace{2ex}\raggedright}
     [\vspace{1ex}\titlerule]
 
 \titleformat{\section}
-    {\normalfont\sffamily\Large\bfseries\color{primary}}
+    {\raggedright\normalfont\sffamily\Large\bfseries\color{primary}}
     {\thesection}{1em}{}
 
 \titleformat{\subsection}
-    {\normalfont\sffamily\large\bfseries\color{secondary}}
+    {\raggedright\normalfont\sffamily\large\bfseries\color{secondary}}
     {\thesubsection}{1em}{}
 
 \titleformat{\subsubsection}
-    {\normalfont\sffamily\normalsize\bfseries}
+    {\raggedright\normalfont\sffamily\normalsize\bfseries}
     {\thesubsubsection}{1em}{}
 
 % Hipervínculos e índice
