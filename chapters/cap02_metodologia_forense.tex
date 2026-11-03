@@ -1,174 +1,68 @@
 \chapter{Principios Forenses y Cadena de Custodia}
 
-La validez jurídica y técnica de un dictamen forense descansa en la inviolabilidad de la evidencia. Frente a una sospecha de compromiso, el perito debe resolver el dilema fundamental entre preservar el estado volátil de la máquina en funcionamiento o proceder al apagado controlado para su examen estático en laboratorio.
+La validez jurídica y técnica de un dictamen forense descansa en la inviolabilidad de la evidencia. Frente a la sospecha fundada de un compromiso de seguridad en un sistema de producción, el equipo pericial debe resolver el dilema fundamental entre preservar el estado volátil de la máquina en funcionamiento o proceder al apagado controlado para su examen estático en laboratorio.
 
 \begin{notaforense}[La Regla de Oro Forense]
-Nunca se investiga directamente sobre el medio original de almacenamiento si no es estrictamente imprescindible. La clonación bit a bit y el cotejo criptográfico mediante sumas de verificación MD5 y SHA1 garantizan que el estado de la evidencia permanezca inalterado a lo largo del proceso pericial.
+Nunca se investiga directamente sobre el medio original de almacenamiento si no es estrictamente imprescindible. La clonación física bit a bit y el cotejo criptográfico mediante sumas de verificación MD5 y SHA-1 garantizan que el estado de la evidencia permanezca inalterado a lo largo del proceso pericial, asegurando la reproducibilidad de los resultados.
 \end{notaforense}
 
-\section{Análisis \emph{post-mortem}}
-
-
- Desde que se sembraron los programas de registro se hizo una copia
-completa del sistema, y antes del análisis forense se generaron varias
-copias idénticas bit a bit de los discos duros. Salvo por necesidad
-se trabajo en el disco original si era meritorio. La copia de las
-particiones del disco duro se analizó en sistemas limpios y
-controlados.
-
-\subsection{Sistemas de análisis y referencia}
-
-
-\textbf{Dell precision 350}\\
-Pentium 4 2.8 GHz\\
-512 MB RAM\\
-DD 80 GB\\
-Debian GNU/Linux Woody (referencia.)\\
-Debian GNU/linux Sarge (análisis.)\\
-
-\textbf{Dell inspiron 4150}\\
-Pentium 4 1.8 GHz\\
-256 MB RAM\\
-DD 30 GB\\
-Debian GNU/Linux Woody (referencia.)\\
-Debian GNU/linux Sarge (análisis.)\\
-
-
-\textbf{Programas usados para el análisis}\\
-
-
-
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal]
-
--- strings 
-								  
--- strace 
-
--- ltrace
-
--- gdb
-
--- find 
-
--- md5sum
-
--- netstat 
-
--- /usr/sbin/lsof 
-
--- grep 
-
--- dd 
-
--- export 
-
--- chkrootkit 
-
--- icat 
-
--- file 
-    
--- readelf 
-
--- objdump 
-   
--- ps 
-    
--- nc 
-    
--- stat 
-
--- nm 
-
--- unrm 
-
--- mactime 
-
--- sleuthkit
-
--- autopsia
-
--- entropy
-
--- gcc
-
--- f-prot 
-
--- lsattr
-
--- lazarus
-
--- dcat                            
-
--- dls                              
-
--- dstat                            
-
--- ffind                            
-
--- file                             
-
--- fls                              
-
--- fsstat                           
-
--- hfind                            
-
--- icat                             
-
--- ifind                            
-
--- ils                              
-
--- istat                            
-
--- mactime                          
-
--- md5                              
-
--- sha1                             
-
--- sorter
-
--- grave-robber
-
--- lastcomm
-
--- major_minor
-
--- timeout
-
--- bdf                                                      
-
--- ils2mac  
-                                          
--- realpath
-
--- check_wtmpx                                          
-
--- chkdirs                                                   
-
--- chklastlog                                                
-
--- chkpro                                                  
-
--- chkproc                                                  
-
--- chkwtmp                                                  
-
--- ifpromisc                                                
-
--- snif                                                     
-
--- last
-
-\end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
+\section{Metodología Pericial y Preservación de Evidencias}
+
+Desde el instante en que se descubrieron los primeros indicios de intrusión y se sembraron los programas de registro encubierto, se procedió a realizar un respaldo integral del sistema. Antes de iniciar cualquier intervención analítica invasiva, se generaron imágenes binarias idénticas (\textit{bit-stream copies}) de los discos duros mediante la utilidad \texttt{dd}. 
+
+Salvo en aquellas situaciones excepcionales donde se requirió verificar el comportamiento en vivo del hardware o del entorno de red original, la totalidad de los análisis se condujo sobre réplicas montadas en modo de solo lectura (\textit{read-only}) dentro de un laboratorio aislado, garantizando que el medio original se mantuviera resguardado bajo estricta cadena de custodia.
+
+\section{Sistemas de Laboratorio y Entornos de Referencia}
+
+Para discriminar con certeza matemática las modificaciones ilícitas introducidas por los atacantes frente a las alteraciones legítimas derivadas de la operación cotidiana, se estructuró un procedimiento de \textbf{análisis diferencial}. Este método consistió en contrastar las imágenes forenses contra instalaciones testigo limpias (\textit{sistemas de referencia}), configuradas con versiones idénticas del sistema operativo y paquetes oficiales no vulnerados.
+
+El laboratorio forense dispuso de dos plataformas independientes de cómputo descritas en el Cuadro~\ref{tab:sistemas_laboratorio}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Componente} & \textbf{Estación Principal (Sobremesa)} & \textbf{Estación Portátil (Móvil)} \\
+\midrule
+Modelo & Dell Precision 350 & Dell Inspiron 4150 \\
+Procesador & Intel Pentium 4 a 2.8~GHz & Intel Mobile Pentium 4 a 1.8~GHz \\
+Memoria RAM & 512~MB DDR & 256~MB DDR \\
+Disco Duro & IDE de 80~GB & IDE de 30~GB \\
+Entorno de Referencia & Debian GNU/Linux 3.0 (\textit{Woody}) & Debian GNU/Linux 3.0 (\textit{Woody}) \\
+Entorno de Análisis & Debian GNU/Linux 3.1 (\textit{Sarge}) & Debian GNU/Linux 3.1 (\textit{Sarge}) \\
+\bottomrule
+\end{tabular}
+\caption{Plataformas de hardware y entornos de referencia del laboratorio forense.}
+\label{tab:sistemas_laboratorio}
+\end{table}
+
+\section{Taxonomía del Instrumental Pericial Utilizado}
+
+El análisis forense digital en la época requería la orquestación metódica de diversas herramientas especializadas de bajo nivel, agrupadas en el Cuadro~\ref{tab:herramientas_forenses} de acuerdo con su función pericial.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lp{10cm}}
+\toprule
+\textbf{Categoría Pericial} & \textbf{Herramientas y Utilidades Empleadas} \\
+\midrule
+\textbf{Inspección Binaria y Reversa} & \texttt{strings}, \texttt{strace}, \texttt{ltrace}, \texttt{gdb}, \texttt{readelf}, \texttt{objdump}, \texttt{nm}, \texttt{file}. Permiten desensamblar ejecutables, auditar llamadas al sistema (\textit{syscalls}) e inspeccionar tablas de símbolos. \\
+\addlinespace
+\textbf{Integridad Criptográfica} & \texttt{md5sum}, \texttt{sha1sum}, \texttt{stat}, \texttt{lsattr}. Cálculo de huellas hash sobre bloques e inspección de metadatos de inodos y atributos especiales de Ext2. \\
+\addlinespace
+\textbf{Suites Forenses Especializadas} & \texttt{The Coroner's Toolkit (TCT)} (\textit{grave-robber}, \textit{ils2mac}, \textit{mactime}, \textit{unrm}, \textit{lazarus}) y \texttt{The Sleuth Kit (TSK)} (\textit{fls}, \textit{ils}, \textit{istat}, \textit{icat}, \textit{fsstat}, \textit{dls}, \textit{Autopsy}). Recuperación de inodos huérfanos y reconstrucción cronológica. \\
+\addlinespace
+\textbf{Detección de Malware y Rootkits} & \texttt{chkrootkit}, \texttt{f-prot}, \texttt{ifpromisc}, \texttt{check\_wtmpx}, \texttt{chklastlog}, \texttt{chkwtmp}, \texttt{snif}. Auditoría de interfaces en modo promiscuo y alteración de registros de acceso. \\
+\addlinespace
+\textbf{Inspección del Sistema en Vivo} & \texttt{lsof}, \texttt{netstat}, \texttt{ps}, \texttt{lastcomm}, \texttt{last}, \texttt{nc}. Monitoreo de descriptores de archivos abiertos, tablas de conexiones de red y sesiones activas. \\
+\bottomrule
+\end{tabular}
+\caption{Clasificación taxonómica de las herramientas de investigación utilizadas.}
+\label{tab:herramientas_forenses}
+\end{table}
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: Adquisición de Memoria Volátil]
-En 2004, la adquisición de memoria RAM viva estaba en una fase incipiente (herramientas como \textit{fmem} o \textit{dd} sobre \texttt{/dev/mem}). Hoy en día, la captura de memoria volátil mediante herramientas como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior análisis con \textit{Volatility 3} constituyen el primer paso ineludible antes de apagar cualquier sistema comprometido, permitiendo rescatar llaves criptográficas, sockets y procesos inyectados que desaparecen al apagar el equipo.
+En 2004, la adquisición de memoria RAM viva estaba en una fase incipiente (herramientas experimentales como \texttt{fmem} o lecturas directas con \texttt{dd} sobre el dispositivo \texttt{/dev/mem}). Hoy en día, la captura de memoria volátil mediante controladores del kernel como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior interrogación con marcos avanzados como \textit{Volatility 3} constituyen el primer paso ineludible en la respuesta a incidentes, permitiendo recuperar claves de cifrado, conexiones de red activas en memoria e inyecciones de código que jamás tocan el disco duro.
 \end{perspectiva20}

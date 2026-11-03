@@ -1,16 +1,15 @@
 \chapter{Vectores en el Servidor de Correo y Webmail}
 
-Las aplicaciones de acceso a correo web en la década del 2000, desarrolladas con frecuencia como scripts CGI en Perl o PHP sin suficiente validación de entradas ni protección contra sesiones concurrentes, representaban una superficie de ataque sumamente vulnerable. El servidor de correo departamental fue analizado minuciosamente para determinar si las intrusiones involucraron la interceptación de correspondencia electrónica.
+Las aplicaciones de acceso a correo web en la década del 2000, desarrolladas con frecuencia como \textit{scripts} CGI en Perl o PHP sin suficiente validación de entradas ni protección contra sesiones concurrentes, representaban una superficie de ataque sumamente vulnerable. El servidor de correo departamental fue analizado minuciosamente para determinar si las intrusiones involucraron la interceptación de correspondencia electrónica.
 
-\section{Bitácoras en el servidor de correo}
+\section{Auditoría de Servicios de Correo Electrónico (POP3 y SMTP)}
  
 
  El servidor de correo es victima3.foo.bar.mx, esta máquina provee acceso
-\verb+pop+, \verb+imap+ y \verb+web+ a sus usuarios pero no permite accesos directos al
-\textbf{shell} como se explicará más adelante.\\
- 
- 
-\verb+authlog+
+\texttt{pop}, \texttt{imap} y \texttt{web} a sus usuarios pero no permite accesos directos al
+\textbf{shell} como se explicará más adelante.
+
+\texttt{authlog}
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -34,37 +33,36 @@ Apr 22 08:00:01 io newsyslog[1695]: logfile turned over
 
 Estas líneas muestran intentos de acceso desde una cuenta dsl de
 prodigy buscando entrar como el usuario duende a la máquina del
-correo.  El día 22 se obtiene un acceso limpio a la cuenta yyyyy por
-medio del servicio \textbf{ssh}. El intruso intenta volverse root en la máquina
+correo. El día 22 se obtiene un acceso limpio a la cuenta yyyyy por
+medio del servicio \textbf{SSH}. El intruso intenta volverse root en la máquina
 con el comando su pero falla en dos intentos, mientras al mismo tiempo
-desde \verb+victima2+, trata de ingresar como duende pero falla de nuevo. En seguida
-cierra la conexión establecida con \verb+admin+.\\
+desde \texttt{victima2}, trata de ingresar como duende pero falla de nuevo. En seguida
+cierra la conexión establecida con \texttt{admin}.
 
 Las líneas anteriores son muy reveladoras porque esa máquina no tiene
-acceso remoto a \textbf{shell} sino solo por medio de la cuenta \verb+admin+, 
-y para ser \verb+root+ hay que
-hacer \verb+su+ dentro del equipo con el password respectivo. Esa
-característica solo la conocían dos personas en el mundo: \verb+root+ y
-\verb+duende+. Nadie mas sabia que la cuenta \verb+admin+ existía y que había que
-ingresar a ella para ser \verb+root+. Además el acceso es limpio y no hay
+acceso remoto a \textbf{shell} sino solo por medio de la cuenta \texttt{admin}, 
+y para ser \texttt{root} hay que
+hacer \texttt{su} dentro del equipo con el contraseña respectivo. Esa
+característica solo la conocían dos personas en el mundo: \texttt{root} y
+\texttt{duende}. Nadie mas sabia que la cuenta \texttt{admin} existía y que había que
+ingresar a ella para ser \texttt{root}. Además el acceso es limpio y no hay
 modo de adivinar la clave sin millones de intentos. El acceso a estas
-cuentas y el intento de hacerse \verb+root+ en la máquina esta solo permitido
+cuentas y el intento de hacerse \texttt{root} en la máquina esta solo permitido
 para el administrador, y nadie mas tiene permiso ni siquiera de intentarlo. Sean
 cuales sean sus intenciones esto es una nueva intrusión. Hay que mencionar
 que con anterioridad estaba permitido el acceso a la cuenta de
-\verb+duende+ a \verb+victima3.foo.bar.mx+ pero fue bloqueada y reducida a una cuenta normal sin
+\texttt{duende} a \texttt{victima3.foo.bar.mx} pero fue bloqueada y reducida a una cuenta normal sin
 haber razón alguna para informarle al usuario. Es de explicar
 entonces los intentos de acceder a la cuenta duende, pero nunca a
 proa, zena o cualquier otra posible. Los intentos son directos y
-limpios.\\
-
+limpios.
 
 \subsection{Revisión de la actividad dentro del programa lector de correo}
 
  Open Web Mail es el lector de correo usado por muchos de los usuarios. Se revisó
-la actividad dentro de este programa con el fin de correlacionar eventos y buscar nueva información.\\  
+la actividad dentro de este programa con el fin de correlacionar eventos y buscar nueva información.
 
-\verb+openwebmail.log+\\
+\texttt{openwebmail.log}
 
 Selección de entre 15,420 accesos.
  \vspace{1em}
@@ -354,7 +352,7 @@ Tue Apr 22 19:01:01 2003 - [13036] (198.51.100.98) duende - logout - duende-sess
 \vspace{1em}
 
 Los registros anteriores muestran que el usuario duende si es quien
-efectivamente accesaba a la cuenta de \verb+victima2+ y desde ahi hacia \verb+victima1+,
+efectivamente accedía a la cuenta de \texttt{victima2} y desde ahi hacia \texttt{victima1},
 los números de ip de las máquinas concuerdan con los demás registros
 vistos anteriormente. El acceso a la cuenta de correo y su actividad
 dentro de ella muestra que el usuario en verdad estaba leyendo y

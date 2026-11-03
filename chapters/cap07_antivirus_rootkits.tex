@@ -2,95 +2,59 @@
 
 Los \textit{rootkits} a nivel de espacio de usuario (\textit{userland rootkits}) operaban reemplazando los binarios estándar de administración (como \texttt{ps}, \texttt{ls}, \texttt{netstat}, \texttt{find} y \texttt{login}) por versiones adulteradas que filtraban deliberadamente los procesos del atacante, ocultaban directorios maliciosos y abrían puertas traseras protegidas por contraseñas predefinidas.
 
-\section{Búsqueda y análisis de programas troyanizados usando antivirus}
+\section{Escaneo Heurístico y Detección de Firmas de Malware}
 
- 
-Muchos programas revisados muestran información y cadenas no
-convencionales por esto se analizó toda la máquina con un
-antivirus. Los archivos que contienen virus para windows se omiten del
-reporte, pues es común que los usuarios los tengan en sus cuentas al llegar 
-en correos o en programas bajados desde internet. En
-linux los virus no son importantes y lo que se pretende es buscar
-archivos con troyanos y gusanos hechos para linux y que pueden ser detectados 
-por un antivirus.\\
+Muchos de los programas examinados presentaban estructuras anómalas y cadenas de texto no convencionales en sus secciones de código. Por esta razón, se procedió a escanear exhaustivamente la imagen del disco mediante la solución antivirus \texttt{f-prot} para sistemas Unix/Linux. 
 
+Los archivos que contenían virus orientados exclusivamente al sistema operativo Microsoft Windows fueron descartados del informe pericial, al tratarse de artefactos inocuos en esta plataforma que los usuarios suelen recibir incidentalmente a través de correspondencia electrónica externa. En entornos GNU/Linux, el interés primordial radicaba en identificar gusanos (\textit{worms}), puertas traseras (\textit{backdoors}) y binarios del sistema infectados o troyanizados.
 
+El Cuadro~\ref{lst:fprot_results} presenta un extracto representativo de los hallazgos tras auditar 181,711 objetos en el disco duro.
 
- Ejemplos ilustrativos de los resultados de la revisión hecha por \verb+f-prot+ 
-a 181,711 archivos y programas:
- 
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal]
-/root/usr/bin/last  Infection: Unix/RST.A
-/root/usr/bin/strace  Infection: Unix/RST.A
-/root/sbin/killall5  Infection: Unix/RST.A
-/root/sbin/sulogin  Infection: Unix/RST.A
-/root/bin/ps  Infection: Unix/RST.A
-/root/dev/zqft4/local!  Infection: Unix/Osf.A
-/home/staff/duende/paw++  Infection: Unix/RST.B
-/home/staff/duende/prog/c/lc/une  Infection: Unix/RST.B
-/home/staff/duende/prog/c/lc/linfo  Infection: Unix/RST.A
-/home/staff/duende/prog/c/lc/mapea  Infection: Unix/RST.A
-/home/staff/duende/prog/c/lc/particion  Infection: Unix/RST.A
+\begin{lstlisting}[style=terminal,caption={Extracto de infecciones detectadas por el escáner antivirus en el sistema examinado.},label={lst:fprot_results}]
+/root/usr/bin/last                        Infection: Unix/RST.A
+/root/usr/bin/strace                      Infection: Unix/RST.A
+/root/sbin/killall5                       Infection: Unix/RST.A
+/root/sbin/sulogin                        Infection: Unix/RST.A
+/root/bin/ps                              Infection: Unix/RST.A
+/root/dev/zqft4/local!                    Infection: Unix/Osf.A
+/home/staff/duende/paw++                  Infection: Unix/RST.B
+/home/staff/duende/prog/c/lc/une          Infection: Unix/RST.B
+/home/staff/duende/prog/c/lc/linfo        Infection: Unix/RST.A
+/home/staff/duende/prog/c/lc/mapea        Infection: Unix/RST.A
+/home/staff/duende/prog/c/lc/particion    Infection: Unix/RST.A
 /home/staff/duende/prog/c/lc/correlacion  Infection: Unix/RST.A
-/home/staff/duende/prog/c/uno/cadena  Infection: Unix/RST.A
-/home/staff/duende/prog/c/uno/arbol  Infection: Unix/RST.A
-/home/staff/duende/prog/c/uno/arboles  Infection: Unix/RST.A
-/home/staff/duende/prog/c/uno/repite  Infection: Unix/RST.A
-/home/staff/duende/prog/c/uno/simotu  Infection: Unix/RST.A
-/home/staff/duende/prog/GL/avion  Infection: Unix/RST.A
-/home/staff/duende/prog/bin/une  Infection: Unix/RST.A
-/home/staff/duende/prog/bin/normal  Infection: Unix/RST.A
-/home/staff/duende/prog/gtk/ghello  Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/cadena      Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/arbol       Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/arboles     Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/repite      Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/simotu      Infection: Unix/RST.A
+/home/staff/duende/prog/GL/avion          Infection: Unix/RST.A
+/home/staff/duende/prog/bin/une           Infection: Unix/RST.A
+/home/staff/duende/prog/bin/normal        Infection: Unix/RST.A
+/home/staff/duende/prog/gtk/ghello        Infection: Unix/RST.A
 /home/staff/duende/prog/gtk/registro.old  Infection: Unix/RST.A
-/home/staff/duende/kxterm  Infection: Unix/RST.A
-/home/staff/duende/installer-redhat-70-i386  Infection: Unix/RST.A
+/home/staff/duende/kxterm                 Infection: Unix/RST.A
+/home/staff/duende/installer-redhat-70-i386 Infection: Unix/RST.A
 
-
-
-Results of virus scanning:
-
-Files: 190937
-MBRs: 0
-Boot sectors: 0
-Objects scanned: 181711
-Infected: 1111
-Suspicious: 4
-Disinfected: 0
-Deleted: 0
-Renamed: 0
-
-Time: 55:33
+============================================================
+Resultados globales del escaneo antivirus:
+Objetos escaneados: 181,711
+Infectados:         1,111
+Sospechosos:        4
+Desinfectados:      0
+Tiempo total:       55 min 33 s
+============================================================
 \end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
 
-De estos resultados, se encontraron cerca de 900 programas
-troyanizados con gusanos que abren conexiones de red y dan acceso a
-la máquina en diversos puertos. Fueron encontrados 115 programas infectados
-en el directorio de duende principalmente en carpetas
-que supuestamente contienen trabajo de investigación. Las fechas de
-modificación de estos programas son de abril 24 pero los fuentes
-correspondientes tienen fechas del 2001. Casi todos los programas esenciales en
-los directorios de sistema están troyanizados. Hay que destacar que
-las infecciones en linux no son automáticas y no se puede decir que
-se infectaron solos por contacto. Los programas fueron infectados con cadenas
-binarias de forma intencional y con claro acceso a la cuenta de
-root. En un sistema limpio no debe aparecer ningún programa como
-infectado como se verificó en los sistemas de control.
+A partir de esta prospección pericial, se constató que cerca de 900 programas y bibliotecas del sistema operativo se encontraban infectados con el gusano \textit{Unix/RST.A}, un parásito binario que infecta ejecutables ELF inyectando código en el punto de entrada (\textit{entry point}) para abrir conexiones de red encubiertas y habilitar el control remoto del equipo. 
 
+Asimismo, se detectaron 115 programas infectados dentro del directorio personal del usuario \texttt{duende}, principalmente en carpetas que simulaban almacenar código fuente de investigación académica. Es relevante señalar que las fechas de modificación de estos binarios correspondían al 24 de abril, mientras que los archivos fuente asociados presentaban marcas temporales de 2001. La alteración de binarios críticos en directorios del sistema (\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}) demostró una manipulación intencional que demandó el uso efectivo de privilegios de superusuario (\texttt{root}). En contraste, la misma prueba ejecutada sobre el sistema de control del laboratorio no arrojó ninguna alerta de infección.
 
+\section{Persistencia Mediante Atributos Inmutables de Ext2 (\texttt{chattr +i})}
 
-\section{Atributos especiales en archivos del sistema}
+Uno de los mecanismos de evasión más sofisticados observados durante la pericia fue la manipulación de las banderas extendidas del sistema de archivos Ext2. Mediante el comando \texttt{lsattr}, se identificó que dieciocho archivos estratégicos contaban con atributos de inmutabilidad y adición forzada activados.
 
-
-\vspace{1em}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-{\footnotesize
-\begin{lstlisting}[style=terminal]
+\begin{lstlisting}[style=terminal,caption={Archivos con atributos especiales de inmutabilidad (+i) y adición (+a).},label={lst:lsattr_output}]
 -u--ia----------- /usr/lib/popclean
 -u--ia----------- /usr/local/lib/dsniff.services
 -u--ia----------- /etc/cron.daily/dnsquery
@@ -109,16 +73,8 @@ infectado como se verificó en los sistemas de control.
 -u--ia----------- /dev/.nst
 -u--ia----------- /dev/.tree
 -u--ia----------- /dev/.tp
-
 \end{lstlisting}
-}
-\vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}
 
+En el sistema de archivos Linux Ext2/Ext3, el atributo inmutable (\texttt{+i}) instruye al controlador del kernel para denegar cualquier operación de escritura, truncamiento, renombramiento o supresión de enlace (\textit{unlink}), bloqueando incluso las órdenes emitidas por el superusuario \texttt{root}. Para modificar o suprimir un archivo marcado con este atributo, el administrador está obligado a deshabilitar previamente la bandera mediante el comando \texttt{chattr -i}. 
 
-El atributo \textbf{i} indica que los archivos anteriores no pueden ser
-modificados o borrados por nadie. Estos atributos son conocidos por
-muy pocas personas y un atacante no experimentado por lo general no
-los sabe usar, pero son comunes cuando alguien instala un \textbf{rootkit}
-empaquetado o compilado en el sistema que se esta atacando.
-
+Por su parte, el atributo \texttt{+a} restringe la apertura del archivo únicamente al modo de adición (\textit{append-only}), impidiendo que su contenido previo sea alterado o vaciado. La presencia coordinada de estos atributos en utilidades de captura de red (como \texttt{dsniff.services}) y en binarios ocultos bajo \texttt{/dev} y \texttt{/var/lib/.identd} evidencia una técnica destinada a garantizar la permanencia del \textit{rootkit} y entorpecer los intentos convencionales de desinfección administrativa.

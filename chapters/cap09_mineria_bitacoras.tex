@@ -2,14 +2,13 @@
 
 Las bitácoras de auditoría del sistema operativo (\texttt{/var/log/messages}, \texttt{secure}, \texttt{wtmp}, \texttt{xferlog}) ofrecen el testimonio cronológico de autenticaciones, conexiones externas y comandos privilegiados. En este capítulo se analizan las secuencias de eventos registradas, desentrañando además los intentos del atacante por limpiar y manipular los archivos de registro.
 
-\section{Revisión de las bitácoras del sistema}
+\section{Auditoría de Bitácoras del Sistema (\texttt{syslog}, \texttt{secure} y \texttt{xferlog})}
 
 Las salidas están resumidas a lo mas esencial, algunas líneas se
-repiten cientos de veces pero solo se mostraran tres o cuatro veces
-para mostrar que son recurrentes.\\
+repiten cientos de veces pero solo se mostrarán tres o cuatro veces
+para mostrar que son recurrentes.
 
-
-\verb+auth.log+
+\texttt{auth.log}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -243,7 +242,7 @@ Apr 21 11:17:50 victima1 newgrp[14569]: unknown gid: 521
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-\verb+daemon.log+
+\texttt{daemon.log}
 
 
 \vspace{1em}
@@ -588,11 +587,11 @@ Apr 15 18:33:10 victima1 in.telnetd[12467]: connect from 198.18.44.222
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-  En las líneas anteriores se observa la gran actividad de las cuentas
+ En las líneas anteriores se observa la gran actividad de las cuentas
 proa, zopilote y zena. El acceso a estas cuentas fue bloqueado el día
 15 de abril, esto detuvo el uso de los servicios plantados en el
 sistema, y es aquí donde se detectaron las acciones del usuario
-duende. Los servicios \verb+ftp+, \verb+telnet+, \verb+smtp+ entre otros son los que se
+duende. Los servicios \texttt{FTP}, \texttt{telnet}, \texttt{smtp} entre otros son los que se
 estuvieron explotando hasta esas fechas. Es de destacar que las
 conexiones provienen de muchas máquinas de todo el mundo lo cual es
 normal en este tipo de ataques. Es cotidiano observar accesos de este
@@ -608,7 +607,7 @@ eliminada de los registros en los días anteriores por los métodos que
 ya se enunciaron.
 
 
-\verb+wtmp+
+\texttt{wtmp}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -865,7 +864,7 @@ proa     pts/6        Tue Apr 15 22:47 - 22:56  (00:08)     host-203.0.113.89-cu
 \vspace{1em}
 
 Esta entrada muestra que inmediatamente que proa sale de la máquina
-duende accesa y, cuando duende sale proa entra.  Hay que notar que
+duende accesa y, cuando duende sale proa entra. Hay que notar que
 duende y zena tienen un accesos con permanencia simultánea de mas de
 23 horas. Las líneas indican que proa zena y duende pueden ser la misma
 persona, pero duende se conecta inexplicablemente siempre desde

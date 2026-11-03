@@ -2,16 +2,16 @@
 
 La reconstrucción temporal de eventos constituye la columna vertebral del análisis pericial. El sistema de archivos almacena tres marcas de tiempo críticas para cada inodo: fecha de última modificación del contenido (\textit{mtime}), fecha de último acceso de lectura (\textit{atime}) y fecha de cambio en los metadatos o inodo (\textit{ctime}). Utilizando la herramienta \texttt{mactime} de \textit{The Coroner's Toolkit} (TCT), fue posible correlacionar con precisión de segundos cada acción ejecutada en el disco.
 
-\section{Creación de líneas de tiempo}
+\section{Reconstrucción Cronológica del Sistema de Archivos (\textit{Timeline Analysis})}
 
 El siguiente paso es crear extraer las fechas y hora de modificación,
 acceso, creación y borrado de todos los archivos almacenados en el disco duro.
 Esta información se encuentra almacenada en los inodos y bloques de datos del disco.
 Con esta información recolectada se ordenaron todos los 
 archivos por la fecha de cualquier actividad relacionada con ese archivo.
-Una vez hecho esto se creo la \emph{línea de tiempo} de todos los archivos en el disco duro,
+Una vez hecho esto se creó la \emph{línea de tiempo} de todos los archivos en el disco duro,
 incluidos los que fueron borrados y que sus sectores en disco no han
-sido sobreescritos. Estas líneas son de la forma:\\
+sido sobreescritos. Estas líneas son de la forma:
 
 Día de la semana mes día del mes año hora tamaño
 modificación-acceso-cambio permisos dueño grupo archivo\\
@@ -246,7 +246,7 @@ Fri Apr 11 2003 21:19:01   171705 m.c -/-rwxr-xr-x root     root     225771   /u
 \end{lstlisting}
 }
 \vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}			    
+\vspace{1em} 
 
 La muestra es meramente representativa de varios cientos de archivos
 modificados y/o creados el 11 de abril a partir de las 20:55:02. Es

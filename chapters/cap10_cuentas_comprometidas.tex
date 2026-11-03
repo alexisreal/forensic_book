@@ -2,7 +2,7 @@
 
 La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslabón más débil de su cadena de credenciales. El análisis forense de los directorios personales de los usuarios afectados reveló el mecanismo de acceso inicial y el depósito de herramientas auxiliares que permitieron la consolidación de la presencia no autorizada.
 
-\section{Revisión de las cuentas involucradas}
+\section{Inspección Forense de Directorios de Cuentas Comprometidas}
 
  Contenido resumido del directorio proa:
 
@@ -48,7 +48,7 @@ La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslab
 \end{lstlisting}
 }
 \vspace{0.8em}\hrulefill\vspace{0.8em}
-\vspace{1em}                                                                        
+\vspace{1em} 
 
  Contenido resumido del directorio zena:
  
@@ -138,7 +138,7 @@ drwx------ scott/users       0 2002-02-08 07:09:51 ex/
 \vspace{1em}
 
  Estos paquetes contienen ejecutables dentro de un directorio llamado
- \verb+ex/+. Verifiquemos la función de estos programas:
+ \texttt{ex/}. Verifiquemos la función de estos programas:
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -155,7 +155,7 @@ sd: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), dynamically linked
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-\verb+ex/ep+
+\texttt{ex/ep}
 
 
 \vspace{1em}
@@ -208,7 +208,7 @@ d0h! error!
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-\verb+ex/rh+
+\texttt{ex/rh}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -261,7 +261,7 @@ Rhn/shh//bi
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-\verb+ex/sd+
+\texttt{ex/sd}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -415,14 +415,14 @@ Thanx for choosing sd's products ;)
 
  Estos programas explotan vulnerabilidades del servidor de correo y
 sirven para ganar acceso a root desde una cuenta no privilegiada. En
-al última línea de \verb+ex/sd+ se hace referencia a \verb+/tmp/.sxp+ que es uno de
+al última línea de \texttt{ex/sd} se hace referencia a \texttt{/tmp/.sxp} que es uno de
 los programas que se encontró en el historial de duende como utilizado
 por el.\\
 
  Veremos ahora el contenido de los archivos del directorio de duende:
  
 
-\verb+oOo.tar+
+\texttt{oOo.tar}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -443,7 +443,7 @@ por el.\\
  directorio proa.\\
 
 
- Contenido del archivo llamado \verb+final+:
+ Contenido del archivo llamado \texttt{final}:
  
 
 \vspace{1em}
@@ -517,10 +517,10 @@ fail!
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Este es el contenido de un exploit de sendmail.\\
+ Este es el contenido de un \textit{exploit} de sendmail.\\
  
  
- Contenido de \verb+dump.sh+:
+ Contenido de \texttt{dump.sh}:
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -564,13 +564,13 @@ id
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Es el contenido de un script que da acceso a un \textbf{shell} de root de
+ Es el contenido de un \textit{script} que da acceso a un \textbf{shell} de root de
  forma no autorizada.\\
  
 
- Los directorios y archivos \verb+emech+, \verb+psybnc+ y \verb+eggdrop+ son de paquetes
-que ejecutan un servidor de \textbf{irc} y contienen servidores de \verb+ftp+ y
-\verb+telnet+. El contenido de estos directorios es el siguiente:
+ Los directorios y archivos \texttt{emech}, \texttt{psybnc} y \texttt{eggdrop} son de paquetes
+que ejecutan un servidor de \textbf{IRC} y contienen servidores de \texttt{FTP} y
+\texttt{telnet}. El contenido de estos directorios es el siguiente:
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -599,7 +599,7 @@ drwxr-xr-x  3 1040     1040        4096 Apr 23 22:33 ..                         
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- El objeto de estos programas es ofrecer el servicio de charlas en línea \textbf{irc} para la red
+ El objeto de estos programas es ofrecer el servicio de charlas en línea \textbf{IRC} para la red
 \textbf{UNDERnet}. El sembrar estos servidores es una actividad extremadamente común, 
 y generalmente quienes la realizan no buscan controlar el sistema u obtener
 información privada como en este caso, solo usan las máquinas para

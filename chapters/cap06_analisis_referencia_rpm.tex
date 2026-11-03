@@ -6,11 +6,15 @@ El método de análisis forense comparativo consiste en contrastar el estado del
 
 
 
- Primero se revisaron los programas reportados por \verb+chkrootkit+ como
+ \section{Cotejo de Binarios con chkrootkit y Base de Datos RPM}
+
+Primero se revisaron los programas reportados por la utilidad \texttt{chkrootkit} como
 troyanizados. En total se estudiaron 1999 programas
 en el árbol de directorios del sistema.\\
 
- \verb+/bin/ps+\\
+ \subsection{Análisis Detallado del Binario \texttt{/bin/ps}}
+
+\noindent\textbf{Ruta del archivo:} \texttt{/bin/ps}\\
  
  Análisis de cadenas de texto:
  
@@ -55,14 +59,16 @@ egrep
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- De estas cadenas lo sobresaliente es que el programa lee \verb+/dev/.libpt+
+ De estas cadenas lo sobresaliente es que el programa lee \texttt{/dev/.libpt}
 y luego con egrep filtra los procesos que lee en ese
 archivo. Definitivamente estos programas están troyanizados con el fin de
 ocultar la información que se le indique a voluntad o de forma
 automática.
 
 
-\verb+/bin/netstat+
+\subsection{Análisis Detallado del Binario \texttt{/bin/netstat}}
+
+\noindent\textbf{Ruta del archivo:} \texttt{/bin/netstat}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -81,11 +87,11 @@ egrep
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- El anterior programa lee \verb+/dev/.nst+ y oculta el estado de la red según
+ El anterior programa lee \texttt{/dev/.nst} y oculta el estado de la red según
  se le ordene.
  
 
-\verb+/usr/bin/pstree+
+\texttt{/usr/bin/pstree}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -104,10 +110,10 @@ egrep
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- El anterior lee \verb+/dev/.libtr+ y oculta procesos.
+ El anterior lee \texttt{/dev/.libtr} y oculta procesos.
  
  
-\verb+/bin/init+
+\texttt{/bin/init}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -186,10 +192,10 @@ ssword:
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Esas cadenas se parecen a las de \verb+/dev/zqft4/sk+ ya antes mencionado,
-así que se calculara su suma \verb+md5sum+ que es una número único de
+ Esas cadenas se parecen a las de \texttt{/dev/zqft4/sk} ya antes mencionado,
+así que se calculara su suma \texttt{md5sum} que es una número único de
 identificación para cada archivo basado en análisis y sumas bit a
-bit.  Si los números coinciden para dos archivos, estos son iguales.
+bit. Si los números coinciden para dos archivos, estos son iguales.
 
  \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -210,8 +216,8 @@ bit.  Si los números coinciden para dos archivos, estos son iguales.
  En este programa existen líneas que explican el origen de varios
 archivos estudiados. También se ve que una de sus funciones es ocultar
 procesos automáticamente y que llama a un programa de nombre
-\verb+/sbin/init!+  entre otras características. Otra función más es hacer invisibles
-a los archivos con \verb+!+ al final de su nombre.
+\texttt{/sbin/init!} entre otras características. Otra función más es hacer invisibles
+a los archivos con \texttt{!} al final de su nombre.
 
  Se buscaron otros archivos ocultos con el signo de admiración al
 final de su nombre y se encontraron los siguientes:
@@ -231,9 +237,9 @@ final de su nombre y se encontraron los siguientes:
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Revisaremos estos programas.\\
+ Revisaremos estos programas.
 
-\verb+/sbin/init!+\\
+\texttt{/sbin/init!}
 
 Tipo de archivo:
 
@@ -249,12 +255,11 @@ dynamically linked (uses shared libs), stripped
 \vspace{1em}
 
 Al revisar las cadenas de texto no encontramos nada extraño, y
-comparando sus sumas binarias se encontró que es el mismo \verb+/sbin/init+
+comparando sus sumas binarias se encontró que es el mismo \texttt{/sbin/init}
 de un sistema limpio. Parece que su función es la de correr el
-init troyanizado.\\
+init troyanizado.
 
-
-\verb+/dev/zqft4/bash!+
+\texttt{/dev/zqft4/bash!}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -391,18 +396,15 @@ ERROR
 \vspace{1em}
 
 Parece ser que el anterior \textbf{shell} tiene agregadas funciones de conexión
-por medio de la red.\\
- 
+por medio de la red.
 
-\verb+/dev/zqft4/local!+\\
-
+\texttt{/dev/zqft4/local!}
 
 Este programa se ejecutó en un sistema de pruebas, con el resultado
 de un daño en el arranque del sistema. Al parecer se debe correr en
-combinación con otros programas y no de manera individual.\\
+combinación con otros programas y no de manera individual.
 
-
-\verb+/dev/zqft4/clean!+\\
+\texttt{/dev/zqft4/clean!}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -449,7 +451,7 @@ mv maillog.hm /var/log/maillog
 voluntad del intruso o de manera automatizada.
  
  Es de destacar que al parecer estos programas ocultos deben de ser ejecutados
-directamente desde la línea de comandos o desde un script para que funcionen.  
+directamente desde la línea de comandos o desde un \textit{script} para que funcionen. 
 Es muy común que los atacantes no sepan que esos programas están instalados 
 pues están ocultos por el sistema y ni ellos se percatan de su existencia si 
 no conocen de antemano el kit usado.

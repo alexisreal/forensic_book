@@ -2,14 +2,14 @@
 
 Una intrusión rara vez permanece confinada a un único servidor cuando los sistemas comparten redes locales, montajes remotos NFS o esquemas de confianza entre cuentas de usuario. La correlación pericial con otros servidores del departamento permitió reconstruir la propagación lateral y confirmar la hipótesis sobre el origen de los accesos.
 
-\section{Correlación con otros sistemas involucrados}
+\section{Movimiento Lateral y Vectores de Confianza Multisistema}
 
 
- \verb+victima2+ se revisó con minuciosidad pero solo serán incluídos los datos
- que estén relacionados con el caso \verb+victima1+.\\
+ \texttt{victima2} se revisó con minuciosidad pero solo serán incluídos los datos
+ que estén relacionados con el caso \texttt{victima1}.\\
 
 
- Programas sospechosos en el directorio \verb+duende/+ en \verb+victima2+.
+ Programas sospechosos en el directorio \texttt{duende/} en \texttt{victima2}.
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -21,8 +21,8 @@ Una intrusión rara vez permanece confinada a un único servidor cuando los sist
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-Contenido del paquete \verb+test.tar+:\\
- 
+Contenido del paquete \texttt{test.tar}:
+
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 {\footnotesize
@@ -36,13 +36,13 @@ drwx------ scott/users       0 2002-02-08 07:09:51 ex/
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Este archivo contiene los exploits para \verb+sendmail+ y es idénticamente el
- mismo que el del directorio \verb+zena/+.
+ Este archivo contiene los \textit{exploits} para \texttt{sendmail} y es idénticamente el
+ mismo que el del directorio \texttt{zena/}.
  
- En el directorio \verb+temp/+ de duende se encontró el directorio borrado
-\verb+ex/+, lo cual confirma que el usuario lo desempaquetó y después lo
-elimino. Además de hallarse un archivo borrado \verb+o0o.tar+ con el mismo
-\textbf{md5sum} de los encontrados en \verb+zena/+, \verb+proa/+ y demás directorios
+ En el directorio \texttt{temp/} de duende se encontró el directorio borrado
+\texttt{ex/}, lo cual confirma que el usuario lo desempaquetó y después lo
+elimino. Además de hallarse un archivo borrado \texttt{o0o.tar} con el mismo
+\textbf{md5sum} de los encontrados en \texttt{zena/}, \texttt{proa/} y demás directorios
 estudiados.
 
 \vspace{1em}
@@ -58,10 +58,9 @@ d / d  	    	ex/  	    	2002.11.27 20:51:02 (cst)  	    	2003.04.27 12:29:51 (cs
 \vspace{1em}
 
 
- Bitácoras en \verb+victima2+.\\
+ Bitácoras en \texttt{victima2}.
 
- 
-\verb+wtmp+
+\texttt{wtmp}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -175,13 +174,13 @@ zopilote pts/1        Wed Apr  2 03:05 - 03:06  (00:00)     gobmorelia34.terra.n
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Se puede observar que los accesos de \verb+zopilote+, \verb+zena+, \verb+proa+ y \verb+lllll+
+ Se puede observar que los accesos de \texttt{zopilote}, \texttt{zena}, \texttt{proa} y \texttt{lllll}
 es desde máquinas dsl de prodigy, telemedia y terra, todas estas
 máquinas están ubicadas en la ciudad de Morelia. Es de destacar que
 cuando se bloquea el acceso a varias cuentas involucradas, es que
 aparecen los accesos de duende quien no ingresó al equipo por mucho tiempo.
 
- Los ingresos del usuario \verb+duende+ desde \verb+victima2+ hacia \verb+victima1+ se
-confirman en las bitácoras de \verb+victima2+, y se autentifica que provienen de
+ Los ingresos del usuario \texttt{duende} desde \texttt{victima2} hacia \texttt{victima1} se
+confirman en las bitácoras de \texttt{victima2}, y se autentifica que provienen de
 una conexión dsl de prodigy infinitum.
 

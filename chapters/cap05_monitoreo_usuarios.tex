@@ -2,7 +2,7 @@
 
 Una vez descubiertos los artefactos sin que el atacante advirtiera la intervención pericial, se tomó la decisión estratégica de establecer un monitoreo encubierto. A través de la supervisión de las sesiones interactivas asociadas a la cuenta sospechosa \texttt{duende}, el equipo de investigación pudo registrar en tiempo real las tácticas, técnicas y procedimientos (TTP) del intruso.
 
-\section{Monitoreo de actividad de los usuarios}
+\section{Supervisión Activa y Registro de Conexiones}
 
 Se procedió a monitorear la actividad del usuario duende. La lista de
 accesos al sistema en el mes de abril es la siguiente:
@@ -95,12 +95,12 @@ duende  pts/6        Tue Apr 15 15:56 - 15:59  (00:02)     victima2.foo.bar.mx
 \vspace{1em}
 
 La actividad de este usuario es muy alta y no hay registro de accesos
-anteriores al 15 de abril, estos accesos se estudiaran mas adelante y
+anteriores al 15 de abril, estos accesos se estudiarán mas adelante y
 se cotejaran con registros de otras máquinas y otras cuentas.
 
  Hasta aquí es muy extraño que los accesos de l usuario duende
-provengan de \verb+victima2.foo.bar.mx+ o \verb+xxx.xxx.xxx.2+, ya que el
-usuario no tenía restricción alguna para accesar directamente desde el
+provengan de \texttt{victima2.foo.bar.mx} o \texttt{xxx.xxx.xxx.2}, ya que el
+usuario no tenía restricción alguna para acceder directamente desde el
 exterior.
 
  Se procedió a observar el comportamiento del usuario, para realizar
@@ -111,7 +111,7 @@ directos en la identificación primaria del atacante. La vigilancia
 del usuario se llevo a cabo por varios días desde el 24
 hasta el 27 de abril.
  
-Una vez viendo que el usuario solo accesaba para revisar el estado
+Una vez viendo que el usuario solo accedía para revisar el estado
 del sistema y el correcto funcionamiento de los troyanos, se procedió
 a tratar de obligar a la máquina a registrar la actividad de esta
 cuenta por los medios normales de registro en los archivos history,
@@ -122,7 +122,7 @@ de los archivos de configuración del usuario.
 Se sembraron programas alternos de registro de
 actividades que no son parte de las instalaciones comunes y pocos
 usuarios y atacantes conocen su existencia y uso. El paquete escogido
-fueron las utilidades \verb+acct+. \verb+acct+ lleva un registro independiente de
+fueron las utilidades \texttt{acct}. \texttt{acct} lleva un registro independiente de
 todos los comandos que se ejecutan en una máquina desde el momento
 mismo en que se arranca el sistema.
 
@@ -185,18 +185,18 @@ hostname           F    500      tty1       0.00 secs Sat Apr 26 16:07
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- \verb+lastcomm+ muestra el comando ejecutado, quíen lo ejecutó y la hora 
+ \texttt{lastcomm} muestra el comando ejecutado, quíen lo ejecutó y la hora 
 de ejecución entre otra información útil. No se explicarán en detalle estas 
-líneas, solo se dirá que \verb+.pst+ es un
+líneas, solo se dirá que \texttt{.pst} es un
 programa oculto cuya función sera explicada mas adelante. Los registros
 muestran la insistencia de saber la identidad de la máquina por medio
 del comando hostname, obtener información sobre los últimos accesos y
-quíen esta conectado en ese instante.  Cabe mencionar que antes
+quíen esta conectado en ese instante. Cabe mencionar que antes
 instalar los paquetes de registro, se provocó de forma intencional una
 desconexión inesperada de los equipos por parte del administrador,
 precisamente para ver cual era la reacción de los usuarios y echar a
 funcionar los servicios sembrados. Una vez reiniciado el servidor se
-vió según los registradores que el usuario duende lo primero que hizo
+vio según los registradores que el usuario duende lo primero que hizo
 fue revisar si no se había cambiado o usurpado la identidad de la
 máquina y por consiguiente se le estaba cazando, cosa que en realidad si
 se estaba haciendo como el principal sospechoso del ataque según las evidencias.
@@ -222,7 +222,7 @@ se encontraron los siguientes:
 La función de estos archivos se expone a continuación:
  
 
-\verb+/dev/.pst+
+\texttt{/dev/.pst}
 
  \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -235,7 +235,7 @@ dynamically linked (uses shared libs), stripped
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Lo anterior nos dice que el archivo es un ejecutable para linux.
+ Lo anterior nos dice que el archivo es un ejecutable para Linux.
 
  Las líneas de texto en el archivo son:
  
@@ -279,13 +279,13 @@ Internal error in ps! Please report this bug.
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-Estas líneas muestran que el programa es en realidad \verb+ps+, un programa
+Estas líneas muestran que el programa es en realidad \texttt{ps}, un programa
 que muestra los procesos que esta corriendo la máquina en determinado
 momento así como quíen los ejecutó.
 
 
 
-\verb+/dev/.nst+
+\texttt{/dev/.nst}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -341,7 +341,7 @@ muestra información sobre las conexiones activas al servidor y los
 servicios que están abiertos. Troyanizar este programa es muy
 importante para ocultar conexiones, siempre y cuando se sepa usar.
 
-\verb+/dev/.tree+
+\texttt{/dev/.tree}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -354,7 +354,7 @@ linked (uses shared libs), stripped
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Las cadenas de texto en \verb+.tree+ son:
+ Las cadenas de texto en \texttt{.tree} son:
  
 
 \vspace{1em}
@@ -384,13 +384,13 @@ usage: pstree [ -a ] [ -c ] [ -h | -H pid ] [ -l ] [ -n ] [ -p ] [ -u ]
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
-Las líneas anteriores muestran que el programa es \verb+pstree+. \verb+pstree+		
+Las líneas anteriores muestran que el programa es \texttt{pstree}. \texttt{pstree} 
 sirve para mostrar el árbol de procesos que se están ejecutando en una
 máquina. El control de este programa es importante para hacer
 invisibles los procesos que se elijan.
 
 Todas estas herramientas sirven para conocer el estado del sistema y
-las conexiones establecidas con el.  La presencia de estos programas en este
+las conexiones establecidas con el. La presencia de estos programas en este
 directorio es signo de que los programas que están en el sistema no
 muestran cierta información que estos si dan, pues su funcionamiento
 es el correcto.
@@ -398,7 +398,7 @@ es el correcto.
 Se corrieron algunos de estos programas con el sistema funcionando y
 los resultados fueron los siguientes:
 
-Usando \verb+/dev/.tree+
+Usando \texttt{/dev/.tree}
 
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -501,7 +501,7 @@ pstree del sistema, una de ellas es la siguiente:
 estudiados, y nos indica claramente que fue ejecutado por el usuario duende.
  
 
- El \verb+/dev/.pst+
+ El \texttt{/dev/.pst}
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -750,11 +750,11 @@ root      7729  0.0  0.0     0    0 tty3     Z    21:32   0:00              \_ [
 
  Aquí aparecen líneas muy interesantes. Aparece el número de proceso,
 los comandos ejecutados, el usuario que lo ejecutó, la hora de
-ejecución y el \verb+PATH+ del usuario que ejecutó este comando, además de
+ejecución y el \texttt{PATH} del usuario que ejecutó este comando, además de
 mostrar desde donde se conecto quíen lo corrió, es decir, si alguien
-entró al sistema y ejecutó un programa el \verb+PATH+ del usuario aparecerá
+entró al sistema y ejecutó un programa el \texttt{PATH} del usuario aparecerá
 como signo inequívoco de la paternidad y propiedad del proceso. El
-usuario venía desde la máquina llamada \verb+victima2+ y corrió esos procesos
+usuario venía desde la máquina llamada \texttt{victima2} y corrió esos procesos
 intencionalmente.
 
 \vspace{1em}
@@ -785,21 +785,21 @@ duende  14929  0.0  0.0     0    0 ?        Z    10:04   0:00  \_ [egrep <defunc
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Los procesos anteriores ejecutan un script que corre varios programas
+ Los procesos anteriores ejecutan un \textit{script} que corre varios programas
 simultáneos entre ellos popclean el cual sabemos que es en realidad
-dsniff. Además muestran el \verb+PATH+ del usuario, quien se conecto desde la
-máquina \verb+xxx.xxx.xxx.2+. El programa no se inicio solo o automáticamente, sino que primero se
-accedió al equipo desde la \verb+xxx.xxx.xxx.2+ y luego se ejecutó de forma intencional.
+dsniff. Además muestran el \texttt{PATH} del usuario, quien se conecto desde la
+máquina \texttt{xxx.xxx.xxx.2}. El programa no se inició solo o automáticamente, sino que primero se
+accedió al equipo desde la \texttt{xxx.xxx.xxx.2} y luego se ejecutó de forma intencional.
 
 
- Para revisar si otros programas aparte de \verb+ps+ y \verb+pstree+ están
+ Para revisar si otros programas aparte de \texttt{ps} y \texttt{pstree} están
 troyanizados corremos el paquete chkrootkit. Por medio de las
 utilidades que contiene chkrootkit someteremos a diversas pruebas y
 retos el sistema para validar la autenticidad de los archivos del
 sistema.
 
 
- Resultados de \verb+chkrootkit+:
+ Resultados de \texttt{chkrootkit}:
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}
@@ -891,16 +891,16 @@ Checking `z2'...
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- \verb+chkrootkit+ nos informa de la evidencia de infección con código no
+ \texttt{chkrootkit} nos informa de la evidencia de infección con código no
 estándar en distintos programas, algunos de ellos son de la propiedad
 de duende como se mostró al principio del documento. De cualquier forma
 se hará una revisión detallada de cada uno de los programas de los cuales
 se sospeche su autenticidad.
 
- \verb+chkrootkit+ nos dice que posiblemente este instalado un \textbf{Loadable
+ \texttt{chkrootkit} nos dice que posiblemente este instalado un \textbf{Loadable
 Kernel Module} (LKM) que ocultaba 11 procesos al momento de la revisión. 
 Esto quiere decir, que pueden existir archivos que no se ven con el sistema 
 funcionando si esta corriendo el LKM. Se sospechaba de antemano de la presencia 
-de un LKM pues había una referencia a \verb+/sbin/init!+ el que no aparece en los
+de un LKM pues había una referencia a \texttt{/sbin/init!} el que no aparece en los
 listados que se obtuvieron.
 

@@ -2,11 +2,11 @@
 
 Cuando un intruso advierte la posibilidad de ser detectado o concluye una fase de su ataque, suele ejecutar comandos de borrado (\texttt{rm -rf}) para suprimir sus herramientas y bitácoras intermedias. Sin embargo, en el sistema de archivos Ext2/Ext3, la eliminación de un archivo desasocia el inodo del directorio pero mantiene intactos los bloques de datos en el disco magnético hasta que son reutilizados por nuevas operaciones de escritura.
 
-\section{Recuperación de archivos eliminados del sistema}
+\section{Recuperación de Inodos Huérfanos y Datos No Asignados (\textit{Carving})}
 
 
  Se recupero el contenido de archivos en el disco duro que fueron
-borrados por cualquier método y que no han sido sobreescritos aun.  Se
+borrados por cualquier método y que no han sido sobreescritos aun. Se
 usaron diversas técnicas de recuperación de datos entre ellas el barrido directo 
 de todos los bits en el disco. Gran parte de la
 información borrada no pudo extraerse ya que el servidor tenía un uso
@@ -49,16 +49,16 @@ f / r  	    	mc.pipe.12891      2003.03.08 12:13:10 (cst)  	    	2003.05.08 03:0
 \vspace{0.8em}\hrulefill\vspace{0.8em}
 \vspace{1em}
 
- Los archivos anteriores son logs del sistema y ejecutables de \textbf{irc}. Lo
-que es de destacar es la existencia de un archivo llamado \verb+algo+.
-Parece ser que \verb+algo+ fue una prueba de control. La palabra \verb+algo+
+ Los archivos anteriores son logs del sistema y ejecutables de \textbf{IRC}. Lo
+que es de destacar es la existencia de un archivo llamado \texttt{algo}.
+Parece ser que \texttt{algo} fue una prueba de control. La palabra \texttt{algo}
 esta en español por lo que podemos decir que la instalación fue hecha
-por un hispano parlante. \verb+/tmp.sxp+ fue recuperado pero parece ser que
-esta ligado al exploit completo del \verb+sendmail+ en el directorio \verb+/ex+.\\
-  
+por un hispano parlante. \texttt{/tmp.sxp} fue recuperado pero parece ser que
+esta ligado al \textit{exploit} completo del \texttt{sendmail} en el directorio \texttt{/ex}.\\
+ 
 
- \verb+mc.pipe.1281+ es un archivo temporal propiedad del usuario duende y
-contiene referencias de un script ejecutado desde mc por el mismo usuario.\\
+ \texttt{mc.pipe.1281} es un archivo temporal propiedad del usuario duende y
+contiene referencias de un \textit{script} ejecutado desde mc por el mismo usuario.\\
 
  Su contenido es el siguiente:
  
@@ -83,7 +83,7 @@ ecko
 \vspace{1em}
 
  Esto muestra claramente que el el 11 de abril, el usuario duende
-ejecutó desde el \verb+midnight commander+ varios de los programas que
+ejecutó desde el \texttt{midnight commander} varios de los programas que
 estamos estudiando. Recordemos que estos son archivos eliminados y
 recuperados para esta investigación.
 
