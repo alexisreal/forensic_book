@@ -34,6 +34,51 @@ El análisis forense integral demuestra con certeza pericial la convergencia de 
     Los artefactos localizados en el directorio \texttt{/dev} revelan un segundo ataque, cronológicamente independiente y posterior al despliegue de los servicios IRC. El móvil fundamental de este segundo evento fue la obtención del control absoluto del equipo, la interceptación de las contraseñas de \texttt{root} en caso de que fuesen reemplazadas por el personal de cómputo, y la captura de información confidencial de las cuentas de usuario mediante \textit{sniffers} locales.
 \end{enumerate}
 
+La coexistencia temporal y la divergencia metodológica entre ambos ataques se esquematizan en la Figura~\ref{fig:doble_vector_ataque}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    extstep/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, font=\scriptsize, minimum width=2.5cm, minimum height=1.1cm},
+    intstep/.style={draw=accent, thick, fill=accent!10, rounded corners=3pt, align=center, font=\scriptsize, minimum width=2.5cm, minimum height=1.1cm},
+    flow/.style={draw=secondary, ultra thick, -{Stealth[length=2.5mm]}},
+    intflow/.style={draw=accent, ultra thick, -{Stealth[length=2.5mm]}}
+]
+
+% Vector 1: Oportunista Externo
+\node[extstep] (e1) at (0, 3.2) {\textbf{Fuerza Bruta FTP}\\\tiny Cuentas débiles (\texttt{proa})};
+\node[extstep] (e2) at (3.5, 3.2) {\textbf{Sembrado IRC}\\\tiny \texttt{psybnc}, \texttt{emech}};
+\node[extstep] (e3) at (7.0, 3.2) {\textbf{Canal C2}\\\tiny Conexión UnderNET 6667};
+\node[extstep] (e4) at (10.5, 3.2) {\textbf{Objetivo Logrado}\\\tiny Parásito de CPU / Tráfico};
+
+\draw[flow] (e1) -- (e2);
+\draw[flow] (e2) -- (e3);
+\draw[flow] (e3) -- (e4);
+
+% Vector 2: Espionaje Interno
+\node[intstep] (i1) at (0, 0.4) {\textbf{Acceso Consola Local}\\\tiny Aprovecha confusión inicial};
+\node[intstep] (i2) at (3.5, 0.4) {\textbf{Suckit Rootkit}\\\tiny Parcheo \texttt{/dev/kmem} y \texttt{init!}};
+\node[intstep] (i3) at (7.0, 0.4) {\textbf{Sniffer de Terminal}\\\tiny Intercepción en \texttt{in.telnetd}};
+\node[intstep] (i4) at (10.5, 0.4) {\textbf{Objetivo Logrado}\\\tiny Captura de clave \texttt{root} y correo};
+
+\draw[intflow] (i1) -- (i2);
+\draw[intflow] (i2) -- (i3);
+\draw[intflow] (i3) -- (i4);
+
+% Etiquetas de vectores
+\node[font=\bfseries\small\color{secondary}, anchor=south west] at (-0.2, 3.9) {Vector 1: Intrusión Oportunista Externa (Bots IRC / Sin interés en datos locales)};
+\node[font=\bfseries\small\color{accent}, anchor=south west] at (-0.2, 1.1) {Vector 2: Intrusión y Espionaje Interno (Captura de credenciales administrativas / Lectura de correo)};
+
+% Línea divisoria / correlación
+\draw[draw=gray!40, dashed, thick] (-0.3, 2.0) -- (11.8, 2.0) node[pos=0.5, above, font=\tiny\itshape\color{gray}] {Intervención concurrente e independiente en el mismo servidor (\texttt{helios})};
+
+\end{tikzpicture}
+\caption{Esquema pericial de los dos ciclos de ataque independientes identificados en la investigación.}
+\label{fig:doble_vector_ataque}
+\end{figure}
+
 El inicio de este segundo vector coincide temporalmente con la sustitución preventiva de contraseñas de administración en todas las máquinas departamentales. Fue inmediatamente después de dicho cambio cuando aparecieron las primeras evidencias de espionaje sobre el tráfico de red. La evidencia sugiere que el hallazgo inicial de los servicios IRC alentó a un usuario local a ejecutar sus propias acciones maliciosas, amparándose en la confusión generada por la intrusión externa preliminar.
 
 La impericia técnica en la instalación del \textit{rootkit} ---reflejada en errores al fijar atributos de inmutabilidad y la omisión de modificar los propietarios originales de los archivos bajo \texttt{/dev}--- indica un atacante con conocimientos teóricos básicos de \textit{cracking}, muy distante de la sofisticación de los operadores externos tradicionales.

@@ -38,23 +38,69 @@ El equipo analizado se encontraba físicamente instalado en el centro de cómput
 
 \begin{figure}[htbp]
 \centering
-\begin{lstlisting}[style=terminal]
-                   Internet / Red Dorsal Universitaria
-                                   |
-                         [Enrutador Perimetral]
-                           192.0.2.1 (Gateway)
-                                   |
-         ================== Dorsal Fast Ethernet ==================
-                 |                         |                |
-          +--------------+          +--------------+   [Estaciones]
-          |    helios    |          |    atlas     |   192.0.2.29 (X11)
-          |  192.0.2.10  |          |  192.0.2.20  |   192.0.2.30 (Lab)
-          | Debian Woody |          | Debian Woody |   192.0.2.67 (Lab)
-          +--------------+          +--------------+   192.0.2.89 (Admin)
-                 |                         |
-                 +----- NFS / NIS / SMB ---+
-\end{lstlisting}
-\caption{Topología de interconexión y direccionamiento de la red departamental.}
+\begin{tikzpicture}[
+    scale=0.92,
+    every node/.style={transform shape, font=\sffamily},
+    netbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.7cm, minimum height=1.4cm},
+    serverbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.2cm, minimum height=1.6cm},
+    routerbox/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.1cm},
+    cloudnode/.style={draw=primary!60, fill=blue!5, rounded corners=10pt, align=center, minimum width=4.0cm, minimum height=1.1cm},
+    line/.style={draw=secondary, thick, -{Stealth[length=2.5mm]}},
+    busline/.style={draw=primary, ultra thick},
+    trustline/.style={draw=accent, thick, dashed, {Stealth[length=2.5mm]}-{Stealth[length=2.5mm]}}
+]
+
+% Nodos superiores
+\node[cloudnode] (inet) at (5, 5.8) {\small\textbf{Internet / Red Dorsal UMSNH}\\\scriptsize Conexiones de ISP (Prodigy / Telemedia)};
+\node[routerbox] (gw) at (5, 4.2) {\small\textbf{Pasarela Perimetral}\\\scriptsize 192.0.2.1 / \texttt{gw.ifm.lab.edu.mx}};
+
+% Bus del Switch Fast Ethernet
+\coordinate (busL) at (0.2, 2.9);
+\coordinate (busR) at (9.8, 2.9);
+\draw[busline] (busL) -- (busR) node[pos=0.03, above, font=\scriptsize\bfseries\color{primary}] {Conmutador Fast Ethernet 100 Mbps (VLAN Única)};
+
+% Conexión Gateway a Bus
+\draw[line] (inet) -- (gw);
+\draw[draw=secondary, thick] (gw) -- (5, 2.9);
+
+% Servidores bajo el bus
+\node[serverbox] (helios) at (2.0, 1.0) {
+    \textbf{helios} (\textit{Objetivo})\\
+    \scriptsize 192.0.2.10 (Debian 3.0)\\
+    \tiny NFS, Mail, X11, FTP, SSH
+};
+
+\node[netbox] (atlas) at (5.3, 1.0) {
+    \textbf{atlas} (\textit{Secundario})\\
+    \scriptsize 192.0.2.20 (Debian 3.0)\\
+    \tiny Servidor Cómputo / Telnet
+};
+
+\node[netbox] (io) at (8.4, 1.0) {
+    \textbf{io} (\textit{Correo / Webmail})\\
+    \scriptsize 192.0.2.25 (FreeBSD)\\
+    \tiny Sendmail, IMAP, OpenWebMail
+};
+
+% Conexiones verticales al bus
+\draw[draw=secondary, thick] (helios.north) -- (2.0, 2.9);
+\draw[draw=secondary, thick] (atlas.north) -- (5.3, 2.9);
+\draw[draw=secondary, thick] (io.north) -- (8.4, 2.9);
+
+% Relación de confianza NFS/Samba entre helios y atlas
+\draw[trustline] (helios.east) -- (atlas.west) node[midway, below, font=\tiny\bfseries\color{accent}] {NFS / NIS Trust};
+
+% Estaciones de trabajo inferiores
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws1) at (1.2, -1.1) {\textbf{Estación X11}\\192.0.2.29};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws2) at (4.0, -1.1) {\textbf{Terminales Lab}\\192.0.2.30 / .67};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.4cm] (ws3) at (7.6, -1.1) {\textbf{Estación Admin}\\192.0.2.89};
+
+\draw[draw=secondary!70, dashed] (ws1.north) -- (1.2, 0.1) -- (2.0, 0.1);
+\draw[draw=secondary!70, dashed] (ws2.north) -- (4.0, 0.1) -- (5.3, 0.1);
+\draw[draw=secondary!70, dashed] (ws3.north) -- (7.6, 2.9);
+
+\end{tikzpicture}
+\caption{Topología pericial y arquitectura de interconexión de la red departamental.}
 \label{fig:topologia_red}
 \end{figure}
 

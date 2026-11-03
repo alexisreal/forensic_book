@@ -19,8 +19,60 @@ El procedimiento pericial consiste en extraer y ordenar cronológicamente las ma
 Con esta información recolectada se construyó la \emph{línea de tiempo integral} de todos los archivos del disco, incluidos aquellos desasociados cuyos sectores magnéticos aún no habían sido sobreescritos por nuevas operaciones del sistema operativo. La sintaxis estándar reportada por \texttt{mactime} sigue la estructura:
 
 \noindent\texttt{Fecha y Hora | Tamaño | Atributo MAC | Permisos | UID | GID | Inodo | Ruta del Archivo}
- 
- Ejemplo:
+
+La secuencia temporal global derivada de esta correlación de inodos se sintetiza en la Figura~\ref{fig:cronologia_mactime}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    tline/.style={draw=primary, ultra thick, -{Stealth[length=3.5mm]}},
+    eventnode/.style={draw=primary, thick, fill=white, rounded corners=3pt, align=center, font=\scriptsize, text width=2.6cm},
+    evdark/.style={draw=accent, thick, fill=accent!10, rounded corners=3pt, align=center, font=\scriptsize, text width=2.6cm},
+    conn/.style={draw=secondary, thick}
+]
+
+% Eje horizontal
+\draw[tline] (0, 0) -- (12.5, 0) node[right, font=\footnotesize\bfseries\color{primary}] {Tiempo (Abril 2004)};
+
+% Marcas temporales y eventos
+% 1. 8 de abril
+\draw[draw=primary, ultra thick] (1.0, 0.2) -- (1.0, -0.2) node[below=2pt, font=\scriptsize\bfseries] {8 de abril};
+\draw[conn] (1.0, 0.2) -- (1.0, 1.8);
+\node[evdark] at (1.0, 2.5) {\textbf{16:02:08}\\\tiny Despliegue de Suckit (\texttt{sk}), parcheo de \texttt{init} y limpiador \texttt{clean!}};
+
+% 2. 11 de abril
+\draw[draw=primary, ultra thick] (3.2, 0.2) -- (3.2, -0.2) node[below=2pt, font=\scriptsize\bfseries] {11 de abril};
+\draw[conn] (3.2, -0.2) -- (3.2, -1.5);
+\node[eventnode] at (3.2, -2.2) {\textbf{16:18 - 21:19}\\\tiny Troyanización de \texttt{top}, \texttt{pstree}, \texttt{getty} y scripts en \texttt{mc.pipe}};
+
+% 3. 15 de abril
+\draw[draw=primary, ultra thick] (5.5, 0.2) -- (5.5, -0.2) node[below=2pt, font=\scriptsize\bfseries] {15 de abril};
+\draw[conn] (5.5, 0.2) -- (5.5, 1.8);
+\node[eventnode] at (5.5, 2.5) {\textbf{22:47 - 23:08}\\\tiny Conexiones de \texttt{proa} y \texttt{zena}. Primer ingreso de \texttt{duende} desde \texttt{atlas}};
+
+% 4. 18 de abril
+\draw[draw=primary, ultra thick] (7.7, 0.2) -- (7.7, -0.2) node[below=2pt, font=\scriptsize\bfseries] {18 de abril};
+\draw[conn] (7.7, -0.2) -- (7.7, -1.5);
+\node[eventnode] at (7.7, -2.2) {\textbf{22:37:42}\\\tiny Ataques de autenticación contra servidor de correo \texttt{io} desde DSL Prodigy};
+
+% 5. 22 de abril
+\draw[draw=primary, ultra thick] (9.8, 0.2) -- (9.8, -0.2) node[below=2pt, font=\scriptsize\bfseries] {22 de abril};
+\draw[conn] (9.8, 0.2) -- (9.8, 1.8);
+\node[evdark] at (9.8, 2.5) {\textbf{06:18:01}\\\tiny Acceso limpio a cuenta \texttt{mherrera} en \texttt{io} y \texttt{BAD SU} a superusuario};
+
+% 6. 24 de abril
+\draw[draw=primary, ultra thick] (11.6, 0.2) -- (11.6, -0.2) node[below=2pt, font=\scriptsize\bfseries] {24 de abril};
+\draw[conn] (11.6, -0.2) -- (11.6, -1.5);
+\node[eventnode] at (11.6, -2.2) {\textbf{Triage en Vivo}\\\tiny Descubrimiento de SUIDs anómalos y congelación pericial};
+
+\end{tikzpicture}
+\caption{Reconstrucción cronológica pericial de los eventos clave obtenida mediante análisis de tiempos MAC.}
+\label{fig:cronologia_mactime}
+\end{figure}
+
+Ejemplo:
  
 \vspace{1em}
 \vspace{0.8em}\hrulefill\vspace{0.8em}

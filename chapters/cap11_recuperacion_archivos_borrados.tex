@@ -11,8 +11,47 @@ Cuando en un sistema Linux Ext2 se ejecuta la llamada al sistema \texttt{unlink(
     \item Los mapas de bits de inodos y de bloques marcan esas estructuras como disponibles para el sistema operativo.
     \item \textbf{Los bloques de datos físicos NO se destruyen}: permanecen íntegros en los sectores del disco magnético (\textit{unallocated clusters}) hasta que otro archivo los sobrescribe.
 \end{enumerate}
-Mediante herramientas forenses como \texttt{ils} (para listar inodos desasociados con tiempo de borrado), \texttt{icat} (para volcar directamente los bloques asociados a un inodo huérfano) y técnicas de tallado de datos (\textit{file carving} por firmas de cabecera y pie), el perito puede resucitar archivos eliminados meses atrás si el bloque no fue reutilizado.
+Mediante herramientas forenses como \texttt{ils} (para listar inodos desasociados con tiempo de borrado), \texttt{icat} (para volcar directamente los bloques asociados a un inodo huérfano) y técnicas de tallado de datos (\textit{file carving} por firmas de cabecera y pie), el perito puede resucitar archivos eliminados meses atrás si el bloque no fue reutilizado. La mecánica de desasociación en Ext2 se resume en la Figura~\ref{fig:ext2_deletion_carving}.
 \end{notaforense}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    dentry/.style={draw=secondary, thick, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.6cm, minimum height=0.9cm},
+    inodebox/.style={draw=primary, thick, fill=primary!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=3.0cm, minimum height=1.3cm},
+    blockbox/.style={draw=accent, thick, fill=retobg, rounded corners=2pt, align=center, font=\scriptsize, minimum width=3.2cm, minimum height=1.3cm},
+    pointer/.style={draw=primary, thick, -{Stealth[length=2.5mm]}},
+    delpointer/.style={draw=accent, thick, dashed, -{Stealth[length=2.5mm]}}
+]
+
+% Estado 1: Archivo Asignado (Activo)
+\draw[draw=gray!30, fill=gray!2, rounded corners=4pt] (-0.5, 2.5) rectangle (11.5, 5.0);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.3, 4.8) {Estado Activo: Archivo Vinculado al Directorio};
+
+\node[dentry] (d1) at (1.5, 3.5) {\textbf{Entrada Directorio}\\\texttt{mc.pipe.12891}\\\tiny Inodo: 130461};
+\node[inodebox] (i1) at (5.5, 3.5) {\textbf{Inodo 130461 (Ext2)}\\\tiny \texttt{i\_links\_count = 1}, \texttt{i\_dtime = 0}\\\tiny Punteros directos a bloques};
+\node[blockbox] (b1) at (9.8, 3.5) {\textbf{Sectores de Datos (Disco)}\\\tiny Contenido: \texttt{dnsquery}, \texttt{sysinit}...\\\tiny Bitmap: Bloques Ocupados};
+
+\draw[pointer] (d1) -- (i1) node[midway, above, font=\tiny] {Vínculo};
+\draw[pointer] (i1) -- (b1) node[midway, above, font=\tiny] {Punteros};
+
+% Estado 2: Archivo Eliminado (unlink)
+\draw[draw=gray!30, fill=gray!2, rounded corners=4pt] (-0.5, -0.6) rectangle (11.5, 1.9);
+\node[font=\bfseries\small\color{accent}, anchor=north west] at (-0.3, 1.7) {Estado Post-Eliminación: Inodo Huérfano y Bloques no Asignados};
+
+\node[dentry, draw=gray!40, text=gray] (d2) at (1.5, 0.4) {\textbf{Entrada Desasociada}\\\texttt{[Entrada Borrada]}\\\tiny Inodo: 0};
+\node[inodebox, draw=accent, fill=accent!5] (i2) at (5.5, 0.4) {\textbf{Inodo Huérfano}\\\tiny \texttt{i\_links\_count = 0}, \texttt{i\_dtime = Epoch}\\\tiny Punteros a bloques borrados};
+\node[blockbox, draw=accent, fill=retobg] (b2) at (9.8, 0.4) {\textbf{Espacio No Asignado}\\\tiny \textbf{¡Datos magnéticos intactos!}\\\tiny Recuperable vía \textit{Carving}};
+
+\draw[draw=gray!40, dashed] (d2) -- (i2);
+\draw[delpointer] (i2) -- (b2) node[midway, above, font=\tiny\bfseries\color{accent}] {Carving / \texttt{icat}};
+
+\end{tikzpicture}
+\caption{Mecánica interna de desasociación (\textit{unlink}) y preservación de bloques huérfanos en el sistema de archivos Ext2.}
+\label{fig:ext2_deletion_carving}
+\end{figure}
 
 \section{Recuperación de Inodos Huérfanos y Datos No Asignados (\textit{Carving})}
 

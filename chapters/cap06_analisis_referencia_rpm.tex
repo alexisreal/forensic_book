@@ -217,6 +217,51 @@ A diferencia de los rootkits tradicionales de la época (como \textit{Knark} o \
 \end{enumerate}
 \end{notaforense}
 
+La arquitectura de intercepción y evasión de Suckit en la memoria del kernel se esquematiza en la Figura~\ref{fig:suckit_hooking}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    userbox/.style={draw=secondary, thick, fill=gray!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.0cm},
+    kernelbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=3.0cm, minimum height=1.1cm},
+    malbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.2cm, minimum height=1.1cm},
+    call/.style={draw=secondary, thick, -{Stealth[length=2.5mm]}},
+    hookcall/.style={draw=accent, ultra thick, -{Stealth[length=2.5mm]}},
+    retline/.style={draw=accent, thick, dashed, -{Stealth[length=2.5mm]}}
+]
+
+% Zonas de memoria
+\draw[draw=secondary!40, fill=gray!3, rounded corners=4pt] (-0.5, 3.8) rectangle (10.5, 6.2);
+\node[font=\bfseries\small\color{secondary}, anchor=north west] at (-0.3, 6.0) {Espacio de Usuario (\textit{Userland})};
+
+\draw[draw=primary!40, fill=blue!2, rounded corners=4pt] (-0.5, -0.6) rectangle (10.5, 3.4);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.3, 3.2) {Espacio del Kernel (\textit{Kernelspace})};
+
+% Nodos en Userland
+\node[userbox] (admin) at (1.8, 4.8) {\textbf{Comandos del Admin}\\\scriptsize \texttt{ls}, \texttt{ps}, \texttt{netstat}};
+\node[malbox] (skloader) at (7.8, 4.8) {\textbf{Loader Suckit}\\\scriptsize \texttt{/sbin/init} (MD5: 423794...)};
+
+% Nodos en Kernelspace
+\node[kernelbox] (idt) at (1.8, 2.0) {\textbf{Tabla IDT del Kernel}\\\scriptsize Localización de dirección base};
+\node[kernelbox] (sct) at (5.0, 2.0) {\textbf{sys\_call\_table[]}\\\scriptsize Punteros a Syscalls};
+\node[malbox] (hook) at (8.0, 0.6) {\textbf{Código Inyectado}\\\scriptsize Alocado con \texttt{kmalloc()}};
+
+% Flujo de ataque y hooking
+\draw[hookcall] (skloader.south) -- ++(0,-0.6) -| (hook.north) node[pos=0.25, right, font=\tiny\bfseries\color{accent}] {Inyección vía \texttt{/dev/kmem}};
+\draw[call] (idt) -- (sct) node[midway, above, font=\tiny] {Offset};
+\draw[hookcall] (sct.east) -| (hook.north west) node[pos=0.3, above, font=\tiny\bfseries\color{accent}] {Hooking: \texttt{sys\_getdents64}};
+
+% Flujo de llamada de usuario
+\draw[call] (admin.south) -- (idt.north) node[midway, left, font=\tiny] {Llamada \texttt{int 0x80}};
+\draw[retline] (hook.west) -| (admin.south east) node[pos=0.3, below, font=\tiny\bfseries\color{accent}] {Filtra procesos y archivos con sufijo \texttt{!}};
+
+\end{tikzpicture}
+\caption{Mecanismo de inyección en memoria física y alteración de llamadas al sistema por el rootkit Suckit v1.3b.}
+\label{fig:suckit_hooking}
+\end{figure}
+
 Se buscaron sistemáticamente en el almacenamiento los archivos ocultos que hicieran uso del sufijo de invisibilidad \texttt{!} configurado por Suckit, identificándose los siguientes componentes:
  
 \vspace{1em}

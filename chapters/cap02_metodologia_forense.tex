@@ -23,7 +23,46 @@ sha1sum /evidencias/helios-master-dd.img > /evidencias/helios-master-dd.img.sha1
 mount -o ro,loop,noexec /evidencias/helios-master-dd.img /mnt/analisis/
 \end{lstlisting}
 
-Salvo en aquellas situaciones excepcionales donde se requirió verificar el comportamiento en vivo del hardware o del entorno de red original, la totalidad de los análisis se condujo sobre réplicas montadas en modo de solo lectura (\textit{read-only}) dentro de un laboratorio aislado, garantizando que el medio original se mantuviera resguardado bajo estricta cadena de custodia.
+Salvo en aquellas situaciones excepcionales donde se requirió verificar el comportamiento en vivo del hardware o del entorno de red original, la totalidad de los análisis se condujo sobre réplicas montadas en modo de solo lectura (\textit{read-only}) dentro de un laboratorio aislado, garantizando que el medio original se mantuviera resguardado bajo estricta cadena de custodia. El ciclo de vida de la evidencia digital se ilustra en la Figura~\ref{fig:metodologia_forense}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    phase/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=3.4cm, minimum height=1.3cm},
+    detail/.style={draw=secondary!50, fill=white, rounded corners=2pt, align=center, font=\scriptsize, text width=3.3cm},
+    flowline/.style={draw=primary, ultra thick, -{Stealth[length=3mm]}},
+    dline/.style={draw=secondary, dashed, thick}
+]
+
+% Nodos superiores
+\node[phase] (p1) at (0, 3.8) {\textbf{1. Aislamiento}\\\scriptsize Contención Pericial};
+\node[phase] (p2) at (4.5, 3.8) {\textbf{2. Adquisición}\\\scriptsize Clonación Bit a Bit};
+\node[phase] (p3) at (9.0, 3.8) {\textbf{3. Verificación}\\\scriptsize Integridad Criptográfica};
+
+% Nodos inferiores
+\node[phase] (p4) at (9.0, 0.2) {\textbf{4. Resguardo y Copia}\\\scriptsize Cadena de Custodia};
+\node[phase] (p5) at (4.5, 0.2) {\textbf{5. Análisis Diferencial}\\\scriptsize Sistema de Referencia};
+
+% Conexiones de flujo
+\draw[flowline] (p1) -- (p2);
+\draw[flowline] (p2) -- (p3);
+\draw[flowline] (p3) -- (p4);
+\draw[flowline] (p4) -- (p5);
+
+% Detalles explicativos
+\node[detail, below=0.25cm of p1] {Desconexión de red Ethernet, volcado volátil y preservación de estado.};
+\node[detail, below=0.25cm of p2] {\texttt{dd conv=noerror,sync} sobre plato IDE (/dev/hda). Bloques de 512B.};
+\node[detail, below=0.25cm of p3] {Cálculo de hashes MD5 y SHA-1. Certificación de no alteración.};
+
+\node[detail, below=0.25cm of p4] {Medio original sellado. Operación en réplicas \texttt{ro,loop,noexec}.};
+\node[detail, below=0.25cm of p5] {Contraste de inodos y sumas binarias contra Debian Woody limpio.};
+
+\end{tikzpicture}
+\caption{Ciclo metodológico formal de adquisición, custodia y análisis diferencial.}
+\label{fig:metodologia_forense}
+\end{figure}
 
 \begin{retoforense}[Integridad de la Imagen Pericial]
 ¿Por qué la opción \texttt{conv=noerror,sync} en \texttt{dd} resulta indispensable frente a un disco con sectores magnéticos dañados? Si se omitiera el parámetro \texttt{sync}, ¿qué ocurriría con el desplazamiento (\textit{offset}) de los bloques subsiguientes y de qué manera invalidaría la reconstrucción de la tabla de inodos en el examen de laboratorio?

@@ -10,6 +10,50 @@ El pivoteo (\textit{pivoting}) consiste en utilizar un equipo secundario comprom
 \end{enumerate}
 \end{notaforense}
 
+El mecanismo de pivoteo empleado por el intruso se ilustra en la Figura~\ref{fig:pivoteo_multisistema}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    hostbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.3cm},
+    targetbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.0cm, minimum height=1.5cm},
+    extbox/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, minimum width=3.2cm, minimum height=1.3cm},
+    netcloud/.style={draw=primary!60, fill=blue!5, rounded corners=8pt, align=center, minimum width=3.2cm, minimum height=1.1cm},
+    hop1/.style={draw=secondary, ultra thick, -{Stealth[length=3mm]}},
+    hop2/.style={draw=accent, ultra thick, -{Stealth[length=3mm]}},
+    hop3/.style={draw=accent!70, thick, dashed, -{Stealth[length=2.5mm]}}
+]
+
+% Zona Externa
+\draw[draw=secondary!30, fill=gray!3, rounded corners=4pt] (-0.5, -2.4) rectangle (4.2, 3.8);
+\node[font=\bfseries\small\color{secondary}, anchor=north west] at (-0.3, 3.6) {Origen Externo (Internet)};
+
+% Zona Interna del Campus
+\draw[draw=primary!30, fill=blue!2, rounded corners=4pt] (4.8, -2.4) rectangle (12.2, 3.8);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (5.0, 3.6) {Subred Interna IFM (\texttt{192.0.2.0/24})};
+
+% Nodos Externos
+\node[extbox] (attacker) at (1.8, 2.2) {\textbf{Operador / Intruso}\\\scriptsize Morelia, Michoacán\\\tiny DSL Prodigy / Telemedia};
+\node[netcloud] (isp) at (1.8, 0.0) {\textbf{Pools de Acceso DSL}\\\scriptsize \texttt{200.78.118.x} / \texttt{203.0.113.89}};
+
+% Nodos Internos
+\node[hostbox] (atlas) at (6.8, 2.2) {\textbf{atlas} (\textit{Pivote})\\\scriptsize \texttt{192.0.2.20}\\\tiny SSH port 22};
+\node[targetbox] (helios) at (10.4, 0.6) {\textbf{helios} (\textit{Objetivo Central})\\\scriptsize \texttt{192.0.2.10}\\\tiny Rootkit Suckit, Sniffer, NFS};
+\node[hostbox] (io) at (6.8, -1.2) {\textbf{io} (\textit{Correo})\\\scriptsize \texttt{192.0.2.25}\\\tiny OpenWebMail, IMAP};
+
+% Saltos
+\draw[hop1] (attacker) -- (isp);
+\draw[hop1] (isp.east) -| (atlas.south) node[pos=0.3, above, font=\scriptsize\bfseries\color{secondary}] {Salto 1: SSH Externo};
+\draw[hop2] (atlas.east) -| (helios.north) node[pos=0.3, above, font=\scriptsize\bfseries\color{accent}] {Salto 2: Pivoteo Interno (Red Local)};
+\draw[hop3] (atlas.south) -- (io.north) node[midway, right, font=\tiny\bfseries\color{accent!70}] {Salto 3: Intento SSH \texttt{mherrera}};
+
+\end{tikzpicture}
+\caption{Diagrama de movimiento lateral y técnica de pivoteo a través del servidor secundario \texttt{atlas}.}
+\label{fig:pivoteo_multisistema}
+\end{figure}
+
 \section{Movimiento Lateral y Vectores de Confianza Multisistema}
 
 
