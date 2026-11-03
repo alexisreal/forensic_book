@@ -1,26 +1,105 @@
+% ==============================================================================
+% PORTADA EXTERIOR A TODO COLOR (FULL-BLEED TIKZ + ILUSTRACIÓN FORENSE)
+% ==============================================================================
 \begin{titlepage}
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+    % Fondo degradado profundo (Azul noche / Grafito forense)
+    \fill[top color=primary!30!black, bottom color=black!95] 
+        (current page.south west) rectangle (current page.north east);
+
+    % Marco perimetral sutil
+    \draw[draw=cyan!40, line width=0.6pt, opacity=0.4, rounded corners=6pt]
+        ($(current page.south west) + (8mm, 8mm)$) rectangle ($(current page.north east) - (8mm, 8mm)$);
+
+    % Franja superior decorativa (Acento carmesí forense)
+    \fill[accent] 
+        ($(current page.north west) + (8mm, -16mm)$) rectangle ($(current page.north east) + (-8mm, -18mm)$);
+
+    % Banner de serie técnica
+    \node[anchor=north, text=cyan!80, font=\sffamily\bfseries\scriptsize] 
+        at ($(current page.north) + (0, -23mm)$) 
+        {ESTUDIO PERICIAL DE CASO REAL $\cdot$ RESPUESTA A INCIDENTES EN PRODUCCIÓN};
+
+    % Título principal
+    \node[anchor=north, text=white, font=\sffamily\bfseries\fontsize{28}{34}\selectfont, align=center] 
+        at ($(current page.north) + (0, -32mm)$) 
+        {ANATOMÍA FORENSE};
+
+    \node[anchor=north, text=cyan!75, font=\sffamily\bfseries\fontsize{24}{30}\selectfont, align=center] 
+        at ($(current page.north) + (0, -44mm)$) 
+        {DE UNA INTRUSIÓN};
+
+    % Subtítulo explicativo
+    \node[anchor=north, text=gray!30, font=\sffamily\small, align=center, text width=13cm] 
+        at ($(current page.north) + (0, -56mm)$) 
+        {Investigación Pericial de un Ataque a un Sistema de Producción Unix/Linux\\
+        \footnotesize\color{gray!40}Metodología de Respuesta, Cronología MAC, Disección de Malware y Atribución};
+
+    % Ilustración central (Plato magnético, circuitos y traza de intrusión)
+    \node[anchor=center] at ($(current page.center) + (0, -6mm)$) {
+        \begin{tikzpicture}
+            % Marco con sombra y resplandor
+            \node[draw=cyan!50, line width=1pt, rounded corners=4pt, inner sep=1.5pt, fill=black!60] {
+                \clip[rounded corners=3pt] (0,0) rectangle (9.2cm, 8.4cm);
+                \node at (4.6cm, 4.2cm) {\includegraphics[width=9.4cm, keepaspectratio]{figures/portada_forense.jpg}};
+            };
+        \end{tikzpicture}
+    };
+
+    % Bloque inferior de autoría
+    \node[anchor=south, text=white, font=\sffamily\bfseries\large] 
+        at ($(current page.south) + (0, 36mm)$) 
+        {Alexis Real Santillán};
+
+    \node[anchor=south, text=gray!35, font=\sffamily\footnotesize, align=center] 
+        at ($(current page.south) + (0, 29mm)$) 
+        {Instituto de Física y Matemáticas\\
+        Universidad Michoacana de San Nicolás de Hidalgo};
+
+    \node[anchor=south, text=gray!50, font=\sffamily\tiny, align=center] 
+        at ($(current page.south) + (0, 23mm)$) 
+        {Colaboración técnica original: \textbf{Jonatan Soffer Hernández} (Linux OpenSource de México)};
+
+    % Cintillo final conmemorativo
+    \node[anchor=south, text=cyan!80, font=\sffamily\bfseries\tiny] 
+        at ($(current page.south) + (0, 13mm)$) 
+        {EDICIÓN CONMEMORATIVA Y RETROSPECTIVA (2005--2025) $\cdot$ ESTÁNDAR RFC 5737 / 2606 $\cdot$ NIST SP 800-86};
+
+\end{tikzpicture}
+
+\newpage
+\thispagestyle{empty}
+\mbox{}
+\newpage
+
+% ==============================================================================
+% PORTADILLA INTERIOR (PÁGINA DE TÍTULO CLÁSICA EN BLANCO Y NEGRO)
+% ==============================================================================
+\thispagestyle{empty}
 \begin{center}
     \vspace*{1.5cm}
 
-    {\Huge \textbf{\textsf{ANATOMÍA FORENSE}}}\\[0.4cm]
-    {\Huge \textbf{\textsf{DE UNA INTRUSIÓN}}}\\[0.8cm]
+    {\fontsize{24}{28}\selectfont\sffamily\bfseries\color{primary} ANATOMÍA FORENSE}\\[0.3cm]
+    {\fontsize{20}{24}\selectfont\sffamily\bfseries\color{primary} DE UNA INTRUSIÓN}\\[0.8cm]
 
-    {\Large \textsc{\textsf{Investigación Pericial de un Ataque a un Sistema de Producción Unix/Linux (2005)}}}\\[2cm]
+    {\large\textsf{Investigación Pericial de un Ataque a un Sistema\\ de Producción Unix/Linux (2005)}}\\[1.8cm]
 
-    \rule{0.6\textwidth}{1pt}\\[2.5cm]
+    \rule{0.5\textwidth}{1.2pt}\\[2.0cm]
 
-    {\Large \textbf{Alexis Real Santillán}}\\[0.4cm]
+    {\Large\textbf{Alexis Real Santillán}}\\[0.4cm]
     {\normalsize Instituto de Física y Matemáticas}\\
     {\small Universidad Michoacana de San Nicolás de Hidalgo}\\[1.5cm]
 
-    {\small \textit{Colaboración y soporte original:}}\\
+    {\small\textit{Colaboración y soporte original:}}\\[0.2cm]
     {\textbf{Jonatan Soffer Hernández}}\\
-    {\small Linux OpenSource de México S.A. de C.V.}\\[3cm]
+    {\small Linux OpenSource de México S.A. de C.V.}\\[2.5cm]
 
     \vfill
 
-    {\small Edición Conmemorativa y Retrospectiva}\\[0.2cm]
-    {\small Publicación Abierta Técnica y Pedagógica}
+    {\small\textsf{Edición Conmemorativa y Didáctica Revisada (20 Años)}}\\[0.2cm]
+    {\footnotesize\textsf{Publicación Abierta con Fines Didácticos y de Preservación Histórica}}
 
 \end{center}
 \end{titlepage}
