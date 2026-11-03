@@ -1,103 +1,94 @@
 % ==============================================================================
-% PORTADA EXTERIOR A TODO COLOR (FULL-BLEED TIKZ + ILUSTRACIÓN FORENSE)
+% PORTADA EXTERIOR EDITORIAL CONTEMPORÁNEA (DISEÑO MINIMALISTA DE ALTO IMPACTO)
+% "Anatomía Forense de una Intrusión" - Alexis Real Santillán
 % ==============================================================================
 \begin{titlepage}
-    hispagestyle{empty}
+\thispagestyle{empty}
 
 \begin{tikzpicture}[remember picture, overlay]
-    % Fondo degradado profundo (Azul noche / Grafito forense)
-    \fill[top color=primary!30!black, bottom color=black!95] 
-        (current page.south west) rectangle (current page.north east);
+    % Paleta de color editorial moderna (Obsidiana / Grafito profundo)
+    \definecolor{coverdark}{RGB}{11, 17, 30}
+    \definecolor{coveraccent}{RGB}{225, 29, 72}
 
-    % Marco perimetral sutil
-    \draw[draw=cyan!40, line width=0.6pt, opacity=0.4, rounded corners=6pt]
-        ($(current page.south west) + (8mm, 8mm)$) rectangle ($(current page.north east) - (8mm, 8mm)$);
+    % Fondo continuo de página completa sin bordes perimetrales
+    \fill[coverdark] (current page.south west) rectangle (current page.north east);
 
-    % Franja superior decorativa (Acento carmesí forense)
-    \fill[accent] 
-        ($(current page.north west) + (8mm, -16mm)$) rectangle ($(current page.north east) + (-8mm, -18mm)$);
-
-    % Banner de serie técnica
-    \node[anchor=north, text=cyan!80, font=\sffamily\bfseries\scriptsize] 
-        at ($(current page.north) + (0, -23mm)$) 
-        {ESTUDIO PERICIAL DE CASO REAL $\cdot$ RESPUESTA A INCIDENTES EN PRODUCCIÓN};
-
-    % Título principal
-    \node[anchor=north, text=white, font=\sffamily\bfseries\fontsize{28}{34}\selectfont, align=center] 
-        at ($(current page.north) + (0, -32mm)$) 
-        {ANATOMÍA FORENSE};
-
-    \node[anchor=north, text=cyan!75, font=\sffamily\bfseries\fontsize{24}{30}\selectfont, align=center] 
-        at ($(current page.north) + (0, -44mm)$) 
-        {DE UNA INTRUSIÓN};
-
-    % Subtítulo explicativo
-    \node[anchor=north, text=gray!30, font=\sffamily\small, align=center, text width=13cm] 
-        at ($(current page.north) + (0, -56mm)$) 
-        {Investigación Pericial de un Ataque a un Sistema de Producción Unix/Linux\\
-        \footnotesize\color{gray!40}Metodología de Respuesta, Cronología MAC, Disección de Malware y Atribución};
-
-    % Ilustración central (Plato magnético, circuitos y traza de intrusión)
-    \node[anchor=center] at ($(current page.center) + (0, -6mm)$) {
-        \begin{tikzpicture}
-            \node[draw=cyan!60, line width=1.2pt, rounded corners=6pt, inner sep=2pt, fill=black!80] {
-                \includegraphics[width=9.2cm, height=8.4cm, keepaspectratio]{figures/portada_forense.jpg}
-            };
-        \end{tikzpicture}
+    % Etiqueta superior de disciplina editorial (tipografía espaciada y sobria)
+    \node[anchor=north, align=center, text=white!60, font=\fontsize{7.5}{10}\selectfont\sffamily\bfseries] 
+        at ($(current page.north) + (0, -26mm)$) {
+        RESPUESTA A INCIDENTES \quad$\cdot$\quad ANÁLISIS FORENSE DIGITAL
     };
 
-    % Bloque inferior de autoría
-    \node[anchor=south, text=white, font=\sffamily\bfseries\large] 
-        at ($(current page.south) + (0, 36mm)$) 
-        {Alexis Real Santillán};
+    % Título principal monolítico con tipografía arquitectónica unificada
+    \node[anchor=north, align=center, text=white, font=\fontsize{24}{30}\selectfont\sffamily\bfseries] 
+        at ($(current page.north) + (0, -36mm)$) {
+        ANATOMÍA FORENSE\\[4pt]
+        DE UNA INTRUSIÓN
+    };
 
-    \node[anchor=south, text=gray!35, font=\sffamily\footnotesize, align=center] 
-        at ($(current page.south) + (0, 29mm)$) 
-        {Instituto de Física y Matemáticas\\
-        Universidad Michoacana de San Nicolás de Hidalgo};
+    % Filete de acento arquitectónico (rojo pericial forense)
+    \draw[line width=1.6pt, draw=coveraccent] 
+        ($(current page.north) + (-20mm, -59mm)$) -- ($(current page.north) + (20mm, -59mm)$);
 
-    \node[anchor=south, text=gray!50, font=\sffamily    iny, align=center] 
-        at ($(current page.south) + (0, 23mm)$) 
-        {Colaboración técnica original: \textbf{Jonatan Soffer Hernández} (Linux OpenSource de México)};
+    % Subtítulo descriptivo con jerarquía clara y tipografía limpia
+    \node[anchor=north, align=center, text width=134mm, text=white!85, font=\fontsize{9.5}{14}\selectfont\sffamily] 
+        at ($(current page.north) + (0, -65mm)$) {
+        Disección pericial de un ataque a servidores de producción en tiempo real:\\[3pt]
+        {\color{white!60}\fontsize{8.5}{12}\selectfont Evidencia en memoria, reconstrucción temporal MAC, análisis de malware y atribución}
+    };
 
-    % Cintillo final conmemorativo
-    \node[anchor=south, text=cyan!80, font=\sffamily\bfseries    iny] 
-        at ($(current page.south) + (0, 13mm)$) 
-        {EDICIÓN CONMEMORATIVA Y RETROSPECTIVA (2005--2025) $\cdot$ ESTÁNDAR RFC 5737 / 2606 $\cdot$ NIST SP 800-86};
+    % Obra visual central: Ventana limpia con marco de precisión (sin neon ni esquinas redondeadas noventeras)
+    \node[anchor=center, inner sep=0pt, draw=white!20, line width=0.4pt, fill=black] 
+        at ($(current page.north) + (0, -127mm)$) {
+        \includegraphics[height=8.8cm, keepaspectratio]{figures/portada_forense.jpg}
+    };
+
+    % Bloque de autoría principal (Alexis Real Santillán como autor único)
+    \node[anchor=north, align=center] 
+        at ($(current page.north) + (0, -183mm)$) {
+        {\fontsize{13}{16}\selectfont\sffamily\bfseries\color{white} Alexis Real Santillán}\\[7pt]
+        {\fontsize{8.5}{12}\selectfont\sffamily\color{white!70} Instituto de Física y Matemáticas}\\[2pt]
+        {\fontsize{8}{11}\selectfont\sffamily\color{white!45} Universidad Michoacana de San Nicolás de Hidalgo}
+    };
+
+    % Cintillo sutil de edición conmemorativa (generosa distancia del borde de página: 30 mm)
+    \node[anchor=north, align=center, text=white!38, font=\fontsize{7}{9}\selectfont\sffamily] 
+        at ($(current page.north) + (0, -218mm)$) {
+        EDICIÓN DIDÁCTICA Y METODOLÓGICA $\cdot$ VEINTE AÑOS DESPUÉS (2005--2025)
+    };
 
 \end{tikzpicture}
 
 \newpage
-    hispagestyle{empty}
+\thispagestyle{empty}
 \mbox{}
 \newpage
 
 % ==============================================================================
-% PORTADILLA INTERIOR (PÁGINA DE TÍTULO CLÁSICA EN BLANCO Y NEGRO)
+% PORTADILLA INTERIOR (PÁGINA DE TÍTULO ACADÉMICA CLÁSICA)
 % ==============================================================================
-    hispagestyle{empty}
+\thispagestyle{empty}
 \begin{center}
-    \vspace*{1.5cm}
+    \vspace*{1.2cm}
+
+    {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{secondary} INVESTIGACIÓN Y METODOLOGÍA PERICIAL DIGITAL}\\[0.6cm]
 
     {\fontsize{24}{28}\selectfont\sffamily\bfseries\color{primary} ANATOMÍA FORENSE}\\[0.3cm]
     {\fontsize{20}{24}\selectfont\sffamily\bfseries\color{primary} DE UNA INTRUSIÓN}\\[0.8cm]
 
-    {\large\textsf{Investigación Pericial de un Ataque a un Sistema\\ de Producción Unix/Linux (2005)}}\\[1.8cm]
+    {\large\textsf{Disección pericial de un ataque a servidores de producción}}\\[0.2cm]
+    {\normalsize\textsf{Metodología de respuesta, evidencia digital y preservación de la cadena de custodia}}\\[1.8cm]
 
-    \rule{0.5\textwidth}{1.2pt}\\[2.0cm]
+    \rule{0.35\textwidth}{1.0pt}\\[2.0cm]
 
     {\Large\textbf{Alexis Real Santillán}}\\[0.4cm]
-    {\normalsize Instituto de Física y Matemáticas}\\
-    {\small Universidad Michoacana de San Nicolás de Hidalgo}\\[1.5cm]
-
-    {\small\textit{Colaboración y soporte original:}}\\[0.2cm]
-    {\textbf{Jonatan Soffer Hernández}}\\
-    {\small Linux OpenSource de México S.A. de C.V.}\\[2.5cm]
+    {\normalsize Instituto de Física y Matemáticas}\\[0.15cm]
+    {\small Universidad Michoacana de San Nicolás de Hidalgo}\\[2.5cm]
 
     \vfill
 
-    {\small\textsf{Edición Conmemorativa y Didáctica Revisada (20 Años)}}\\[0.2cm]
-    {\footnotesize\textsf{Publicación Abierta con Fines Didácticos y de Preservación Histórica}}
+    {\small\textsf{Edición Didáctica y Monográfica Revisada (20 Años)}}\\[0.2cm]
+    {\footnotesize\textsf{Publicación Académica Abierta con Fines de Preservación Histórica}}
 
 \end{center}
 \end{titlepage}

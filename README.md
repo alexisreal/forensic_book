@@ -3,8 +3,7 @@
 **Investigación pericial de un ataque a un sistema de producción Unix/Linux (2005 - 2025)**
 
 * **Autor:** Alexis Real Santillán
-* **Colaboración original:** Jonatan Soffer Hernández (Linux OpenSource de México S.A. de C.V.)
-* **Afiliación histórica:** Instituto de Física y Matemáticas, Universidad Michoacana de San Nicolás de Hidalgo (UMSNH)
+* **Afiliación:** Instituto de Física y Matemáticas, Universidad Michoacana de San Nicolás de Hidalgo (UMSNH)
 * **Licencia de publicación:** [Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)
 
 ---
