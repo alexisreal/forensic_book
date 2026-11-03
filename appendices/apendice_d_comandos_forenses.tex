@@ -1,0 +1,93 @@
+\chapter{Guía Rápida de Comandos Forenses en Consola GNU/Linux}
+
+Este apéndice constituye una guía de referencia rápida (\textit{cheat sheet}) con los comandos esenciales que todo analista e investigador forense debe dominar al interactuar con sistemas basados en Unix y GNU/Linux, tanto en escenarios de respuesta en vivo (\textit{live response}) como en el examen estático de imágenes (\textit{dead-box forensics}).
+
+\section{Inspección y Triage del Sistema en Vivo}
+
+\subsection{Procesos en Ejecución y Memoria Volátil}
+\begin{lstlisting}[style=terminal]
+# Listar todos los procesos con usuario, PID, consumo y linea de comando completa:
+ps auxwww
+
+# Arbol jerarquico de procesos padre-hijo (revela procesos huerfanos o inyectados):
+pstree -p -a
+
+# Descriptores de archivos abiertos y conexiones por proceso (ej. PID 1234):
+lsof -p 1234
+
+# Verificacion del binario real en disco que ejecuta un proceso:
+ls -l /proc/1234/exe
+
+# Inspeccion de variables de entorno de un proceso sospechoso:
+strings -a /proc/1234/environ | tr '\0' '\n'
+
+# Volcado del mapa de memoria virtual de un proceso:
+cat /proc/1234/maps
+\end{lstlisting}
+
+\subsection{Conexiones de Red y Sockets Activos}
+\begin{lstlisting}[style=terminal]
+# Sockets TCP y UDP en escucha y establecidos con PID y nombre de proceso:
+netstat -tulpn
+# Alternativa moderna (iproute2):
+ss -tulpan
+
+# Listar procesos que mantienen conexiones de red activas:
+lsof -i -n -P
+
+# Captura de trafico crudo en una interfaz especifica (sin resolucion DNS):
+tcpdump -i eth0 -nn -s 0 -w captura_incidente.pcap
+\end{lstlisting}
+
+\subsection{Búsqueda de Binarios Privilegiados y Atributos Especiales}
+\begin{lstlisting}[style=terminal]
+# Localizar todos los ejecutables con bit SUID o SGID en el sistema:
+find / -type f \( -perm -04000 -o -perm -02000 \) -exec ls -l {} \; 2>/dev/null
+
+# Buscar archivos pertenecientes a usuarios no estandar en directorios de sistema:
+find /bin /sbin /usr/bin /usr/sbin /dev -not -user root -ls
+
+# Auditoria recursiva de atributos inmutables (+i) y append-only (+a) en Ext2/3/4:
+lsattr -aR /dev /bin /sbin /usr/lib /etc 2>/dev/null | grep -E "(\-i\-|\-a\-)"
+\end{lstlisting}
+
+\section{Análisis de Imágenes con The Sleuth Kit (TSK)}
+
+Cuando se analiza una copia binaria de un disco o partición (\texttt{disco.img}):
+
+\begin{lstlisting}[style=terminal]
+# 1. Informacion general del sistema de archivos (tamaño de bloque, inodos):
+fsstat disco.img
+
+# 2. Listado recursivo de archivos con inodos asociados (incluyendo borrados):
+fls -r -p -m "/" disco.img > bodyfile.txt
+
+# 3. Inspeccion detallada de un inodo especifico (marcas MAC, bloques asignados):
+istat disco.img 533487
+
+# 4. Extraccion directa del contenido de un inodo hacia un archivo local:
+icat disco.img 533487 > binario_rescatado.bin
+
+# 5. Listar unicamente inodos eliminados / huerfanos:
+ils -r -m disco.img >> bodyfile.txt
+
+# 6. Generacion de la linea de tiempo cronologica formateada (mactime):
+mactime -b bodyfile.txt -d -z CST > linea_tiempo.csv
+\end{lstlisting}
+
+\section{Verificación de Integridad y Detección de Alteraciones}
+
+\begin{lstlisting}[style=terminal]
+# Calculo de huellas hash criptograficas para preservacion de custodia:
+md5sum disco.img > disco.img.md5
+sha256sum disco.img > disco.img.sha256
+
+# Extraccion de cadenas de texto ASCII y Unicode de un archivo sospechoso:
+strings -a -t x archivo_sospechoso.bin
+
+# Auditoria de integridad de paquetes en distribuciones Debian/Ubuntu:
+debsums -c -s
+
+# Auditoria de integridad de paquetes en distribuciones Red Hat/CentOS/Fedora:
+rpm -Va
+\end{lstlisting}

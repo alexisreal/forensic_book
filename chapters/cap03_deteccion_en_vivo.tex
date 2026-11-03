@@ -26,6 +26,16 @@ Un análisis preliminar de estos dos binarios confirmó que se trataba de progra
 
 Aunque la administración procedió de inmediato a revocar los permisos SUID para mitigar el riesgo de elevación de privilegios inmediata, la gravedad del hallazgo exigió la apertura formal de una investigación pericial profunda.
 
+\begin{retoforense}[Reto Pericial 1: Auditoría de Permisos SUID y Triage en Vivo]
+Suponga que durante una respuesta a incidentes en un servidor GNU/Linux localiza un ejecutable en \texttt{/tmp/run} con permisos \texttt{-rwsr-xr-x} perteneciente a \texttt{root}:
+\begin{enumerate}
+    \item ¿Qué comandos de inspección binaria utilizaría para examinar el archivo de forma pasiva sin arriesgar la ejecución de código malicioso?
+    \item ¿Cómo determinaría mediante el comando \texttt{stat} el número de inodo y si el archivo mantiene enlaces duros (\textit{hard links}) en otras ramas del disco?
+    \item Si revoca preventivamente el bit especial con \texttt{chmod u-s /tmp/run}, ¿cuál de las tres marcas temporales del inodo (\textit{mtime}, \textit{atime} o \textit{ctime}) se actualizará en ese instante y cuál permanecerá intacta?
+\end{enumerate}
+\end{retoforense}
+
+
 \section{Presencia Anómala en Directorios del Sistema}
 
 Tras confirmar la anomalía en el espacio de usuario, la siguiente fase pericial consistió en evaluar la integridad de los directorios del sistema (\texttt{/usr/bin}, \texttt{/bin}, \texttt{/sbin}, \texttt{/dev}). Para ello se ejecutó una búsqueda diferencial de todos los objetos en el disco duro cuyo propietario fuera un identificador distinto de \texttt{root} (UID 0), descartando los directorios personales legítimos montados en \texttt{/home}.

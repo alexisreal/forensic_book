@@ -81,3 +81,12 @@ La reconstrucción temporal permitió establecer los siguientes hechos probados:
     \item La maniobra de secuestro de \texttt{/sbin/init} y la creación de los artefactos en \texttt{/dev/zqft4} ocurrieron de manera automatizada en un intervalo inferior a 15 segundos, lo que confirma el empleo de un script de instalación preempaquetado.
     \item Las marcas de inodo vinculan de manera inequívoca las acciones de implantación con la cuenta \texttt{duende}, cuyas marcas temporales de acceso coinciden milimétricamente con los eventos registrados en el disco.
 \end{itemize}
+
+
+\begin{retoforense}[Reto Pericial 3: Detección de Falsificación de Marcas de Tiempo (Timestomping)]
+Un atacante descarga un archivo malicioso el 15 de mayo y ejecuta \texttt{touch -d "2001-01-01 12:00:00" /bin/backdoor}:
+\begin{enumerate}
+    \item Al generar la línea de tiempo con \texttt{mactime}, ¿en qué posición cronológica figurará la marca de modificación (\textit{mtime}) y en cuál la de cambio de metadatos (\textit{ctime})?
+    \item Explique por qué el valor de \textit{ctime} no puede ser manipulado directamente a través de llamadas de usuario en un sistema de archivos estándar de Linux y cómo esta discrepancia prueba judicialmente la manipulación maliciosa.
+\end{enumerate}
+\end{retoforense}

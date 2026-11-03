@@ -1,6 +1,6 @@
 # Anatomía Forense de una Intrusión
 
-**Investigación pericial de un ataque a un sistema de producción Unix/Linux (2005)**
+**Investigación pericial de un ataque a un sistema de producción Unix/Linux (2005 - 2025)**
 
 * **Autor:** Alexis Real Santillán
 * **Colaboración original:** Jonatan Soffer Hernández (Linux OpenSource de México S.A. de C.V.)
@@ -9,56 +9,65 @@
 
 ---
 
-## Descripción del Proyecto
+## Propósito Formativo y Editorial
 
-Este repositorio contiene la edición revisada, modernizada y adaptada en formato de **libro técnico monográfico** del informe pericial redactado originalmente en enero de 2005.
+Esta obra ha sido estructurada como un **manual y caso de estudio de referencia formativa para la disciplina de Análisis Forense Digital y Respuesta a Incidentes (DFIR)**. Combina el rigor técnico y la evidencia material de un caso real ocurrido en un servidor departamental de producción con un aparato pedagógico diseñado para estudiantes, analistas y peritos informáticos.
 
-El documento investiga en profundidad una intrusión en un servidor departamental de producción con arquitectura Intel Pentium III sobre Red Hat Linux, revelando la convergencia de dos incidentes independientes:
-1. Una intrusión oportunista externa aprovechando contraseñas débiles en el servicio FTP para alojar bots de IRC (*eggdrop*, *psyBNC*, *energyb*).
-2. Un ataque concurrente por parte de un actor interno con acceso a las instalaciones físicas del edificio, quien intentó desplegar *rootkits*, modificar atributos inmutables (`chattr +i`) y capturar credenciales de administración mediante *sniffers* de red.
+El libro se alinea formalmente con las directrices de los estándares internacionales **ISO/IEC 27037:2012** (Directrices para la identificación, recolección, adquisición y preservación de evidencia digital) y **NIST SP 800-86** (Guía de integración de técnicas forenses en la respuesta a incidentes).
 
 ---
 
-## Estructura del Libro
-
-El proyecto ha sido desglosado en una arquitectura modular:
+## Estructura Modular de la Obra
 
 ```
 reporte-forense/
-├── main.tex                    # Archivo maestro compilable
+├── main.tex                            # Archivo maestro compilable
 ├── config/
-│   └── preamble.tex            # Paquetes, tipografía (B5), estilos de listados y cajas
+│   └── preamble.tex                    # Tipografía B5, cajas tcolorbox, listings y estilos
 ├── frontmatter/
-│   ├── portada.tex             # Portada editorial
-│   ├── creditos.tex            # Página legal, licencia CC y declaración de anonimización RFC 5737
-│   ├── prefacio.tex            # Prefacio retrospectivo "20 Años Después"
-│   └── resumen.tex             # Resumen pericial ejecutivo
+│   ├── portada.tex                     # Portada editorial formal
+│   ├── creditos.tex                    # Página legal, licencia CC y anonimización RFC 5737
+│   ├── prefacio.tex                    # Prefacio: "Veinte Años Después (2005-2025)"
+│   ├── resumen.tex                     # Resumen ejecutivo pericial
+│   └── guia_estudio.tex                # Guía didáctica, axiomas forenses y matriz NIST
 ├── chapters/
-│   ├── cap01_entorno_tecnologico.tex
-│   ├── cap02_metodologia_forense.tex
-│   ├── cap03_deteccion_en_vivo.tex
-│   ├── cap04_siembra_servicios_malware.tex
-│   ├── cap05_monitoreo_usuarios.tex
-│   ├── cap06_analisis_referencia_rpm.tex
-│   ├── cap07_antivirus_rootkits.tex
-│   ├── cap08_lineas_tiempo_mactime.tex
-│   ├── cap09_mineria_bitacoras.tex
-│   ├── cap10_cuentas_comprometidas.tex
-│   ├── cap11_recuperacion_archivos_borrados.tex
-│   ├── cap12_correlacion_multisistema.tex
-│   ├── cap13_servidor_correo_webmail.tex
-│   ├── cap14_veredicto_y_atribucion.tex
-│   └── cap15_retrospectiva_20_anios.tex
+│   ├── cap01_entorno_tecnologico.tex   # Hardware (Pentium III), servicios y topología
+│   ├── cap02_metodologia_forense.tex   # Cadena de custodia, clonación y taxonomía de herramientas
+│   ├── cap03_deteccion_en_vivo.tex     # Detección temprana de SUID/SGID y registros de Midnight Commander
+│   ├── cap04_siembra_servicios_malware.tex # Bots IRC (Energyb, psyBNC) y exfiltración con popclean
+│   ├── cap05_monitoreo_usuarios.tex    # Vigilancia pasiva, Process Accounting (acct) y sesiones
+│   ├── cap06_analisis_referencia_rpm.tex # Análisis diferencial y desensamblado de /bin/ps y /bin/netstat
+│   ├── cap07_antivirus_rootkits.tex    # Gusano Unix/RST.A y atributos inmutables de Ext2 (+i/+a)
+│   ├── cap08_lineas_tiempo_mactime.tex # Líneas de tiempo TCT (mactime) y el "momento cero" de la intrusión
+│   ├── cap09_mineria_bitacoras.tex     # Minería de auth.log, xferlog (FTP) y correlación temporal
+│   ├── cap10_cuentas_comprometidas.tex # Perfil proa, directorio "..." y bot EnergyMech
+│   ├── cap11_recuperacion_archivos_borrados.tex # File carving con unrm y marcador lingüístico ("algo")
+│   ├── cap12_correlacion_multisistema.tex # Movimiento lateral hacia victima2 y saltos de red
+│   ├── cap13_servidor_correo_webmail.tex # El servidor io, vector de abuso interno y OpenWebMail
+│   ├── cap14_veredicto_y_atribucion.tex # Síntesis pericial: intrusión externa vs espía interno
+│   └── cap15_retrospectiva_20_anios.tex # DFIR 2005 vs 2025: evolución técnica y lecciones universales
 ├── appendices/
-│   ├── apendice_a_iocs.tex     # Catálogo de Indicadores de Compromiso (IoCs)
+│   ├── apendice_a_iocs.tex             # Catálogo de Indicadores de Compromiso (IoCs) y rutas
 │   ├── apendice_b_bitacoras_completas.tex # Registros y transcripciones de auditoría
-│   └── apendice_c_glosario.tex # Glosario de herramientas y conceptos forenses clásicos
+│   ├── apendice_c_glosario.tex         # Glosario de herramientas y conceptos clásicos de Unix
+│   ├── apendice_d_comandos_forenses.tex # Cheat sheet de comandos forenses en consola GNU/Linux
+│   └── apendice_e_cadena_custodia_modelo.tex # Plantilla formal de cadena de custodia ISO/IEC 27037
 ├── biblio/
-│   ├── bibliografia.tex        # Entorno thebibliography estandarizado
-│   └── referencias.bib         # Entradas BibTeX normalizadas
-├── scripts/                    # Scripts de conversión, anonimización e inspección
-└── original/                   # Respaldo intacto del archivo original de 2005
+│   ├── bibliografia.tex                # Entorno thebibliography estandarizado
+│   └── referencias.bib                 # Entradas BibTeX normalizadas
+├── scripts/                            # Scripts de verificación y auditoría automatizada
+└── original/                           # Respaldo intacto del manuscrito original de 2005
 ```
+
+---
+
+## Componentes Didácticos Destacados
+
+* **Cajas de Perspectiva Histórica (`perspectiva20`):** Recuadros que contrastan cómo se resolvía un problema en 2004/2005 frente a las tecnologías contemporáneas (EDR, Volatility, Zero Trust).
+* **Alertas de Integridad (`advertencia`):** Indicadores de técnicas antiforense (*anti-forensics*) y precauciones periciales en caliente.
+* **Retos de Investigación Pericial (`retoforense`):** Preguntas y ejercicios prácticos de razonamiento pericial intercalados en los capítulos clave para evaluación formativa.
+* **Guía Rápida de Comandos Forenses:** Resumen operativo de comandos de inspección en vivo, análisis de inodos con *The Sleuth Kit* (TSK) y líneas de tiempo.
+* **Plantilla de Cadena de Custodia Judicial:** Modelo formal para la acreditación probatoria de indicios digitales.
 
 ---
 
@@ -68,13 +77,5 @@ Para compilar el libro a formato PDF:
 
 ```bash
 pdflatex main.tex
-pdflatex main.tex  # Segunda pasada para generar la tabla de contenidos
+pdflatex main.tex  # Segunda pasada para actualizar referencias cruzadas e índices
 ```
-
-O utilizando `latexmk`:
-
-```bash
-latexmk -pdf main.tex
-```
-
-También es compatible al 100% con plataformas como Overleaf.

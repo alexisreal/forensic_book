@@ -1,0 +1,61 @@
+\chapter*{Guía Didáctica para el Aprendizaje del Cómputo Forense}
+\addcontentsline{toc}{chapter}{Guía Didáctica para el Aprendizaje del Cómputo Forense}
+
+Este libro fue concebido no solo como la crónica pericial de un incidente histórico, sino como un **texto formativo integral** para estudiantes, analistas de seguridad, administradores de sistemas y peritos judiciales que desean incursionar con solvencia en la disciplina del Análisis Forense Digital y Respuesta a Incidentes (\textit{Digital Forensics and Incident Response} - DFIR).
+
+En un panorama contemporáneo saturado de retos sintéticos de laboratorio (\textit{CTFs}) y herramientas comerciales que automatizan el análisis mediante un solo clic, este caso de estudio ofrece el valor insustituible de enfrentarse a la **evidencia cruda de una intrusión real**: con bitácoras inconsistentes, técnicas de antiforense, ataques concurrentes y presiones operativas.
+
+\section*{Los Axiomas Cardinales de la Criminalística Digital}
+
+A lo largo del estudio de este caso, el lector observará la aplicación práctica de tres principios universales que rigen toda investigación pericial informática:
+
+\begin{enumerate}
+    \item \textbf{El Principio de Intercambio de Locard aplicado al Ciberespacio:}
+    Postulado por el criminalista Edmond Locard: \textit{«Todo contacto deja un rastro»}. En un sistema operativo multiusuario, es técnicamente imposible que un intruso ejecute un comando, transfiera un archivo o altere un proceso sin modificar el estado físico del equipo (marcas de inodo, contabilidad de procesos en el kernel, tablas de sockets o registros de autenticación). La labor del perito consiste en descubrir los rastros que el atacante creyó haber borrado.
+    
+    \item \textbf{El Orden de Volatilidad (RFC 3227):}
+    La recolección de evidencias debe ejecutarse respetando la vida útil de los datos, desde los más efímeros hasta los más persistentes:
+    \begin{equation*}
+    \text{Registros de CPU/Caché} \to \text{Memoria RAM/Sockets} \to \text{Estado del Kernel} \to \text{Almacenamiento en Disco} \to \text{Respaldos}
+    \end{equation*}
+    En el caso documentado, el equipo pericial supo equilibrar el monitoreo en vivo de la memoria y las sesiones antes de proceder a la clonación en frío del almacenamiento masivo.
+
+    \item \textbf{La Inmutabilidad y Repetibilidad de la Prueba:}
+    Cualquier conclusión pericial debe ser verificable y reproducible por un perito independiente de la contraparte. La clonación física bit a bit y el cotejo mediante sumas de verificación criptográficas (MD5 y SHA-1) constituyen la salvaguarda jurídica de la cadena de custodia.
+\end{enumerate}
+
+\section*{Matriz de Alineación con Estándares Internacionales}
+
+Para facilitar su uso en asignaturas universitarias y certificaciones profesionales (como GCFA, GCFE, CHFI o CCFP), los contenidos de esta obra se alinean directamente con los marcos internacionales \textbf{NIST SP 800-86} e \textbf{ISO/IEC 27037}, como se detalla en el Cuadro~\ref{tab:matriz_nist}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabular}{lll}
+\toprule
+\textbf{Fase Metodológica (NIST / ISO)} & \textbf{Capítulos del Libro} & \textbf{Competencias Periciales Desarrolladas} \\
+\midrule
+\textbf{1. Identificación y Triage} & Capítulos 1 y 3 & Reconocimiento de anomalías, evaluación de SUID y triage en vivo. \\
+\addlinespace
+\textbf{2. Adquisición y Custodia} & Capítulos 2 y 5 & Clonación bit a bit, verificación de hash y contabilidad de procesos. \\
+\addlinespace
+\textbf{3. Examen Binario y Malware} & Capítulos 4, 6 y 7 & Ingeniería inversa estática, disección de bots y detección de rootkits. \\
+\addlinespace
+\textbf{4. Análisis Temporal y Trazas} & Capítulos 8, 9 y 10 & Reconstrucción con tiempos MAC, correlación de bitácoras y cuentas. \\
+\addlinespace
+\textbf{5. Recuperación Avanzada} & Capítulos 11, 12 y 13 & \textit{File carving} en inodos huérfanos, correlación y pivoting de red. \\
+\addlinespace
+\textbf{6. Dictamen y Atribución} & Capítulos 14 y 15 & Elaboración del informe pericial judicial y visión retrospectiva. \\
+\bottomrule
+\end{tabular}
+\caption{Correspondencia formativa entre las fases periciales y los capítulos del libro.}
+\label{tab:matriz_nist}
+\end{table}
+
+\section*{Rutas de Aprendizaje Sugeridas}
+
+\begin{itemize}
+    \item \textbf{Para Principiantes y Estudiantes:} Se aconseja realizar una primera lectura lineal de la Parte~I (contexto y metodología) y la Parte~II (detección en vivo), resolviendo los cuestionarios conceptuales al final de cada bloque antes de abordar los capítulos de ingeniería inversa de binarios.
+    \item \textbf{Para Analistas de Incidentes (Incident Responders):} Concéntrese en los Capítulos 4, 6 y 8 para dominar las técnicas de evasión de procesos, la identificación de utilidades del sistema troyanizadas y la generación de líneas de tiempo con herramientas libres.
+    \item \textbf{Para Peritos Judiciales y Auditores:} Estudie con particular atención el Capítulo 2 (cadena de custodia), el Capítulo 14 (dictamen pericial) y los Apéndices D y E, donde se suministran plantillas formales de registro de evidencias admisibles en sede judicial.
+\end{itemize}

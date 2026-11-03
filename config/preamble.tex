@@ -42,6 +42,8 @@
 \definecolor{notablueborder}{RGB}{59, 130, 246}
 \definecolor{perspectivabg}{RGB}{240, 253, 244}
 \definecolor{perspectivaborder}{RGB}{34, 197, 94}
+\definecolor{retobg}{RGB}{254, 249, 195}      % Amarillo suave pedagógico
+\definecolor{retoborder}{RGB}{202, 138, 4}
 
 % Configuración de listados de código y terminal
 \lstdefinestyle{terminal}{
@@ -91,7 +93,7 @@
     colframe=notablueborder,
     fonttitle=\bfseries\sffamily\small,
     coltitle=primary,
-    title={\includegraphics[height=1em]{example-image} \quad #1},
+    title={#1},
     attach boxed title to top left={xshift=4mm, yshift=-2mm},
     boxed title style={colback=notablue, colframe=notablueborder},
     sharp corners,
@@ -124,6 +126,21 @@
     title={#1},
     attach boxed title to top left={xshift=4mm, yshift=-2mm},
     boxed title style={colback=red!5, colframe=accent},
+    sharp corners,
+    boxrule=0.8pt,
+    top=4mm, bottom=3mm, left=3mm, right=3mm,
+    before skip=4mm, after skip=4mm
+}
+
+\newtcolorbox{retoforense}[1][Reto de Investigación Pericial]{
+    enhanced,
+    colback=retobg,
+    colframe=retoborder,
+    fonttitle=\bfseries\sffamily\small,
+    coltitle=black,
+    title={#1},
+    attach boxed title to top left={xshift=4mm, yshift=-2mm},
+    boxed title style={colback=retobg, colframe=retoborder},
     sharp corners,
     boxrule=0.8pt,
     top=4mm, bottom=3mm, left=3mm, right=3mm,
