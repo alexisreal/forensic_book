@@ -8,7 +8,7 @@ El servidor estudiado representaba el estándar de cómputo de alto rendimiento 
 
 \section{Ficha Técnica del Sistema Objetivo}
 
-El sistema objeto de la investigación forense corresponde al servidor principal del departamento, identificado en este informe bajo el seudónimo técnico \texttt{victima1}. Las características de hardware y plataforma base se detallan en el Cuadro~\ref{tab:ficha_victima1}.
+El sistema objeto de la investigación forense corresponde al servidor principal del departamento, identificado en este informe bajo el seudónimo técnico \texttt{helios}. Las características de hardware y plataforma base se detallan en el Cuadro~\ref{tab:ficha_victima1}.
 
 \begin{table}[htbp]
 \centering
@@ -17,8 +17,8 @@ El sistema objeto de la investigación forense corresponde al servidor principal
 \toprule
 \textbf{Parámetro} & \textbf{Especificación Técnica} \\
 \midrule
-Nombre de host (\textit{hostname}) & \texttt{victima1} \\
-Dominio institucional & \texttt{foo.bar.mx} \\
+Nombre de host (\textit{hostname}) & \texttt{helios} \\
+Dominio institucional & \texttt{ifm.lab.edu.mx} \\
 Dirección IP asignada & \texttt{192.0.2.10} \\
 Funciones principales & Servidor de correo, servidor de archivos, servidor gráfico X11 \\
 Fabricante y chasis & Servidor ensamblado de arquitectura abierta \\
@@ -28,7 +28,7 @@ Almacenamiento masivo & Disco duro IDE ATA-66 de 20~GB \\
 Sistema operativo base & GNU/Linux Debian 3.0-r1 (\textit{Woody}) \\
 \bottomrule
 \end{tabular}
-\caption{Especificaciones técnicas del servidor evaluado (\texttt{victima1}).}
+\caption{Especificaciones técnicas del servidor evaluado (\texttt{helios}).}
 \label{tab:ficha_victima1}
 \end{table}
 
@@ -36,7 +36,7 @@ Sistema operativo base & GNU/Linux Debian 3.0-r1 (\textit{Woody}) \\
 
 El equipo analizado se encontraba físicamente instalado en el centro de cómputo departamental del edificio central del campus universitario. La interconexión física hacia la infraestructura general de la institución se realizaba a través de una tarjeta de interfaz de red Fast Ethernet (100~Mbps) conectada directamente a un conmutador (\textit{switch}) central mediante cableado estructurado en topología de estrella.
 
-Desde el punto de vista funcional y de almacenamiento, el servidor mantenía montajes de red compartidos vía NFS (\textit{Network File System}) y Samba con el servidor secundario \texttt{victima2} (\texttt{192.0.2.20}), permitiendo a profesores, investigadores y estudiantes el acceso interactivo a sus directorios personales tanto a través de sesiones remotas de consola (mediante SSH y Telnet/FTP tradicional) como mediante terminales gráficas remotas vía XDMCP. Esta concentración de servicios y privilegios convertía a la máquina en un objetivo prioritario dentro de la infraestructura departamental.
+Desde el punto de vista funcional y de almacenamiento, el servidor mantenía montajes de red compartidos vía NFS (\textit{Network File System}) y Samba con el servidor secundario \texttt{atlas} (\texttt{192.0.2.20}), permitiendo a profesores, investigadores y estudiantes el acceso interactivo a sus directorios personales tanto a través de sesiones remotas de consola (mediante SSH y Telnet/FTP tradicional) como mediante terminales gráficas remotas vía XDMCP. Esta concentración de servicios y privilegios convertía a la máquina en un objetivo prioritario dentro de la infraestructura departamental.
 
 \begin{perspectiva20}[Perspectiva 20 Años Después: Topología y Perímetro]
 En 2004, era una práctica habitual conectar servidores de cómputo directamente con direcciones IP públicas sin capas de inspección profunda de paquetes ni arquitecturas de confianza cero (\textit{Zero Trust}). Actualmente, un sistema análogo operaría dentro de una nube privada virtual (VPC), aislado tras pasarelas seguras (\textit{bastion hosts}), balanceadores de carga con WAF, segmentación por microperímetros y autenticación reforzada mediante llaves criptográficas basadas en hardware (FIDO2/WebAuthn).

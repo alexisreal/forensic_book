@@ -8,7 +8,7 @@ El análisis forense integral demuestra con certeza pericial la convergencia de 
 
 \begin{enumerate}
     \item \textbf{La intrusión oportunista externa (servicios parásitos):}
-    El punto de acceso inicial a la infraestructura fue el servicio FTP, complementado con intentos de explotación sobre Samba y montajes NFS. La causa determinante de este acceso fue la debilidad en la política de contraseñas de los usuarios locales; se identificó que las cuentas \texttt{xxxxx}, \texttt{xxxxxx} y \texttt{xxxxxxxx} fueron vulneradas mediante ataques de fuerza bruta basados en diccionarios debido a la simplicidad de sus claves.
+    El punto de acceso inicial a la infraestructura fue el servicio FTP, complementado con intentos de explotación sobre Samba y montajes NFS. La causa determinante de este acceso fue la debilidad en la política de contraseñas de los usuarios locales; se identificó que las cuentas \texttt{cgarcia}, \texttt{alopez} y \texttt{jvaldez} fueron vulneradas mediante ataques de fuerza bruta basados en diccionarios debido a la simplicidad de sus claves.
     
     El objetivo principal de este actor externo fue el despliegue de servidores IRC clandestinos y bots de retransmisión para apropiarse del ancho de banda y la capacidad de cómputo del servidor. Este tipo de atacantes busca preservar los servicios activos pasando inadvertidos, sin sustraer bases de datos ni causar daño destructivo a los sistemas operativos.
 
@@ -22,7 +22,7 @@ La impericia técnica en la instalación del \textit{rootkit} ---reflejada en er
 
 \section{Evaluación de Responsabilidad y Atribución Local}
 
-La investigación de los servidores bajo administración departamental demostró que el interés del intruso se concentró exclusivamente en \texttt{victima1}, \texttt{victima2} e \texttt{io}, las máquinas nodales del centro de cómputo. El atacante conocía con precisión la arquitectura de hardware, la función operativa y la ubicación física exacta de los gabinetes dentro del campus:
+La investigación de los servidores bajo administración departamental demostró que el interés del intruso se concentró exclusivamente en \texttt{helios}, \texttt{atlas} e \texttt{io}, las máquinas nodales del centro de cómputo. El atacante conocía con precisión la arquitectura de hardware, la función operativa y la ubicación física exacta de los gabinetes dentro del campus:
 \begin{itemize}
     \item Las auditorías sobre los conmutadores y subredes adyacentes demostraron que no existieron ataques ni accesos anómalos contra sistemas ubicados fuera del edificio departamental.
     \item Un actor remoto externo carece de los medios para inferir la distribución física y la relación de confianza funcional que unía a estos servidores específicos.
