@@ -3,14 +3,15 @@
 
 Los incidentes de seguridad informática en entornos de producción rara vez se ajustan a los escenarios asépticos y ordenados que describen los manuales teóricos. En una intrusión real, el administrador de sistemas se enfrenta a la incertidumbre, a la coexistencia de múltiples anomalías concurrentes y a la necesidad imperiosa de determinar con precisión qué ocurrió, cómo se vulneró el perímetro y qué impacto sufrieron los datos y servicios.
 
-El origen de esta obra se remonta a una investigación pericial exhaustiva realizada tras la detección de actividades no autorizadas en servidores centrales de producción. En aquel momento, la administración de la infraestructura departamental demandaba una respuesta inmediata. La detección fortuita de binarios anómalos con permisos de superusuario en rutas encubiertas desencadenó un proceso meticuloso de preservación y análisis forense. No existían plataformas comerciales automatizadas de detección en la nube ni consolas de gestión unificada: la respuesta a incidentes exigía compilar herramientas periciales directamente desde el código fuente, interrogar estructuras de inodos en bajo nivel y reconstruir la actividad del atacante a partir de bitácoras alteradas y marcas temporales en disco.
+El origen de esta obra se remonta a una investigación pericial exhaustiva realizada tras la detección de actividades no autorizadas en servidores centrales de producción. En aquel momento, la administración demandaba una respuesta inmediata. La detección fortuita de binarios anómalos con permisos de superusuario en rutas encubiertas desencadenó un proceso meticuloso de preservación y análisis forense: compilar herramientas periciales directamente desde el código fuente, interrogar estructuras de inodos en bajo nivel y reconstruir la actividad del atacante a partir de bitácoras alteradas y marcas temporales en disco.
 
-Este libro es la adaptación técnica y pedagógica del informe entregado formalmente a las autoridades de la institución. Su propósito es compartir las lecciones y la metodología de aquella investigación con estudiantes, analistas defensivos y administradores de sistemas que buscan comprender la anatomía de un ataque real. A través de sus páginas se documenta la cronología detallada de los hechos: desde la intrusión oportunista inicial y la siembra de procesos ocultos, hasta la implantación de un rootkit a nivel de núcleo, el despliegue de sniffers de contraseñas y la paciente correlación de eventos entre múltiples servidores.
+Este libro es la adaptación técnica y metodológica del informe entregado formalmente a las autoridades de la institución. Su propósito es compartir las lecciones y la metodología de aquella investigación con estudiantes, analistas defensivos y administradores de sistemas que buscan comprender la anatomía de un ataque real. A través de sus páginas se documenta la cronología detallada de los hechos: desde la intrusión oportunista inicial y la siembra de procesos ocultos, hasta la implantación de un rootkit a nivel de núcleo, el despliegue de sniffers de contraseñas y la paciente correlación de eventos entre múltiples servidores.
 
 Más allá de la evolución de las herramientas tecnológicas, los fundamentos periciales demostrados en este caso mantienen plena vigencia: el valor irremplazable de la evidencia en memoria, el rigor en la cadena de custodia, la disciplina en el contraste de hipótesis y la comprensión profunda del comportamiento de quien opera al otro lado del teclado.
 
-\vspace{2em}
-\begin{flushright}
-\textbf{Alexis Real Santillán}\\
-\textit{Administrador de Sistemas de Cómputo}\\
-\end{flushright}
+\vspace{1.2em}
+\noindent\begin{minipage}{\linewidth}
+\raggedleft
+\textbf{Alexis Real Santillán}\\[3pt]
+\textit{Administrador de Sistemas de Cómputo}
+\end{minipage}

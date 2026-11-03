@@ -1,4 +1,5 @@
 \chapter{Vectores en el servidor de correo y webmail}
+\label{cap:servidor_correo_webmail}
 
 Las aplicaciones de acceso a correo web en la década del 2000, desarrolladas con frecuencia como \textit{scripts} CGI en Perl o PHP sin suficiente validación de entradas ni protección contra sesiones concurrentes, representaban una superficie de ataque sumamente vulnerable. El servidor de correo departamental fue analizado minuciosamente para determinar si las intrusiones involucraron la interceptación de correspondencia electrónica.
 
@@ -366,6 +367,8 @@ registro del origen y destino del correo además la posibilidad de
 revisar su contenido, pero esto no tiene importancia para este caso, solo
 se necesitan los tiempos de acceso y origen de la conexión para poder
 correlacionar los eventos.
+
+Con los indicios extraídos del servidor de correo \texttt{io}, las marcas temporales en inodos de \texttt{helios}, las bitácoras de autenticación de \texttt{atlas} y la concordancia de las direcciones IP residenciales del proveedor local, todas las piezas del caso quedaron formalmente articuladas. El análisis pericial disponía del sustento fáctico para emitir su veredicto definitivo: separar con precisión el ataque externo oportunista (los bots de IRC) de la intrusión interna dirigida (el espionaje mediante Suckit y el sniffer de terminal), sintetizando las conclusiones en el dictamen técnico entregado a las autoridades de la institución, expuesto en el Capítulo~\ref{cap:veredicto_y_atribucion}.
 
 \begin{retoforense}[Trazabilidad de Sesiones Webmail y Privacidad]
 En las bitácoras de OpenWebMail se aprecian identificadores de sesión (\texttt{duende-session-0.269443440091894}) y comandos de movimiento de mensajes (\texttt{movemsg}). ¿Qué precauciones procesales y de cadena de custodia debe observar un perito informático antes de inspeccionar el contenido de correos electrónicos privados para no vulnerar el secreto de las comunicaciones ni invalidar la prueba judicialmente?

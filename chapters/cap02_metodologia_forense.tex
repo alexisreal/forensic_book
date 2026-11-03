@@ -119,6 +119,8 @@ El análisis forense digital en la época requería la orquestación metódica d
 \label{tab:herramientas_forenses}
 \end{table}
 
+Con el laboratorio de control configurado, las estaciones periciales preparadas y los principios de preservación claramente definidos, la investigación debió enfrentar su primer desafío operativo directo: ejecutar un triaje en vivo sobre el servidor \texttt{helios} en funcionamiento, examinando el sistema de archivos sin alertar al intruso y recolectando los primeros artefactos materiales que delataran su presencia. Esta inspección inicial reveló una alarmante siembra de binarios con permisos indebidos de superusuario, cuyo descubrimiento se examina a continuación.
+
 \begin{perspectiva20}[Perspectiva y lección técnica: adquisición de memoria volátil]
 En investigaciones periciales de sistemas Unix/Linux, la adquisición de memoria RAM viva estaba en una fase incipiente. Hoy en día, la captura de memoria volátil mediante controladores del kernel como \textit{LiME} (\textit{Linux Memory Extractor}) y su posterior interrogación con marcos avanzados como \textit{Volatility 3} constituyen el primer paso ineludible en la respuesta a incidentes, permitiendo recuperar claves de cifrado, conexiones de red activas en memoria e inyecciones de código que jamás tocan el disco duro.
 \end{perspectiva20}

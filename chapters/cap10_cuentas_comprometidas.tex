@@ -1,4 +1,5 @@
 \chapter{Análisis forense de cuentas comprometidas}
+\label{cap:cuentas_comprometidas}
 
 La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslabón más débil de su cadena de credenciales. El análisis forense de los directorios personales de los usuarios afectados reveló el mecanismo de acceso inicial y el depósito de herramientas auxiliares que permitieron la consolidación de la presencia no autorizada.
 
@@ -588,6 +589,8 @@ colocar sus servidores y después de poco tiempo migran a otros equipos
 sin dejar rastro o recolectar información. No serán estudiados
 estos servicios en el presente reporte, solo se mencionará lo que sea de interés
 directo con la intrusión y sustracción de información confidencial.
+
+La inspección de estas cuentas personales reveló además que el intruso había ejecutado órdenes sistemáticas de borrado (\texttt{rm -rf}) para suprimir scripts intermedios, bitácoras de compilación y archivos temporales, buscando encubrir la autoría material del ataque. Sin embargo, en la arquitectura de Linux Ext2, la supresión lógica no destruye físicamente los bloques magnéticos de datos. Para rescatar esta evidencia indispensable que el atacante pretendió hacer desaparecer, el procedimiento pericial recurrió a la interrogación de inodos huérfanos y al tallado forense de estructuras desasociadas (\textit{file carving}), como se documenta en el siguiente capítulo.
 
 \begin{retoforense}[Detección de Bots y Procesos Ocultos en Espacio de Usuario]
 En el directorio de \texttt{proa} se localizaron ejecutables \texttt{in.ftpd} y \texttt{psybnc}. Si el intruso no posee privilegios de \texttt{root} para enlazar puertos privilegiados ($< 1024$), ¿en qué rangos de puertos efímeros suelen operar estos servicios y qué comando de red (\texttt{netstat -tlpn} o \texttt{ss}) permite identificar qué sockets están asociados a un UID específico?

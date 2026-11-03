@@ -201,7 +201,11 @@ bit. Si los números coinciden para dos archivos, estos son iguales.
 
 
 
- Los dos archivos son idénticos a nivel binario. El cotejo del valor hash MD5 (\texttt{4237949f8b00fc64feb9b575a5f6e1dc}) confirma que el binario de inicio del sistema operativo (\texttt{/sbin/init}) fue reemplazado exactamente por una copia del programa malicioso \texttt{/dev/zqft4/sk}.
+ Los dos archivos son idénticos a nivel binario. El cotejo de la huella MD5:
+\begin{center}
+\texttt{4237949f8b00fc64feb9b575a5f6e1dc}
+\end{center}
+confirma que el binario de inicio del sistema operativo (\texttt{/sbin/init}) fue reemplazado exactamente por una copia del programa malicioso \texttt{/dev/zqft4/sk}.
 
 \begin{notaforense}[Disección del Rootkit Suckit v1.3b y Evasión vía /dev/kmem]
 El análisis forense de cadenas y estructuras binarias identifica de manera categórica al artefacto \texttt{sk} como el célebre \textbf{Suckit Rootkit versión 1.3b} (diseñado por el investigador \textit{sd} y publicado en la revista \textit{Phrack} \#58 en diciembre de 2001). 

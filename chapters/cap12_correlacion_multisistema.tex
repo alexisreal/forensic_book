@@ -1,4 +1,5 @@
 \chapter{Movimiento lateral y correlación multisistema}
+\label{cap:correlacion_multisistema}
 
 Una intrusión rara vez permanece confinada a un único servidor cuando los sistemas comparten redes locales, montajes remotos NFS o esquemas de confianza entre cuentas de usuario. La correlación pericial con otros servidores del departamento permitió reconstruir la propagación lateral y confirmar la hipótesis sobre el origen de los accesos.
 
@@ -227,6 +228,8 @@ aparecen los accesos de duende quien no ingresó al equipo por mucho tiempo.
  Los ingresos del usuario \texttt{duende} desde \texttt{atlas} hacia \texttt{helios} se
 confirman en las bitácoras de \texttt{atlas}, y se autentifica que provienen de
 una conexión dsl de prodigy infinitum.
+
+Con el pivoteo interno desde \texttt{atlas} plenamente documentado y vinculado a conexiones residenciales de proveedores locales en Morelia, un flanco de extrema gravedad requería confirmación pericial: el servidor departamental de correspondencia electrónica (\texttt{io.ifm.lab.edu.mx}). Si el atacante había cosechado contraseñas mediante el sniffer troyanizado en \texttt{helios}, ¿había accedido a los buzones privados de los usuarios de la institución? ¿Empleó el portal de correo web (\textit{OpenWebMail}) para espiar comunicaciones o enviar mensajes en nombre de terceros? Para esclarecer el alcance de esta amenaza, la investigación auditó las bitácoras de transporte MTA y sesiones CGI en \texttt{io}, tal como se examina en el Capítulo~\ref{cap:servidor_correo_webmail}.
 
 \begin{retoforense}[Trazabilidad de Saltos Múltiples (Pivoting)]
 A partir de las bitácoras de \texttt{atlas} y \texttt{helios}, reconstruya la cadena completa de conexión: ¿cuál fue la dirección IP del proveedor externo de acceso conmutado/DSL y en qué puertos se establecieron las sesiones sucesivas? ¿Qué información adicional requeriría solicitar judicialmente al ISP para identificar al titular de la línea telefónica?

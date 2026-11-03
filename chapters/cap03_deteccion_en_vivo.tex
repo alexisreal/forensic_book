@@ -438,3 +438,5 @@ El bloque final de comandos ejecutados en la consola confirma sin ambigüedad qu
 58=ls -lFa .bash_history
 \end{lstlisting}
 La lectura directa del archivo \texttt{/etc/shadow} solo es técnicamente posible para la cuenta \texttt{root}. Asimismo, el comando \texttt{chown root.root dnsquery} demuestra el intento deliberado por transferir la propiedad del archivo malicioso \texttt{dnsquery} (originalmente creado bajo el usuario \texttt{duende}) al superusuario, buscando enmascararlo entre los programas legítimos del sistema operativo.
+
+La confirmación de que el usuario \texttt{duende} poseía control de superusuario y operaba sobre directorios camuflados en \texttt{/dev} planteó una interrogante de máxima gravedad: ¿qué funciones cumplían los programas almacenados en \texttt{/dev/zqft4} y \texttt{/dev/ptyp}, y qué impacto operativo estaban causando sobre el servidor? Para responder a ello, la investigación procedió de inmediato a someter estos binarios a un análisis de funcionalidad e ingeniería inversa, destapando el despliegue de una red de bots IRC parásitos y un sofisticado mecanismo de intercepción de credenciales en el sistema.

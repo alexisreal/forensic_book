@@ -25,7 +25,7 @@ La secuencia temporal global derivada de esta correlación de inodos se sintetiz
 \begin{figure}[htbp]
 \centering
 \begin{tikzpicture}[
-    scale=0.88,
+    scale=0.79,
     every node/.style={transform shape, font=\sffamily},
     tline/.style={draw=primary, ultra thick, -{Stealth[length=3.5mm]}},
     eventnode/.style={draw=primary, thick, fill=white, rounded corners=3pt, align=center, font=\scriptsize, text width=2.6cm},
@@ -40,32 +40,32 @@ La secuencia temporal global derivada de esta correlación de inodos se sintetiz
 % 1. 8 de abril
 \draw[draw=primary, ultra thick] (1.0, 0.2) -- (1.0, -0.2) node[below=2pt, font=\scriptsize\bfseries] {8 de abril};
 \draw[conn] (1.0, 0.2) -- (1.0, 1.8);
-\node[evdark] at (1.0, 2.5) {\textbf{16:02:08}\\	iny Despliegue de Suckit (\texttt{sk}), parcheo de \texttt{init} y limpiador \texttt{clean!}};
+\node[evdark] at (1.0, 2.5) {\textbf{16:02:08}\\\tiny Despliegue de Suckit (\texttt{sk}), parcheo de \texttt{init} y limpiador \texttt{clean!}};
 
 % 2. 11 de abril
 \draw[draw=primary, ultra thick] (3.2, 0.2) -- (3.2, -0.2) node[below=2pt, font=\scriptsize\bfseries] {11 de abril};
 \draw[conn] (3.2, -0.2) -- (3.2, -1.5);
-\node[eventnode] at (3.2, -2.2) {\textbf{16:18 - 21:19}\\	iny Troyanización de \texttt{top}, \texttt{pstree}, \texttt{getty} y scripts en \texttt{mc.pipe}};
+\node[eventnode] at (3.2, -2.2) {\textbf{16:18 - 21:19}\\\tiny Troyanización de \texttt{top}, \texttt{pstree}, \texttt{getty} y scripts en \texttt{mc.pipe}};
 
 % 3. 15 de abril
 \draw[draw=primary, ultra thick] (5.5, 0.2) -- (5.5, -0.2) node[below=2pt, font=\scriptsize\bfseries] {15 de abril};
 \draw[conn] (5.5, 0.2) -- (5.5, 1.8);
-\node[eventnode] at (5.5, 2.5) {\textbf{22:47 - 23:08}\\	iny Conexiones de \texttt{proa} y \texttt{zena}. Primer ingreso de \texttt{duende} desde \texttt{atlas}};
+\node[eventnode] at (5.5, 2.5) {\textbf{22:47 - 23:08}\\\tiny Conexiones de \texttt{proa} y \texttt{zena}. Primer ingreso de \texttt{duende} desde \texttt{atlas}};
 
 % 4. 18 de abril
 \draw[draw=primary, ultra thick] (7.7, 0.2) -- (7.7, -0.2) node[below=2pt, font=\scriptsize\bfseries] {18 de abril};
 \draw[conn] (7.7, -0.2) -- (7.7, -1.5);
-\node[eventnode] at (7.7, -2.2) {\textbf{22:37:42}\\	iny Ataques de autenticación contra servidor de correo \texttt{io} desde DSL Prodigy};
+\node[eventnode] at (7.7, -2.2) {\textbf{22:37:42}\\\tiny Ataques de autenticación contra servidor de correo \texttt{io} desde DSL Prodigy};
 
 % 5. 22 de abril
 \draw[draw=primary, ultra thick] (9.8, 0.2) -- (9.8, -0.2) node[below=2pt, font=\scriptsize\bfseries] {22 de abril};
 \draw[conn] (9.8, 0.2) -- (9.8, 1.8);
-\node[evdark] at (9.8, 2.5) {\textbf{06:18:01}\\	iny Acceso limpio a cuenta \texttt{mherrera} en \texttt{io} y \texttt{BAD SU} a superusuario};
+\node[evdark] at (9.8, 2.5) {\textbf{06:18:01}\\\tiny Acceso limpio a cuenta \texttt{mherrera} en \texttt{io} y \texttt{BAD SU} a superusuario};
 
 % 6. 24 de abril
 \draw[draw=primary, ultra thick] (11.6, 0.2) -- (11.6, -0.2) node[below=2pt, font=\scriptsize\bfseries] {24 de abril};
 \draw[conn] (11.6, -0.2) -- (11.6, -1.5);
-\node[eventnode] at (11.6, -2.2) {\textbf{Triage en Vivo}\\	iny Descubrimiento de SUIDs anómalos y congelación pericial};
+\node[eventnode] at (11.6, -2.2) {\textbf{Triage en Vivo}\\\tiny Descubrimiento de SUIDs anómalos y congelación pericial};
 
 \end{tikzpicture}
 \caption{Reconstrucción cronológica pericial de los eventos clave obtenida mediante análisis de tiempos MAC.}
@@ -311,6 +311,8 @@ momento. Las marcas de tiempo nos dicen que a esta hora fueron
 troyanizados/creados gran parte de los programas y archivos esenciales
 para el funcionamiento del equipo. Los archivos propiedad de duende
 están entre los programas modificados/creados y se muestran arriba.
+
+La fijación incontrovertible de la <<hora cero>> del ataque (domingo 11 de abril de 2004 a partir de las 20:55:02) brindó la coordenada pericial indispensable para orientar la siguiente fase: cruzar esta ventana crítica contra los registros de auditoría del sistema operativo. A pesar de los intentos del intruso por purgar las bitácoras con utilidades como \texttt{clean!}, el análisis minucioso de las bitácoras de autenticación (\texttt{auth.log}), los registros binarios de sesión (\texttt{wtmp}) y las transferencias de archivos (\texttt{xferlog}) permitió determinar con qué credenciales se accedió y qué archivos se descargaron en ese instante.
 
 \begin{retoforense}[Detección de Falsificación Temporal (Timestomping)]
 Si un intruso ejecuta \texttt{touch -r /bin/sh /dev/zqft4/bash!} para clonar las marcas \texttt{mtime} y \texttt{atime} del shell legítimo, ¿por qué el comando \texttt{mactime} continúa reportando la fecha real de la implantación en la columna \texttt{c} (\textit{ctime}) y cómo puede un perito explotar esta discrepancia para refutar coartadas temporales?

@@ -100,10 +100,9 @@ La actividad de este usuario es muy alta y no hay registro de accesos
 anteriores al 15 de abril, estos accesos se estudiarán mas adelante y
 se cotejaran con registros de otras máquinas y otras cuentas.
 
- Hasta aquí es muy extraño que los accesos de l usuario duende
-provengan de \texttt{atlas.ifm.lab.edu.mx} o \texttt{192.0.2.20}, ya que el
-usuario no tenía restricción alguna para acceder directamente desde el
-exterior.
+ Hasta aquí resultaba sumamente anómalo que los accesos del usuario \texttt{duende}
+provengan de \nolinkurl{atlas.ifm.lab.edu.mx} (\texttt{192.0.2.20}), ya que dicho
+usuario no tenía restricción alguna para acceder directamente desde el exterior.
 
  Se procedió a observar el comportamiento del usuario, para realizar
 esto nos valimos de la colaboración de algunos otros usuarios de los
@@ -479,287 +478,56 @@ pstree del sistema, una de ellas es la siguiente:
 
 \vspace{1em}
 
- En esas líneas aparece una cadena donde se corren varios de los programas
-estudiados, y nos indica claramente que fue ejecutado por el usuario duende.
- 
+ En estas líneas aparece una cadena donde se ejecutan de forma encubierta varios de los programas maliciosos bajo investigación, indicando inequívocamente que fueron invocados bajo la cuenta del usuario \texttt{duende}.
 
- El \texttt{/dev/.pst}
- 
-\vspace{1em}
+\subsection{Inspección profunda de procesos y descubrimiento de \texttt{/dev/.pst}}
+
+Para comprender el mecanismo mediante el cual el intruso lograba evadir la detección en la consola ordinaria, se procedió a volcar la tabla de procesos en memoria mediante \texttt{ps auxe} (salida extendida con variables de entorno). Al aislar los demonios pasivos de fondo, el análisis pericial se concentró en los árboles de procesos interactivos y en las tuberías activas de ejecución:
 
 \begin{lstlisting}[style=terminal]
 USER       PID %CPU %MEM   VSZ  RSS TTY      STAT START   TIME COMMAND
-root         6  0.0  0.0     0    0 ?        SW   Apr23   0:04 [kupdated]
-root         5  0.0  0.0     0    0 ?        SW   Apr23   0:00 [bdflush]
-root         4  0.0  0.0     0    0 ?        SW   Apr23   0:06 [kswapd]
-root         3  0.0  0.0     0    0 ?        SWN  Apr23   0:00 [ksoftirqd_CPU0]
-root         1  0.0  0.1  1284  460 ?        S    Apr23   0:04 init [2]   TERM=linux BOOT_IMAGE=Linux
-root         2  0.0  0.0     0    0 ?        SW   Apr23   0:07 [keventd]
-root         7  0.0  0.0     0    0 ?        SW   Apr23   0:00 [i2oevtd]
-root         8  0.0  0.0     0    0 ?        SW   Apr23   0:11 [kjournald]
-root        57  0.0  0.0     0    0 ?        SW   Apr23   0:00 [khubd]
-root       112  0.0  0.0     0    0 ?        SW   Apr23   0:08 [kjournald]
-daemon     152  0.0  0.1  1384  432 ?        S    Apr23   0:00 /sbin/portmap PWD=/ CONSOLE=/dev/console
-                 PREVLEVEL=N AUTOBOOT=YES runlevel=S prevlevel=N VERBOSE=yes SHLVL=2 BOOT_IMAGE=Linux 
-                 TERM=linux PATH=/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=S INIT_VERSION=sysvinit-2.84 _
-                 =/sbin/start-stop-daemon
-root       163  0.0  0.0     0    0 ?        SW   Apr23   0:03 [rpciod]
-root       164  0.0  0.0     0    0 ?        SW   Apr23   0:00 [lockd]
-root       252  0.0  0.3  2036  776 ?        S    Apr23   0:00 /sbin/syslogd PWD=/ CONSOLE=/dev/console 
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/bin:/usr/bin:/sbin:/usr/sbin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84 _
-                =/sbin/start-stop-daemon
-root       265  0.0  0.4  2120 1060 ?        S    Apr23   0:00 /sbin/klogd PWD=/ CONSOLE=/dev/console
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/bin:/usr/bin:/sbin:/usr/sbin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84 _
-                =/sbin/start-stop-daemon
-root       271  0.0  0.2  1444  540 ?        S    Apr23   0:00 /sbin/rpc.statd PWD=/ CONSOLE=
-                /dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux 
-                TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION
-                =sysvinit-2.84 _=/sbin/start-stop-daemon OLDPWD=/
-root       284  0.0  0.2  1992  652 ?        S    Apr23   0:00 /usr/sbin/inetd PWD=/ CONSOLE=/dev/console 
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84
-         _=/sbin/start-stop-daemon
-daemon     299  0.0  0.2  1976  512 ?        S    Apr23   0:00 lpd Waiting                                                                                                                                                                                                                                                          
-root       314  0.0  0.2  2788  660 ?        S    Apr23   0:00 /usr/sbin/sshd PWD=/ CONSOLE=/dev/console
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84
-                _=/sbin/start-stop-daemon
-root     18706  0.0  0.7  6552 1884 ?        S    13:39   0:03  \_ /usr/sbin/sshd PWD=/ 
-                CONSOLE=/dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=
-                Linux TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 
-                INIT_VERSION=sysvinit-2.84 _=/sbin/start-stop-daemon
-root     18708  0.0  0.5  2268 1316 pts/4    S    13:39   0:00  |   \_ -bash USER=root LOGNAME=root 
-                HOME=/root PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin MAIL=/var/mail/root 
-                SHELL=/bin/bash SSH_CLIENT=192.0.2.89 32817 22 SSH_TTY=/dev/pts/4 TERM=linux LANG=C
-root     29247  0.0  0.7  2952 1780 pts/4    S    16:22   0:01  |       \_ mc PWD=/root PS1=\h:\w\$  
-                USER=root MAIL=/var/mail/root LANG=C SSH_CLIENT=192.0.2.89 32817 22 LOGNAME=root 
-                SHLVL=1 SHELL=/bin/bash HOME=/root TERM=linux PATH=/usr/local/sbin:/usr/local/bin:
-                /usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 SSH_TTY=/dev/pts/4 _=/usr/bin/mc 
-                OLDPWD=/root/chkrootkit-0.40
-root     29250  0.0  0.5  2236 1288 pts/5    S    16:22   0:00  |           \_ bash -rcfile .bashrc 
-                PWD=/root PS1=\h:\w\$  USER=root MAIL=/var/mail/root LANG=C SSH_CLIENT=192.0.2.89 
-                32817 22 LOGNAME=root SHLVL=1 SHELL=/bin/bash HOME=/root TERM=linux PATH=/usr/local/sbin:
-                /usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 SSH_TTY=/dev/pts/4 _
-                =/usr/bin/mc OLDPWD=/root/chkrootkit-0.40 MC_CONTROL_FILE=/tmp/mc.29247.control 
-                HISTCONTROL=ignorespace
-root      6546  0.0  0.0  1260  248 pts/5    T    17:54   0:00  |               \_ last PWD=/dev PS1=\h:
-                \w\$  USER=root HISTCONTROL=ignorespace MAIL=/var/mail/root LANG=C SSH_CLIENT=
-                192.0.2.89 32817 22 LOGNAME=root SHLVL=2 SHELL=/bin/bash MC_CONTROL_FILE=
-                /tmp/mc.29247.control HOME=/root TERM=linux PATH=/usr/local/sbin:/usr/local/bin:
-                /usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 SSH_TTY=/dev/pts/4 OLDPWD=/ _=/usr/bin/last
+---------------------------------------------------------------------------------------
+[Sesión administrativa de investigación (192.0.2.89)]
+root     18706  0.0  0.7  6552 1884 ?        S    13:39   0:03  \_ /usr/sbin/sshd
+root     18708  0.0  0.5  2268 1316 pts/4    S    13:39   0:00  |   \_ -bash
+                                                       [SSH_CLIENT=192.0.2.89 32817 22]
+root     29247  0.0  0.7  2952 1780 pts/4    S    16:22   0:01  |       \_ mc
+                                                       [OLDPWD=/root/chkrootkit-0.40]
+root     29250  0.0  0.5  2236 1288 pts/5    S    16:22   0:00  |           \_ bash -rcfile .bashrc
+root      6546  0.0  0.0  1260  248 pts/5    T    17:54   0:00  |               \_ last
 root      6548  0.0  0.0     0    0 pts/5    Z    17:54   0:00  |                   \_ [last <defunct>]
-root      6951  0.0  0.6  6400 1712 ?        S    20:09   0:00  \_ /usr/sbin/sshd PWD=/ 
-                CONSOLE=/dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N 
-                BOOT_IMAGE=Linux TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2
-                INIT_VERSION=sysvinit-2.84 _=/sbin/start-stop-daemon
-duende   6953  0.0  0.7  6408 1820 ?        S    20:09   0:00      \_ /usr/sbin/sshd PWD=/ 
-                CONSOLE=/dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N 
-                BOOT_IMAGE=Linux TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 
-                INIT_VERSION=sysvinit-2.84 _=/sbin/start-stop-daemon
-duende   6954  0.0  0.6  2780 1528 pts/6    S    20:09   0:00          \_ -tcsh USER=duende 
-                LOGNAME=duende HOME=/home/staff/duende PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin 
-                MAIL=/var/mail/duende SHELL=/bin/tcsh SSH_CLIENT=192.0.2.20 34189 22 
-                SSH_TTY=/dev/pts/6 TERM=xterm LANG=C
-root       318  0.0  0.1  4240  456 ?        S    Apr23   0:00 /usr/bin/X11/xfs -daemon PWD=/ 
-                CONSOLE=/dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=
-                Linux TERM=linux PATH=/bin:/usr/bin:/sbin:/usr/sbin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84
-                =/sbin/start-stop-daemon
-root       321  0.1  0.5  2940 1476 ?        S    Apr23   4:47 /usr/sbin/rpc.nfsd PWD=/ CONSOLE=
-                /dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux 
-                TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=
-                sysvinit-2.84 _=/sbin/start-stop-daemon
-root       323  0.0  0.3  2476  952 ?        S    Apr23   0:00 /usr/sbin/rpc.mountd PWD=/ CONSOLE=
-                /dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux 
-                TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=
-                sysvinit-2.84 _=/sbin/start-stop-daemon
-daemon     326  0.0  0.2  1384  516 ?        S    Apr23   0:00 /usr/sbin/atd PWD=/ CONSOLE=/dev/console 
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/bin:/usr/bin:/sbin:/usr/sbin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84 _
-                =/sbin/start-stop-daemon
-root       329  0.0  0.2  1652  616 ?        S    Apr23   0:00 /usr/sbin/cron PWD=/ CONSOLE=/dev/console 
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84
-                _=/sbin/start-stop-daemon
-root     11793  0.0  0.3  1760  764 ?        S    06:25   0:00  \_ /USR/SBIN/CRON PWD=/ 
-                CONSOLE=/dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=
-                Linux TERM=linux PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 
-                INIT_VERSION=sysvinit-2.84 _=/sbin/start-stop-daemon
-root     11809  0.0  0.1  2612  488 ?        T    06:25   0:00      \_ /usr/sbin/sendmail -i -FCronDaemon
-                -odi -oem root PWD=/ CONSOLE=/dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 
-                previous=N BOOT_IMAGE=Linux TERM=linux PATH=/usr/bin:/bin RUNLEVEL=2 INIT_VERSION=
-                sysvinit-2.84 _=/sbin/start-stop-daemon
-root       334  0.0  0.6  7292 1624 ?        S    Apr23   0:00 /usr/bin/gdm PWD=/ CONSOLE=/dev/console 
-                PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux 
-                PATH=/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84 _=
-                /sbin/start-stop-daemon
-root      4739  0.0  0.8  7340 2100 ?        S    Apr24   0:00  \_ /usr/bin/gdm PWD=/ CONSOLE=
-                /dev/console PREVLEVEL=N AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux 
-                TERM=linux PATH=/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84 _=
-                /sbin/start-stop-daemon
-root      4740  0.0  2.0 72896 5188 ?        S<   Apr24   0:52      \_ /usr/bin/X11/X :0 -deferglyphs 16 
-                -nolisten tcp vt7 -auth /var/lib/gdm/:0.Xauth PWD=/ CONSOLE=/dev/console PREVLEVEL=N 
-                AUTOBOOT=YES runlevel=2 SHLVL=2 previous=N BOOT_IMAGE=Linux TERM=linux PATH=/sbin:/bin:
-                /usr/sbin:/usr/bin RUNLEVEL=2 INIT_VERSION=sysvinit-2.84 _=/sbin/start-stop-daemon 
-                XAUTHORITY=/var/lib/gdm/:0.Xauth DISPLAY=:0
-gdm       5377  0.0  1.4  7928 3724 ?        S    Apr24   0:00      \_ /usr/bin/gdmlogin --disable-sound 
-                --disable-crash-dialog XAUTHORITY=/var/lib/gdm/:0.Xauth DISPLAY=:0 LOGNAME=gdm USER=gdm 
-                USERNAME=gdm GDM_GREETER_PROTOCOL_VERSION=1 GDM_VERSION=198.18.38.5 HOME=/var/lib/gdm SHELL=
-                /bin/false PATH=/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games RUNNING_UNDER_GDM=
-                true GDM_IS_LOCAL=yes GDM_TIMED_LOGIN_OK= 
-root       352  0.0  0.1  1256  412 tty4     S    Apr23   0:00 /sbin/getty 38400 tty4  BOOT_IMAGE=Linux 
-                AUTOBOOT=YES PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 PREVLEVEL=N 
-                CONSOLE=/dev/console INIT_VERSION=sysvinit-2.84
-root       353  0.0  0.1  1256  400 tty5     S    Apr23   0:00 /sbin/getty 38400 tty5  BOOT_IMAGE=Linux 
-                AUTOBOOT=YES PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 PREVLEVEL=N 
-                CONSOLE=/dev/console INIT_VERSION=sysvinit-2.84
-root       354  0.0  0.1  1256  400 tty6     S    Apr23   0:00 /sbin/getty 38400 tty6  BOOT_IMAGE=Linux 
-                AUTOBOOT=YES PATH=/usr/local/sbin:/sbin:/bin:/usr/sbin:/usr/bin RUNLEVEL=2 PREVLEVEL=N 
-                CONSOLE=/dev/console INIT_VERSION=sysvinit-2.84
-root       892  0.0  0.0  1524  224 ?        S    Apr23   0:00 su PWD=/home/misc/brenton PS1=\u@\h:\w\$  
-                USER=brenton MAIL=/var/mail/brenton LANG=C SSH_CLIENT=192.0.2.89 45170 22 LOGNAME=brenton 
-                SHLVL=1 SHELL=/bin/bash HOME=/home/misc/brenton TERM=linux PATH=/usr/local/bin:/usr/bin:
-                /bin:/usr/bin/X11:/usr/games SSH_TTY=/dev/pts/0 _=/bin/su
-solanill  4609  0.0  0.3  2056  948 ?        S    Apr24   0:01 ./su 
-                REMOTEHOST=dup-200-64-59-216.prodigy.net.mx TERM=vt52 HZ=100 HOME=/home/staff/solanill 
-                SHELL=/bin/tcsh PATH=/usr/local/bin:/usr/bin:/bin:/usr/bin/X11:/usr/games USER=solanill 
-                LOGNAME=solanill MAIL=/var/mail/solanill LANG=C HUSHLOGIN=FALSE HOSTTYPE=i386-linux 
-                VENDOR=intel OSTYPE=linux MACHTYPE=i386 SHLVL=1 PWD=/home/staff/solanill/... GROUP=unknown 
-                HOST=helios
-root     11017  0.0  0.1  1516  372 ?        T    Apr24   0:00 tar chf - sbin PWD=/ USER=root 
-                HISTCONTROL=ignorespace MAIL=/var/mail/root OLDPWD=/sbin LANG=C SSH_CLIENT=192.0.2.89 
-                32949 22 LOGNAME=root SHLVL=3 SHELL=/bin/bash MC_CONTROL_FILE=/tmp/mc.10988.control 
-                HOME=/root TERM=linux PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
-                /usr/bin/X11 SSH_TTY=/dev/pts/4 _=/bin/tar
-root     11019  0.0  0.0     0    0 ?        Z    Apr24   0:00  \_ [tar <defunct>]
-root     11820  0.0  0.1  2612  488 ?        T    06:25   0:00 send-mail -i -- 
-                brenton@helios.ifm.lab.edu.mx PWD=/usr/lib OLDPWD=/root LOGNAME=root SHLVL=2 SHELL=/bin/sh 
-                HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin _
-                =/usr/bin/mail
-duende  12689  0.0  0.0  1284  252 ?        T    07:43   0:00 /bin/egrep -v egrep|dnsquery|-bash|linux
-                |sysinit|db|identd|plogd|screen|ecko|popclean|popclean|ps PWD=/dev/zqft4 VENDOR=intel 
-                REMOTEHOST=atlas.ifm.lab.edu.mx MOZILLA_HOME=/usr/local/netscape OPENWINHOME=/usr/openwin 
-                USER=duende MACHTYPE=i386 MAIL=/var/mail/duende LANG=C HOST=helios 
-                SSH_CLIENT=192.0.2.20 33996 22 LOGNAME=duende SHLVL=2 GROUP=unknown SHELL=/bin/tcsh 
-                HOSTTYPE=i386-linux OSTYPE=linux HOME=/home/staff/duende TERM=vt100 PATH=/bin:/usr/bin:
-                /usr/local/bin:/usr/X11R6/bin:.:/home/staff/duende/prog/bin:/usr/local/bin:/opt/kde/bin:
-                /home/staff/duende/bin SSH_TTY=/dev/pts/3 _=/bin/egrep
-duende  12690  0.0  0.0     0    0 ?        Z    07:43   0:00  \_ [egrep <defunct>]
-duende  14928  0.0  0.0  1284  252 ?        T    10:04   0:00 /bin/egrep -v egrep|dnsquery|-bash|linux
-                |sysinit|db|identd|plogd|screen|ecko|popclean|popclean|ps PWD=/home/staff/duende 
-                VENDOR=intel REMOTEHOST=atlas.ifm.lab.edu.mx MOZILLA_HOME=/usr/local/netscape 
-                OPENWINHOME=/usr/openwin USER=duende MACHTYPE=i386 MAIL=/var/mail/duende LANG=C 
-                HOST=helios SSH_CLIENT=192.0.2.20 34041 22 LOGNAME=duende SHLVL=2 GROUP=unknown 
-                SHELL=/bin/tcsh HOSTTYPE=i386-linux OSTYPE=linux HOME=/home/staff/duende TERM=vt100 
-                PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:.:/home/staff/duende/prog/bin:
-                /usr/local/bin:/opt/kde/bin:/home/staff/duende/bin SSH_TTY=/dev/pts/9 _=/bin/egrep
-duende  14929  0.0  0.0     0    0 ?        Z    10:04   0:00  \_ [egrep <defunct>]
-root     19340  0.0  0.0  1244  244 pts/4    T    14:18   0:00 /bin/echo a\c PWD=/root/chkrootkit-0.40 
-                USER=root MAIL=/var/mail/root LANG=C SSH_CLIENT=192.0.2.89 32817 22 LOGNAME=root 
-                SHLVL=2 SHELL=/bin/bash HOME=/root TERM=linux PATH=/usr/local/sbin:/usr/local/bin:
-                /usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 SSH_TTY=/dev/pts/4 _=/bin/echo
-root     19342  0.0  0.0     0    0 pts/4    Z    14:18   0:00  \_ [echo <defunct>]
-root     19341  0.0  0.0  1280  248 pts/4    T    14:18   0:00 /bin/egrep c PWD=/root/chkrootkit-0.40 
-                USER=root MAIL=/var/mail/root LANG=C SSH_CLIENT=192.0.2.89 32817 22 LOGNAME=root 
-                SHLVL=2 SHELL=/bin/bash HOME=/root TERM=linux PATH=/usr/local/sbin:/usr/local/bin:
-                /usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 SSH_TTY=/dev/pts/4 _=/bin/egrep
-root     19343  0.0  0.0     0    0 pts/4    Z    14:18   0:00  \_ [egrep <defunct>]
-root     26825  0.0  0.0  1280  248 pts/4    T    14:25   0:00 /bin/egrep -l ^[0-5]  /dev/.libn 
-                PWD=/root/chkrootkit-0.40 USER=root MAIL=/var/mail/root LANG=C SSH_CLIENT=192.0.2.89 
-                32817 22 LOGNAME=root SHLVL=2 SHELL=/usr/bin/esh HOME=/root TERM=linux 
-                PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 
-                SSH_TTY=/dev/pts/4 _=/usr/bin/find
-root     26826  0.0  0.0     0    0 pts/4    Z    14:25   0:00  \_ [egrep <defunct>]
-root      6746  0.0  0.4  2228 1248 tty2     S    18:21   0:00 -bash TERM=linux HZ=100 HOME=/root 
-                SHELL=/bin/bash PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/bin/X11:/usr/local/sbin:
-                /usr/local/bin USER=root LOGNAME=root MAIL=/var/mail/root LANG=C HUSHLOGIN=FALSE
-root      7342  0.7  0.6  2828 1664 tty2     D    20:52   0:20  \_ mc PWD=/root HZ=100 PS1=\h:\w\$  
-                USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=1 HUSHLOGIN=FALSE SHELL=/bin/bash 
-                TERM=linux HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
-                /usr/bin/X11 _=/usr/bin/mc OLDPWD=/home/staff/duende
-root      7344  0.0  0.1  1240  324 ?        S    20:52   0:00      \_ cons.saver /dev/tty2 PWD=/root 
-                HZ=100 PS1=\h:\w\$  USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=1 
-                HUSHLOGIN=FALSE SHELL=/bin/bash TERM=linux HOME=/root PATH=/usr/local/sbin:
-                /usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 _=/usr/bin/mc 
-                OLDPWD=/home/staff/duende MC_CONTROL_FILE=/tmp/mc.7342.control
-root      7345  0.0  0.4  2224 1244 pts/8    S    20:52   0:00      \_ bash -rcfile .bashrc PWD=/root 
-                HZ=100 PS1=\h:\w\$  USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=1 
-                HUSHLOGIN=FALSE SHELL=/bin/bash TERM=linux HOME=/root PATH=/usr/local/sbin:
-                /usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 _=/usr/bin/mc OLDPWD=
-                /home/staff/duende MC_CONTROL_FILE=/tmp/mc.7342.control HISTCONTROL=ignorespace
-root      6747  0.0  0.4  2228 1260 tty1     S    18:21   0:00 -bash TERM=linux HZ=100 HOME=/root SHELL=
-                /bin/bash PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/bin/X11:/usr/local/sbin:/usr/local/bin 
-                USER=root LOGNAME=root MAIL=/var/mail/root LANG=C HUSHLOGIN=FALSE
-root      7031  0.0  0.0  1260  248 tty1     T    20:16   0:00  \_ last PWD=/root HZ=100 PS1=\h:\w\$  
-                USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=1 HUSHLOGIN=FALSE SHELL=/bin/bash 
-                TERM=linux HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
-                /usr/bin/X11 _=/usr/bin/last
-root      7033  0.0  0.0     0    0 tty1     Z    20:16   0:00  |   \_ [last <defunct>]
-root      7756  0.0  0.6  3552 1564 tty1     R    21:34   0:00  \_ /dev/.pst eaxfu PWD=/root HZ=100 
-                PS1=\h:\w\$  USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=1 HUSHLOGIN=FALSE 
-                SHELL=/bin/bash TERM=linux HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:
-                /usr/bin:/sbin:/bin:/usr/bin/X11 _=/dev/.pst
-root      6787  0.0  0.1  1260  440 pts/5    S    18:24   0:00 notifyme -C duende PWD=/root PS1=\h:\w\$  
-                USER=root HISTCONTROL=ignorespace MAIL=/var/mail/root LANG=C SSH_CLIENT=192.0.2.89 
-                32817 22 LOGNAME=root SHLVL=2 SHELL=/bin/bash MC_CONTROL_FILE=/tmp/mc.29247.control 
-                HOME=/root TERM=linux PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
-                /usr/bin/X11 SSH_TTY=/dev/pts/4 OLDPWD=/dev _=/usr/bin/notifyme
-root      7483  0.0  0.4  2224 1232 tty3     S    21:07   0:00 -bash TERM=linux HZ=100 HOME=/root 
-                SHELL=/bin/bash PATH=/sbin:/bin:/usr/sbin:/usr/bin:/usr/bin/X11:/usr/local/sbin:
-                /usr/local/bin USER=root LOGNAME=root MAIL=/var/mail/root LANG=C HUSHLOGIN=FALSE
-root      7724  0.0  0.1  1284  388 tty3     T    21:32   0:00  \_ ps -u root PWD=/root HZ=100 
-                PS1=\h:\w\$  USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=1 HUSHLOGIN=FALSE 
-                SHELL=/bin/bash TERM=linux HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:
-                /usr/bin:/sbin:/bin:/usr/bin/X11 _=/bin/ps
-root      7726  0.0  0.3  2024  888 tty3     T    21:32   0:00      \_ sh -c /dev/.pst  -u root | 
-                /bin/egrep -v "egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|popclean
-                |popclean|ps" PWD=/root HZ=100 PS1=\h:\w\$  USER=root MAIL=/var/mail/root LANG=C 
-                LOGNAME=root SHLVL=1 HUSHLOGIN=FALSE SHELL=/bin/bash TERM=linux HOME=/root 
-                PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:/usr/bin/X11 _=/bin/ps
-root      7728  0.0  0.0  1280  248 tty3     T    21:32   0:00          \_ /bin/egrep -v egrep|dnsquery
-                |-bash|linux|sysinit|db|identd|plogd|screen|ecko|popclean|popclean|ps PWD=/root HZ=100 
-                USER=root MAIL=/var/mail/root LANG=C LOGNAME=root SHLVL=2 HUSHLOGIN=FALSE SHELL=/bin/bash 
-                TERM=linux HOME=/root PATH=/usr/local/sbin:/usr/local/bin:/usr/sbin:/usr/bin:/sbin:/bin:
-                /usr/bin/X11 _=/bin/egrep
+
+[Sesión interactiva del atacante duende (pivoteo desde atlas - 192.0.2.20)]
+root      6951  0.0  0.6  6400 1712 ?        S    20:09   0:00  \_ /usr/sbin/sshd
+duende    6953  0.0  0.7  6408 1820 ?        S    20:09   0:00      \_ /usr/sbin/sshd
+duende    6954  0.0  0.6  2780 1528 pts/6    S    20:09   0:00          \_ -tcsh
+                                                       [SSH_CLIENT=192.0.2.20 34189 22]
+                                                       [REMOTEHOST=atlas.ifm.lab.edu.mx]
+
+[Tuberías activas de filtrado de procesos]
+duende   12689  0.0  0.0  1284  252 ?        T    07:43   0:00 /bin/egrep -v "egrep|dnsquery|-bash|..."
+                                                       [PWD=/dev/zqft4]
+                                                       [REMOTEHOST=atlas.ifm.lab.edu.mx]
+duende   14928  0.0  0.0  1284  252 ?        T    10:04   0:00 /bin/egrep -v "egrep|dnsquery|-bash|..."
+                                                       [PWD=/home/staff/duende]
+                                                       [REMOTEHOST=atlas.ifm.lab.edu.mx]
+
+[Interceptación en vivo: sustitución de ps por /dev/.pst]
+root      7756  0.0  0.6  3552 1564 tty1     R    21:34   0:00  \_ /dev/.pst eaxfu
+root      6787  0.0  0.1  1260  440 pts/5    S    18:24   0:00 notifyme -C duende
+root      7724  0.0  0.1  1284  388 tty3     T    21:32   0:00  \_ ps -u root
+root      7726  0.0  0.3  2024  888 tty3     T    21:32   0:00      \_ sh -c /dev/.pst -u root | egrep -v ...
+root      7728  0.0  0.0  1280  248 tty3     T    21:32   0:00          \_ /bin/egrep -v "egrep|dnsquery|..."
 root      7729  0.0  0.0     0    0 tty3     Z    21:32   0:00              \_ [egrep <defunct>]
-
+---------------------------------------------------------------------------------------
 \end{lstlisting}
 
-\vspace{1em}
-
- Aquí aparecen líneas muy interesantes. Aparece el número de proceso,
-los comandos ejecutados, el usuario que lo ejecutó, la hora de
-ejecución y el \texttt{PATH} del usuario que ejecutó este comando, además de
-mostrar desde donde se conecto quíen lo corrió, es decir, si alguien
-entró al sistema y ejecutó un programa el \texttt{PATH} del usuario aparecerá
-como signo inequívoco de la paternidad y propiedad del proceso. El
-usuario venía desde la máquina llamada \texttt{atlas} y corrió esos procesos
-intencionalmente.
-
-\vspace{1em}
-
-\begin{lstlisting}[style=terminal]
-duende  12689  0.0  0.0  1284  252 ?        T    07:43   0:00 
-                /bin/egrep -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko
-                |popclean|popclean|ps PWD=/dev/zqft4 VENDOR=intel REMOTEHOST=atlas.ifm.lab.edu.mx 
-                MOZILLA_HOME=/usr/local/netscape OPENWINHOME=/usr/openwin USER=duende MACHTYPE=i386
-            MAIL=/var/mail/duende LANG=C HOST=helios SSH_CLIENT=192.0.2.20 33996 22 
-                LOGNAME=duende SHLVL=2 GROUP=unknown SHELL=/bin/tcsh HOSTTYPE=i386-linux 
-                OSTYPE=linux HOME=/home/staff/duende TERM=vt100 PATH=/bin:/usr/bin:/usr/local/bin
-                :/usr/X11R6/bin:.:/home/staff/duende/prog/bin:/usr/local/bin:/opt/kde/bin
-                :/home/staff/duende/bin SSH_TTY=/dev/pts/3 _=/bin/egrep
-duende  12690  0.0  0.0     0    0 ?        Z    07:43   0:00  \_ [egrep <defunct>]
-duende  14928  0.0  0.0  1284  252 ?        T    10:04   0:00 /bin/egrep -v egrep|dnsquery|-bash
-                |linux|sysinit|db|identd|plogd|screen|ecko|popclean|popclean|ps PWD=/home/staff/duende
-                VENDOR=intel REMOTEHOST=atlas.ifm.lab.edu.mx MOZILLA_HOME=/usr/local/netscape 
-                OPENWINHOME=/usr/openwin USER=duende MACHTYPE=i386 MAIL=/var/mail/duende LANG=C 
-                HOST=helios SSH_CLIENT=192.0.2.20 34041 22 LOGNAME=duende SHLVL=2 GROUP=unknown 
-                SHELL=/bin/tcsh HOSTTYPE=i386-linux OSTYPE=linux HOME=/home/staff/duende TERM=vt100 
-                PATH=/bin:/usr/bin:/usr/local/bin:/usr/X11R6/bin:.:/home/staff/duende/prog/bin
-               :/usr/local/bin:/opt/kde/bin:/home/staff/duende/bin SSH_TTY=/dev/pts/9 _=/bin/egrep
-duende  14929  0.0  0.0     0    0 ?        Z    10:04   0:00  \_ [egrep <defunct>]
-\end{lstlisting}
+Este volcado reveló una prueba pericial contundente:
+\begin{enumerate}
+    \item \textbf{Origen remoto verificado:} Las variables \texttt{SSH\_CLIENT=192.0.2.20} y \texttt{REMOTEHOST=}\allowbreak\nolinkurl{atlas.ifm.lab.edu.mx} en los procesos de \texttt{duende} confirmaron que el atacante operaba de forma remota utilizando el servidor de cómputo \texttt{atlas} como plataforma de salto o pivote hacia \texttt{helios}.
+    \item \textbf{Mecanismo de engaño en \texttt{ps}:} El proceso legítimo \texttt{ps -u root} (PID 7724) no ejecutaba el binario original del sistema, sino que invocaba un envoltorio malicioso (\textit{wrapper}) que llamaba a \texttt{/dev/.pst} y canalizaba la salida a través de una expresión regular (\texttt{egrep -v}) para purgar deliberadamente de la vista del administrador nombres de procesos clave: \texttt{dnsquery}, \texttt{popclean}, \texttt{identd}, \texttt{plogd} y \texttt{screen}.
+    \item \textbf{Directorio encubierto en ejecución:} La variable \texttt{PWD=/dev/zqft4} en el PID 12689 confirmó que el atacante ejecutaba herramientas directamente desde el directorio camuflado en el árbol de dispositivos.
+\end{enumerate}
 
 \vspace{1em}
 
@@ -879,6 +647,8 @@ Esto quiere decir, que pueden existir archivos que no se ven con el sistema
 funcionando si esta corriendo el LKM. Se sospechaba de antemano de la presencia 
 de un LKM pues había una referencia a \texttt{/sbin/init!} el que no aparece en los
 listados que se obtuvieron.
+
+Este hallazgo marcó un punto de inflexión decisivo en la investigación. Si el propio núcleo del sistema operativo estaba comprometido y falseaba las respuestas a comandos esenciales como \texttt{ps}, \texttt{ls} o \texttt{find}, el análisis no podía confiar en ninguna herramienta ejecutada en vivo sobre la máquina encendida. Continuar operando en caliente implicaba el riesgo de que el intruso advirtiera la vigilancia y detonara órdenes destructivas. En consecuencia, se procedió a retirar el servidor de la red, preservar la memoria volátil y transferir la imagen clonada al laboratorio de referencia forense. Allí, cada archivo del disco sería cotejado de forma rigurosa e incontaminada contra la base de datos oficial de paquetes (RPM), un procedimiento que desnudó por completo la mecánica del rootkit y sacó a la luz el proceso oculto \texttt{/sbin/init!}.
 
 \begin{retoforense}[Discrepancia entre /proc y llamadas de ps]
 La alerta de \texttt{chkrootkit} (\textit{You have 11 process hidden for ps command}) se genera contrastando las entradas devueltas por la llamada al sistema \texttt{sys\_getdents()} sobre el sistema de archivos \texttt{/proc} frente a las salidas de \texttt{ps}. Si un intruso modifica la tabla del kernel pero olvida ocultar los subdirectorios numéricos en \texttt{/proc}, ¿cómo puede un analista listar los PIDs reales mediante un script de consola que no dependa de binarios del sistema?
