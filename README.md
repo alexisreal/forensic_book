@@ -3,7 +3,11 @@
 **Autopsy of a Cyberattack on Live Production Servers (2005 – 2025)**  
 *Incident Response, Volatile Memory, and Multi-System Event Correlation*
 
-**English** | [Versión en Español](README_es.md)
+[![Language: English](https://img.shields.io/badge/Language-English-blue.svg)](#linux-forensics-a-real-case)
+[![Idioma: Español](https://img.shields.io/badge/Idioma-Español-red.svg)](#versión-en-español-anatomía-forense-de-una-intrusión)
+[![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg)](https://creativecommons.org/licenses/by-sa/4.0/)
+
+> 🌐 **Language navigation:** **English (Primary)** | [Saltar a la Versión en Español ↓](#versión-en-español-anatomía-forense-de-una-intrusión)
 
 * **Author:** Alexis Real Santillán
 * **Professional Profile:** Cybersecurity, Cloud Architecture, and Critical Infrastructure Consultant | CTO at [Linux Open Source de México](https://linuxopensource.org)
@@ -41,8 +45,8 @@ forensic_book/
 ├── main_en.tex                         # Master LaTeX document (English Edition)
 ├── main.pdf                            # Compiled Spanish book (181 pages)
 ├── main_en.pdf                         # Compiled English book (173 pages)
-├── README.md                           # English documentation (this file)
-├── README_es.md                        # Documentación en español
+├── README.md                           # Dual-language repository documentation
+├── README_es.md                        # Documentación complementaria en español
 │
 ├── config/
 │   ├── preamble.tex                    # Typography, geometry & Spanish callouts
@@ -135,3 +139,80 @@ pdflatex main_en.tex
 ## License
 
 This work is licensed under the **[Creative Commons Attribution-ShareAlike 4.0 International License (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)**. You are free to share, copy, distribute, and adapt the material for academic, commercial, or professional purposes provided that proper attribution is given to the author and derivative works are distributed under the same license.
+
+<br>
+
+---
+---
+
+<br>
+
+# Versión en Español: Anatomía Forense de una Intrusión
+
+**Investigación pericial de un ataque a un sistema de producción Unix/Linux (2005 – 2025)**  
+*Respuesta a incidentes, memoria viva y correlación pericial de eventos*
+
+> 🌐 [Volver a la versión principal en inglés ↑](#linux-forensics-a-real-case)
+
+* **Autor:** Alexis Real Santillán
+* **Perfil:** Consultor en Ciberseguridad, Arquitectura Cloud e Infraestructura Crítica | CTO en [Linux Open Source de México](https://linuxopensource.org)
+* **Trayectoria y portafolio:** [alexisreal.github.io/cv](https://alexisreal.github.io/cv/)
+* **Contacto:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
+* **Contexto del caso:** Basado en la investigación pericial dirigida durante su periodo como Administrador de Sistemas en el Instituto de Física y Matemáticas (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
+* **Licencia de publicación:** [Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Publicación digital abierta, sin registro ISBN comercial).
+
+---
+
+## Descarga Directa de Libros en PDF
+
+* 📘 **[PDF Edición en Español (main.pdf)](main.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
+* 📕 **[PDF English Edition (main_en.pdf)](main_en.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
+
+---
+
+## Propósito Formativo y Editorial
+
+Esta obra ha sido estructurada como un **manual y caso de estudio de referencia formativa para la disciplina de Análisis Forense Digital y Respuesta a Incidentes (DFIR)**. Combina el rigor técnico y la evidencia material de un caso real ocurrido en un servidor departamental de producción con un aparato pedagógico diseñado para estudiantes, analistas y peritos informáticos.
+
+El libro se alinea formalmente con las directrices de los estándares internacionales:
+* **ISO/IEC 27037:2012:** Directrices para la identificación, recolección, adquisición y preservación de evidencia digital.
+* **NIST SP 800-86:** Guía de integración de técnicas forenses en la respuesta a incidentes.
+* **RFC 5737 y RFC 2606:** Anonimización estandarizada de direcciones IP (`192.0.2.0/24`) y dominios preservando las relaciones de subred y la correlación pericial.
+
+---
+
+## Compilación desde Código Fuente
+
+El proyecto compila directamente con el motor moderno **Tectonic** o con `pdflatex` / `xelatex`:
+
+```bash
+# Compilar edición en español:
+tectonic main.tex
+
+# Compilar edición en inglés:
+tectonic main_en.tex
+```
+
+---
+
+## Componentes Didácticos Destacados
+
+* **Cajas de Perspectiva Histórica (`perspectiva20`):** Recuadros que contrastan cómo se resolvía un problema en 2004/2005 frente a las tecnologías contemporáneas (EDR, Volatility 3, eBPF y arquitecturas Zero Trust).
+* **Alertas de Integridad (`advertencia`):** Indicadores de técnicas antiforense (*anti-forensics*) y precauciones periciales en caliente.
+* **Retos de Investigación Pericial (`retoforense`):** Preguntas y ejercicios prácticos de deducción pericial intercalados en los capítulos clave.
+* **Diagramas Vectoriales:** Topologías de red y líneas de tiempo de ataque compuestas en alta resolución con TikZ.
+* **Bitácoras Auténticas Anotadas:** Sesiones de consola, capturas de sniffer, contabilidad de procesos (acct) y metadatos de inodos preservados íntegramente.
+
+---
+
+## Créditos Editoriales y Asistencia Técnica
+
+* **Obra original:** Escrita y concebida en idioma español por Alexis Real Santillán.
+* **Traducción al inglés:** Realizada con la asistencia de Google Gemini.
+* **Ilustraciones técnicas y diseño tipográfico:** Los diagramas vectoriales de arquitectura TikZ, el diseño de la contraportada y las revisiones tipográficas y de estilo en ambas ediciones contaron con la asistencia de Google Gemini.
+
+---
+
+## Licencia de Publicación
+
+Esta obra se distribuye bajo una licencia internacional **[Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/)**. Se autoriza su reproducción, distribución y divulgación académica, comercial o profesional citando debidamente la autoría bajo los mismos términos de licenciamiento.
