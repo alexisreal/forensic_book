@@ -1,0 +1,226 @@
+\chapter{Lateral Movement and Multi-System Correlation}
+\label{cap:correlacion_multisistema}
+
+An intrusion rarely remains confined to a single host when systems share local subnets, cross-mounted NFS exports, or inter-user trust relationships. Forensic correlation across peer departmental servers enabled the reconstruction of lateral movement paths and substantiated hypotheses regarding session origins.
+
+\begin{notaforense}[The Lateral Movement Vector (\textit{Pivoting})]
+Pivoting consists of leveraging a compromised intermediary host as a jump box to stealthily probe, attack, or administer other servers situated on the same internal network segment. By hopping from \texttt{atlas} into \texttt{helios}, the adversary achieved two distinct operational advantages:
+\begin{enumerate}
+    \item \textbf{Perimeter Firewall Evasion:} Inter-system connections between \texttt{atlas} and \texttt{helios} originated from the trusted internal subnet (\texttt{192.0.2.0/24}), bypassing any perimeter access control lists restricting external inbound SSH or Telnet.
+    \item \textbf{Origin Obfuscation:} Within \texttt{helios}'s direct connection logs, the apparent source IP address was that of \texttt{atlas} (\texttt{192.0.2.20}), compelling examiners to expand the forensic perimeter into peer server logs to unmask the true public ISP pool address.
+\end{enumerate}
+\end{notaforense}
+
+The lateral pivoting mechanism employed by the adversary is illustrated in Figure~\ref{fig:pivoteo_multisistema}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    hostbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.3cm},
+    targetbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.0cm, minimum height=1.5cm},
+    extbox/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, minimum width=3.2cm, minimum height=1.3cm},
+    netcloud/.style={draw=primary!60, fill=blue!5, rounded corners=8pt, align=center, minimum width=3.2cm, minimum height=1.1cm},
+    hop1/.style={draw=secondary, ultra thick, -{Stealth[length=3mm]}},
+    hop2/.style={draw=accent, ultra thick, -{Stealth[length=3mm]}},
+    hop3/.style={draw=accent!70, thick, dashed, -{Stealth[length=2.5mm]}}
+]
+
+% External Zone
+\draw[draw=secondary!30, fill=gray!3, rounded corners=4pt] (-0.5, -2.4) rectangle (4.2, 3.8);
+\node[font=\bfseries\small\color{secondary}, anchor=north west] at (-0.3, 3.6) {External Origin (Internet)};
+
+% Internal Campus Subnet
+\draw[draw=primary!30, fill=blue!2, rounded corners=4pt] (4.8, -2.4) rectangle (12.2, 3.8);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (5.0, 3.6) {Internal Subnet IFM (\texttt{192.0.2.0/24})};
+
+% External Nodes
+\node[extbox] (attacker) at (1.8, 2.2) {\textbf{Operator / Intruder}\\\scriptsize External Connection\\\tiny Prodigy DSL / Telemedia};
+\node[netcloud] (isp) at (1.8, 0.0) {\textbf{DSL Access Pools}\\\scriptsize \texttt{200.78.118.x} / \texttt{203.0.113.89}};
+
+% Internal Nodes
+\node[hostbox] (atlas) at (6.8, 2.2) {\textbf{atlas} (\textit{Pivot})\\\scriptsize \texttt{192.0.2.20}\\\tiny SSH port 22};
+\node[targetbox] (helios) at (10.4, 0.6) {\textbf{helios} (\textit{Primary Target})\\\scriptsize \texttt{192.0.2.10}\\\tiny Suckit rootkit, sniffer, NFS};
+\node[hostbox] (io) at (6.8, -1.2) {\textbf{io} (\textit{Mail})\\\scriptsize \texttt{192.0.2.25}\\\tiny OpenWebMail, IMAP};
+
+% Hops
+\draw[hop1] (attacker) -- (isp);
+\draw[hop1] (isp.east) -| (atlas.south) node[pos=0.3, above, font=\scriptsize\bfseries\color{secondary}] {Hop 1: External SSH};
+\draw[hop2] (atlas.east) -| (helios.north) node[pos=0.3, above, font=\scriptsize\bfseries\color{accent}] {Hop 2: Internal Pivot};
+\draw[hop3] (atlas.south) -- (io.north) node[midway, right=2pt, font=\tiny\bfseries\color{accent!70}] {Hop 3: SSH Attempt \texttt{mherrera}};
+
+\end{tikzpicture}
+\caption{Diagram of lateral movement and pivoting technique via secondary server \texttt{atlas}.}
+\label{fig:pivoteo_multisistema}
+\end{figure}
+
+\section{Lateral Movement and Cross-System Trust Vectors}
+
+Secondary server \texttt{atlas} was audited comprehensively; only findings directly bearing on the \texttt{helios} incident are presented here.
+
+Suspicious files discovered within \texttt{duende/}'s directory on \texttt{atlas}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+-rw-r--r--  1 500      500        61440 Apr 21 20:37 test.tar
+\end{lstlisting}
+
+\vspace{1em}
+
+Contents of archive \texttt{test.tar}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal] 
+drwx------ scott/users       0 2002-02-08 07:09:51 ex/
+-rwx------ scott/users   14361 2002-02-08 07:09:35 ex/ep
+-rwx------ scott/users   14543 2002-02-08 07:09:39 ex/rh
+-rwx------ scott/users   23577 2002-02-08 07:09:45 ex/sd
+\end{lstlisting}
+
+\vspace{1em}
+
+This archive contained the Sendmail privilege escalation exploits, bit-for-bit identical to the package recovered from \texttt{zena/}.
+
+Within \texttt{duende}'s \texttt{temp/} directory, the deleted subdirectory \texttt{ex/} was extracted, confirming that the operator unpacked and subsequently purged the exploit tree. Furthermore, an unlinked copy of \texttt{o0o.tar} matching the cryptographic MD5 hash of packages in \texttt{zena/}, \texttt{proa/}, and other audited directories was recovered:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+TIPO  RUTA BORRADA   MTIME (MODIF)        DTIME (BORRADO)      UID:GID  INODO
+---------------------------------------------------------------------------------
+d/d   temp/ex/       2003.04.27 12:29:51  2003.04.23 00:39:37  512:512  999703
+---------------------------------------------------------------------------------
+\end{lstlisting}
+
+\vspace{1em}
+
+Session logs on \texttt{atlas}:
+
+\texttt{wtmp}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+duende  pts/7        Mon Apr 28 04:46 - 04:47  (00:00)     dsl-200-67-75-92.prodigy.net.mx
+duende  pts/6        Mon Apr 28 04:44 - 04:46  (00:02)     dsl-200-67-75-92.prodigy.net.mx
+duende  pts/6        Sun Apr 27 23:23 - 23:38  (00:14)     dsl-200-67-75-92.prodigy.net.mx
+duende  pts/1        Sun Apr 27 19:10 - 20:14  (01:03)     dsl-200-67-75-92.prodigy.net.mx
+duende  pts/0        Sun Apr 27 16:34 - 16:39  (00:04)     dsl-200-67-75-92.prodigy.net.mx
+duende  pts/0        Sun Apr 27 16:11 - 16:14  (00:03)     dsl-200-67-75-92.prodigy.net.mx
+duende  pts/0        Sun Apr 27 05:24 - 05:35  (00:10)     dsl-200-78-118-164.prodigy.net.mx
+reboot   system boot  Sun Apr 27 05:19         (1+07:19)    2.4.18-686-smp
+reboot   system boot  Sun Apr 27 05:12          (00:03)     2.4.18-686-smp
+reboot   system boot  Sun Apr 27 05:09          (00:06)     2.4.18-686-smp
+reboot   system boot  Sat Apr 26 07:00          (00:57)     2.4.18-686-smp
+duende  pts/9        Sat Apr 26 05:14 - 05:51  (00:37)     dsl-200-67-75-160.prodigy.net.mx
+duende  pts/4        Sat Apr 26 03:10 - 03:12  (00:02)     dsl-200-67-75-160.prodigy.net.mx
+duende  pts/3        Sat Apr 26 03:09 - 03:20  (00:11)     dsl-200-67-75-160.prodigy.net.mx
+duende  pts/3        Fri Apr 25 22:53 - 23:15  (00:22)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/11       Fri Apr 25 21:23 - 21:28  (00:04)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/8        Fri Apr 25 19:09 - 19:16  (00:07)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/3        Fri Apr 25 19:07 - 19:17  (00:10)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/7        Fri Apr 25 16:49 - 16:53  (00:04)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/4        Fri Apr 25 15:17 - 16:53  (01:36)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/3        Fri Apr 25 15:15 - 16:49  (01:34)     dsl-200-67-75-55.prodigy.net.mx
+duende  pts/3        Fri Apr 25 06:10 - 06:25  (00:14)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/6        Fri Apr 25 00:22 - 00:30  (00:07)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/4        Thu Apr 24 21:35 - 21:39  (00:04)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/2        Thu Apr 24 19:06 - 19:27  (00:20)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/0        Thu Apr 24 19:03 - 19:05  (00:02)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/2        Thu Apr 24 17:53 - 17:55  (00:02)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/0        Thu Apr 24 15:11 - 15:14  (00:02)     dsl-200-67-75-49.prodigy.net.mx
+duende  pts/6        Thu Apr 24 05:34 - 05:49  (00:15)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/5        Thu Apr 24 05:28 - 05:49  (00:21)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/0        Thu Apr 24 05:05 - 05:08  (00:03)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/0        Thu Apr 24 02:23 - 02:26  (00:02)     helios.ifm.lab.edu.mx
+reboot   system boot  Thu Apr 24 02:22         (2+05:35)    2.4.18-686-smp
+duende  pts/3        Thu Apr 24 00:03 - 00:35  (00:32)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/2        Wed Apr 23 23:51 - 00:34  (00:43)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/1        Wed Apr 23 23:21 - 23:28  (00:07)     dsl-200-67-75-152.prodigy.net.mx
+lllll pts/0        Wed Apr 23 22:26 - 22:33  (00:07)     dup-200-64-59-99.prodigy.net.mx
+duende  pts/5        Wed Apr 23 19:56 - 20:07  (00:11)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/0        Wed Apr 23 17:11 - 17:13  (00:02)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/1        Wed Apr 23 06:44 - 06:44  (00:00)     dsl-200-78-118-98.prodigy.net.mx
+duende  pts/0        Wed Apr 23 04:10 - 04:25  (00:15)     dsl-200-78-118-98.prodigy.net.mx
+duende  pts/0        Wed Apr 23 00:09 - 00:11  (00:01)     dsl-200-78-118-98.prodigy.net.mx
+duende  pts/3        Tue Apr 22 20:47 - 20:52  (00:04)     dsl-200-78-118-98.prodigy.net.mx
+duende  pts/0        Tue Apr 22 16:51 - 17:41  (00:50)     dsl-200-78-118-98.prodigy.net.mx
+duende  pts/0        Tue Apr 22 15:02 - 15:12  (00:10)     dsl-200-78-118-98.prodigy.net.mx
+duende  pts/0        Tue Apr 22 05:47 - 06:01  (00:14)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/1        Tue Apr 22 02:41 - 02:56  (00:14)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/0        Mon Apr 21 23:36 - 23:38  (00:02)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/1        Mon Apr 21 22:08 - 22:16  (00:07)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/7        Mon Apr 21 21:36 - 22:00  (00:24)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/3        Mon Apr 21 21:24 - 21:58  (00:34)     dsl-200-78-118-51.prodigy.net.mx
+lllll pts/0        Mon Apr 21 20:35 - 22:49  (02:13)     dup-200-64-234-196.prodigy.net.mx
+duende  pts/0        Mon Apr 21 18:38 - 18:40  (00:01)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/0        Mon Apr 21 17:01 - 17:01  (00:00)     dsl-200-78-118-51.prodigy.net.mx
+duende  pts/0        Mon Apr 21 07:26 - 07:30  (00:03)     dsl-200-67-75-99.prodigy.net.mx
+duende  pts/1        Mon Apr 21 03:54 - 03:55  (00:00)     dsl-200-67-75-99.prodigy.net.mx
+duende  pts/0        Mon Apr 21 00:38 - 00:40  (00:01)     dsl-200-67-75-99.prodigy.net.mx
+duende  pts/0        Sun Apr 20 16:07 - 16:40  (00:32)     dsl-200-67-75-99.prodigy.net.mx
+duende  pts/0        Sun Apr 20 05:43 - 05:45  (00:01)     dsl-200-67-75-109.prodigy.net.mx
+duende  pts/0        Sun Apr 20 02:22 - 02:30  (00:07)     dsl-200-67-75-109.prodigy.net.mx
+reboot   system boot  Sun Apr 20 00:10         (4+02:09)    2.4.18-686-smp
+duende  pts/0        Sat Apr 19 21:48 - 22:04  (00:15)     dsl-200-67-75-109.prodigy.net.mx
+duende  pts/0        Sat Apr 19 16:15 - 16:16  (00:01)     dsl-200-67-75-109.prodigy.net.mx
+duende  pts/0        Sat Apr 19 07:25 - 07:25  (00:00)     dsl-200-78-118-131.prodigy.net.mx
+duende  pts/0        Sat Apr 19 05:10 - 05:11  (00:00)     dsl-200-78-118-131.prodigy.net.mx
+duende  pts/0        Sat Apr 19 00:31 - 00:36  (00:05)     dsl-200-78-118-131.prodigy.net.mx
+duende  pts/1        Fri Apr 18 21:01 - 21:17  (00:15)     198.51.100.131
+duende  pts/1        Fri Apr 18 15:06 - 15:09  (00:03)     dsl-200-78-118-131.prodigy.net.mx
+duende  pts/7        Fri Apr 18 06:00 - 06:23  (00:22)     dsl-200-67-75-78.prodigy.net.mx
+duende  pts/5        Fri Apr 18 02:05 - 02:06  (00:00)     dsl-200-67-75-78.prodigy.net.mx
+duende  pts/5        Thu Apr 17 22:04 - 22:07  (00:02)     dsl-200-67-75-78.prodigy.net.mx
+duende  pts/0        Thu Apr 17 17:52 - 17:53  (00:00)     dsl-200-67-75-78.prodigy.net.mx
+duende  pts/0        Thu Apr 17 15:00 - 15:01  (00:01)     dsl-200-67-75-78.prodigy.net.mx
+duende  pts/4        Thu Apr 17 05:49 - 05:50  (00:01)     dsl-200-78-118-61.prodigy.net.mx
+duende  pts/2        Thu Apr 17 05:48 - 05:51  (00:02)     dsl-200-78-118-61.prodigy.net.mx
+duende  pts/3        Thu Apr 17 02:46 - 02:49  (00:02)     dsl-200-78-118-61.prodigy.net.mx
+duende  pts/0        Thu Apr 17 00:26 - 00:41  (00:15)     dsl-200-78-118-61.prodigy.net.mx
+reboot   system boot  Wed Apr 16 23:54         (3+00:14)    2.4.18-686-smp
+proa     pts/4        Wed Apr 16 20:49 - 20:51  (00:01)     dup-200-64-59-111.prodigy.net.mx
+duende  pts/4        Wed Apr 16 20:15 - 20:23  (00:07)     dsl-200-78-118-61.prodigy.net.mx
+zopilote pts/5        Wed Apr 16 20:05 - 20:08  (00:03)     dup-200-64-59-111.prodigy.net.mx
+reboot   system boot  Wed Apr 16 19:15          (04:36)     2.4.18-686-smp
+duende  pts/0        Wed Apr 16 15:54 - 16:15  (00:20)     dsl-200-78-118-61.prodigy.net.mx
+duende  pts/2        Wed Apr 16 15:25 - 15:40  (00:15)     dsl-200-78-118-61.prodigy.net.mx
+duende  pts/0        Wed Apr 16 15:15 - 15:40  (00:25)     dsl-200-78-118-61.prodigy.net.mx
+duende  pts/3        Wed Apr 16 05:01 - 05:28  (00:26)     dsl-200-78-118-156.prodigy.net.mx
+duende  pts/5        Wed Apr 16 04:56 - 05:28  (00:31)     dsl-200-78-118-156.prodigy.net.mx
+duende  pts/2        Wed Apr 16 03:07 - 04:36  (01:29)     dsl-200-78-118-156.prodigy.net.mx
+duende  pts/0        Wed Apr 16 03:02 - 04:36  (01:34)     dsl-200-78-118-156.prodigy.net.mx
+proa     pts/1        Wed Apr 16 00:38 - 00:47  (00:08)     host-203.0.113.89-cust.telemedia.net.mx
+duende  pts/1        Wed Apr 16 00:16 - 00:27  (00:10)     dsl-200-78-118-156.prodigy.net.mx
+duende  pts/2        Wed Apr 16 00:05 - 00:28  (00:23)     dsl-200-78-118-156.prodigy.net.mx
+proa     pts/2        Wed Apr 16 00:01 - 00:01  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+zopilote pts/8        Tue Apr 15 22:57 - 23:00  (00:02)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/7        Tue Apr 15 22:17 - 00:23  (02:05)     host-203.0.113.89-cust.telemedia.net.mx
+reboot   system boot  Tue Apr 15 20:28          (22:43)     2.4.18-686-smp
+proa     pts/4        Fri Apr 11 21:35 - 21:44  (00:09)     dup-200-64-234-32.prodigy.net.mx
+proa     pts/8        Wed Apr  9 20:28 - 20:33  (00:04)     host-198.18.3.172-cust.telemedia.net.mx
+zopilote pts/0        Sun Apr  6 01:29 - 01:29  (00:00)     host-198.18.11.221-cust.telemedia.net.mx
+zopilote pts/1        Fri Apr  4 21:24 - 21:28  (00:04)     dup-200-64-239-107.prodigy.net.mx
+reboot   system boot  Fri Apr  4 21:00         (11+22:11)   2.4.18-686-smp
+zopilote pts/1        Fri Apr  4 01:27 - 01:32  (00:04)     dup-200-64-234-43.prodigy.net.mx
+zopilote pts/1        Wed Apr  2 03:05 - 03:06  (00:00)     gobmorelia34.terra.net.mx
+\end{lstlisting}
+
+\vspace{1em}
+
+Logins for accounts \texttt{zopilote}, \texttt{zena}, \texttt{proa}, and \texttt{lllll} originated from residential DSL endpoints assigned to Prodigy, Telemedia, and Terra, all geo-located within the city of Morelia. Noticeably, when access to several compromised student accounts was revoked, active sessions for user \texttt{duende} immediately surfaced.
+
+The inbound sessions for user \texttt{duende} leaping from \texttt{atlas} to \texttt{helios} are confirmed in \texttt{atlas}'s accounting records, proving that they originated from external Prodigy Infinitum DSL subscriptions.
+
+With lateral pivoting through \texttt{atlas} documented and tied to residential internet providers in Morelia, a grave investigative question remained: what of the institutional mail server (\texttt{io.ifm.lab.edu.mx})? If the adversary harvested passwords through the trojanized sniffer on \texttt{helios}, had they penetrated private institutional mailboxes? Did they leverage the webmail portal (\textit{OpenWebMail}) to read communications or impersonate departmental personnel? To resolve the operational extent of this threat, the forensic team audited MTA transport records and CGI session logs on \texttt{io}, detailed in Chapter~\ref{cap:servidor_correo_webmail}.
+
+\begin{retoforense}[Multi-Hop Pivoting Traceability]
+Using the correlated log excerpts from \texttt{atlas} and \texttt{helios}, reconstruct the end-to-end connection chain: what was the originating external dial-up/DSL ISP IP address, and across what ports were successive sessions established? What subscriber records would be requested from the telecommunications carrier under a legal subpoena to tie the session to a billing subscriber?
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: Zero Trust and Microsegmentation]
+The traditional perimeter security model of 2004 assumed that any internal network traffic was inherently trustworthy, enabling a compromised host like \texttt{atlas} to target peer systems without friction. Two decades later, the dominant architectural paradigm is \textit{Zero Trust} ("never trust, always verify"): internal campus networks are microsegmented to block unauthorized east-west lateral movement, and every session must be authenticated cryptographically via mTLS and continuously assessed against dynamic risk policies.
+\end{perspectiva20}

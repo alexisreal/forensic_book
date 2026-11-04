@@ -1,0 +1,560 @@
+\chapter{Active Monitoring and Session Analysis}
+
+Once the artifacts were uncovered without alerting the intruder to ongoing investigative activities, the strategic decision was made to establish covert active monitoring. By observing interactive sessions associated with the suspicious account \texttt{duende}, the forensic team captured the adversary's tactics, techniques, and procedures (TTPs) in real time.
+
+\begin{notaforense}[The Tactical Dilemma: Immediate Containment vs. Active Monitoring]
+In digital incident response, investigators frequently confront the difficult choice between disconnecting the system immediately to stop an intrusion or maintaining controlled observation. Premature containment tips off the adversary, who may wipe critical forensic evidence or detonate anti-forensic self-destruct routines. Conversely, live monitoring allows investigators to substantiate operational identity, capture credentials in-flight, and map the attacker's full lateral reach across the network. This tactic must only be sustained if the response team can guarantee that third-party data confidentiality will not be compromised and that the compromised host will not be leveraged to launch external attacks.
+\end{notaforense}
+
+\section{Active Surveillance and Connection Auditing}
+
+Active monitoring of user \texttt{duende}'s sessions was established. The chronological log of interactive logins during the month of April was as follows:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+duende  pts/0        Sun Apr 27 20:39 - 20:40  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 27 15:27 - 15:29  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 27 15:19 - 15:19  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 27 12:07 - 12:07  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sun Apr 27 08:32 - 08:32  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sun Apr 27 08:06 - 08:08  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/3        Sat Apr 26 21:27 - 21:29  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/2        Sat Apr 26 18:20 - 18:39  (00:18)     dsl-200-78-118-164.prodigy.net.mx
+duende  pts/6        Fri Apr 25 21:09 - 23:21  (02:12)     atlas.ifm.lab.edu.mx
+duende  pts/7        Fri Apr 25 19:04 - 19:07  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/5        Fri Apr 25 14:50 - 14:55  (00:05)     atlas.ifm.lab.edu.mx
+duende  pts/4        Fri Apr 25 13:19 - 13:21  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/9        Fri Apr 25 11:03 - 11:06  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/7        Fri Apr 25 11:02 - 11:10  (00:08)     atlas.ifm.lab.edu.mx
+duende  pts/5        Fri Apr 25 08:43 - 08:45  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 08:27 - 08:43  (00:16)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 08:24 - 08:25  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 07:19 - 08:09  (00:49)     atlas.ifm.lab.edu.mx
+duende  pts/4        Fri Apr 25 07:10 - 08:10  (00:59)     atlas.ifm.lab.edu.mx
+duende  pts/3        Thu Apr 24 22:05 - 22:07  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/2        Thu Apr 24 16:22 - 16:24  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/2        Thu Apr 24 16:17 - 16:19  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 24 13:30 - 13:30  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 24 09:49 - 09:50  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 24 07:07 - 07:08  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/5        Wed Apr 23 21:23 - 21:43  (00:20)     atlas.ifm.lab.edu.mx
+duende  pts/3        Wed Apr 23 20:59 - 21:02  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/0        Wed Apr 23 18:14 - 18:14  (00:00)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/5        Wed Apr 23 16:18 - 16:29  (00:10)     atlas.ifm.lab.edu.mx
+duende  pts/5        Wed Apr 23 16:06 - 16:17  (00:11)     atlas.ifm.lab.edu.mx
+duende  pts/11       Wed Apr 23 15:57 - 16:05  (00:07)     atlas.ifm.lab.edu.mx
+duende  pts/2        Wed Apr 23 15:47 - 16:28  (00:41)     atlas.ifm.lab.edu.mx
+duende  pts/1        Wed Apr 23 15:19 - 15:22  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/2        Wed Apr 23 11:55 - 12:01  (00:05)     atlas.ifm.lab.edu.mx
+duende  pts/1        Wed Apr 23 09:06 - 09:08  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/2        Tue Apr 22 20:06 - 20:19  (00:13)     atlas.ifm.lab.edu.mx
+duende  pts/1        Tue Apr 22 16:04 - 16:05  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Tue Apr 22 12:45 - 12:46  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/0        Tue Apr 22 07:04 - 07:06  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Mon Apr 21 21:52 - 21:55  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/0        Mon Apr 21 21:42 - 21:43  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Mon Apr 21 18:37 - 18:47  (00:09)     atlas.ifm.lab.edu.mx
+duende  pts/5        Mon Apr 21 13:32 - 13:54  (00:21)     atlas.ifm.lab.edu.mx
+duende  pts/2        Mon Apr 21 10:33 - 10:34  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Mon Apr 21 08:55 - 08:56  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sun Apr 20 23:21 - 23:24  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sun Apr 20 19:49 - 19:49  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 16:33 - 16:34  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 08:11 - 08:13  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 08:02 - 08:04  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sat Apr 19 21:38 - 21:38  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sat Apr 19 18:23 - 18:24  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/2        Sat Apr 19 13:45 - 13:52  (00:07)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sat Apr 19 08:10 - 08:10  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 21:05 - 21:05  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 16:28 - 16:29  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 12:57 - 12:59  (00:01)     192.0.2.20
+duende  pts/1        Fri Apr 18 07:02 - 07:03  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Thu Apr 17 22:00 - 22:03  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/0        Thu Apr 17 17:59 - 18:00  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Thu Apr 17 13:59 - 14:00  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 17 06:54 - 06:55  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Wed Apr 16 21:43 - 21:44  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/0        Wed Apr 16 21:42 - 21:45  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/1        Wed Apr 16 18:41 - 18:43  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/0        Wed Apr 16 16:30 - 16:34  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/0        Wed Apr 16 16:22 - 16:26  (00:04)     atlas.ifm.lab.edu.mx
+duende  pts/6        Wed Apr 16 12:11 - 12:13  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/9        Wed Apr 16 07:15 - 07:30  (00:15)     atlas.ifm.lab.edu.mx
+duende  pts/6        Wed Apr 16 07:05 - 07:24  (00:18)     atlas.ifm.lab.edu.mx
+duende  pts/9        Tue Apr 15 20:51 - 21:04  (00:12)     atlas.ifm.lab.edu.mx
+duende  pts/6        Tue Apr 15 20:48 - 21:18  (00:29)     atlas.ifm.lab.edu.mx
+duende  pts/7        Tue Apr 15 18:57 - 20:48  (01:51)     atlas.ifm.lab.edu.mx
+duende  pts/6        Tue Apr 15 18:55 - 20:17  (01:22)     atlas.ifm.lab.edu.mx
+duende  pts/11       Tue Apr 15 16:06 - 15:14  (23:07)     atlas.ifm.lab.edu.mx
+duende  pts/7        Tue Apr 15 15:59 - 18:57  (02:57)     atlas.ifm.lab.edu.mx
+duende  pts/6        Tue Apr 15 15:56 - 15:59  (00:02)     atlas.ifm.lab.edu.mx
+\end{lstlisting}
+
+\vspace{1em}
+
+Login frequency on this account was extraordinarily high, yet curiously, no recorded logins predated April 15. Crucially, almost all incoming connections for user \texttt{duende} originated from \nolinkurl{atlas.ifm.lab.edu.mx} (\texttt{192.0.2.20}), despite the account having no restrictions preventing direct external access.
+
+To observe the user's live behavior without raising suspicion, the investigation secured the voluntary collaboration of departmental server users who permitted the team to operate from their terminals. Surveillance continued uninterrupted from April 24 through April 27.
+
+Observing that the user repeatedly connected solely to verify the operational status of his planted trojans, attempts were made to enforce shell command logging via standard \texttt{history} configurations. However, this proved ineffective because the account was intentionally bypassing default profile logging mechanisms.
+
+Consequently, alternative kernel accounting tools unfamiliar to most attackers were deployed. The \texttt{acct} (\textit{Process Accounting}) suite was installed, which records every command executed across the operating system directly from kernel process exit structures.
+
+The output captured by \texttt{lastcomm} yielded critical intelligence (sample shown):
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+sshd              SF    500      ??         0.75 secs Sat Apr 26 18:20
+tcsh                    500      ??         0.12 secs Sat Apr 26 18:20
+w                  F    500      ??         0.00 secs Sat Apr 26 18:39
+ssh                     500      ??         0.16 secs Sat Apr 26 18:38
+ping              S     500      ??         0.01 secs Sat Apr 26 18:38
+last                  X 500      ??         0.02 secs Sat Apr 26 18:37
+less                    500      ??         0.04 secs Sat Apr 26 18:37
+last               F    500      ??         0.00 secs Sat Apr 26 18:37
+w                       500      ??         0.01 secs Sat Apr 26 18:37
+df                 F    500      ??         0.00 secs Sat Apr 26 18:32
+ping              S     500      ??         0.00 secs Sat Apr 26 18:32
+w                  F    500      ??         0.00 secs Sat Apr 26 18:32
+finger                  500      ??         0.00 secs Sat Apr 26 18:30
+w                  F    500      ??         0.00 secs Sat Apr 26 18:30
+lynx                    500      ??         0.20 secs Sat Apr 26 18:30
+file                    500      ??         0.00 secs Sat Apr 26 18:26
+ls                 F    500      ??         0.00 secs Sat Apr 26 18:26
+ld                      500      ??         0.02 secs Sat Apr 26 18:26
+tcsh               F    500      ??         0.00 secs Sat Apr 26 18:24
+hostname           F    500      ??         0.00 secs Sat Apr 26 18:24
+cons.saver        S     500      ??         0.00 secs Sat Apr 26 18:24
+mc                 F    500      ??         0.00 secs Sat Apr 26 18:24
+last                    500      ??         0.03 secs Sat Apr 26 18:24
+ls                 F    500      ??         0.00 secs Sat Apr 26 18:24
+last                  X 500      ??         0.02 secs Sat Apr 26 18:23
+less                    500      ??         0.00 secs Sat Apr 26 18:23
+last               F    500      ??         0.00 secs Sat Apr 26 18:23
+ping              S     500      ??         0.02 secs Sat Apr 26 18:22
+ls                 F    500      ??         0.00 secs Sat Apr 26 18:22
+less                    500      ??         0.03 secs Sat Apr 26 18:21
+ps                      500      ??         0.00 secs Sat Apr 26 18:21
+sh                      500      ??         0.01 secs Sat Apr 26 18:21
+egrep                   500      ??         0.00 secs Sat Apr 26 18:21
+.pst                    500      ??         0.07 secs Sat Apr 26 18:21
+egrep              F    500      ??         0.00 secs Sat Apr 26 18:21
+ps                 F    500      ??         0.00 secs Sat Apr 26 18:21
+last                  X 500      ??         0.02 secs Sat Apr 26 18:21
+less                    500      ??         0.02 secs Sat Apr 26 18:21
+last               F    500      ??         0.00 secs Sat Apr 26 18:21
+w                  F    500      ??         0.00 secs Sat Apr 26 18:20
+hostname           F    500      ??         0.00 secs Sat Apr 26 18:20
+xauth                   500      ??         0.02 secs Sat Apr 26 18:20
+tcsh              S     500      tty1       0.10 secs Sat Apr 26 16:07
+ls                 F    500      tty1       0.00 secs Sat Apr 26 16:07
+hostname           F    500      tty1       0.00 secs Sat Apr 26 16:07
+\end{lstlisting}
+
+\vspace{1em}
+
+\texttt{lastcomm} logged the executed command, the invoking user, and execution runtime. Notice the repeated execution of \texttt{.pst}, a hidden binary. The logs reveal persistent verification of host identity via \texttt{hostname}, alongside repeated checks on active users and recent logins. Prior to activating \texttt{acct}, the administrator intentionally simulated a server reboot to observe attacker reactions; upon reconnecting, the first action user \texttt{duende} took was verifying host identity to ascertain whether the machine had been cloned or placed in a honeynet trap.
+
+A targeted search for hidden files across \texttt{/dev} produced the following unauthorized binaries:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+241477   64 -rwxr-xr-x   1 root     root        58412 Oct 27  2001 /dev/.pst
+241498   92 -rwxr-xr-x   1 root     root        86892 Nov 23  2001 /dev/.nst
+225715   16 -rwxr-xr-x   1 root     root        13224 Mar  2  2002 /dev/.tree
+225524   32 -rwxr-xr-x   1 root     root        32236 Oct 27  2001 /dev/.tp
+\end{lstlisting}
+
+\vspace{1em}
+
+Analyzing these executables:
+
+\texttt{/dev/.pst}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+.pst: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
+dynamically linked (uses shared libs), stripped
+\end{lstlisting}
+
+\vspace{1em}
+
+Header inspection via \texttt{file} confirmed a native x86 ELF executable. Extracting string constants:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+Linux version %d.%d.%d
+Compiled with: libc %d, internal version %d.%d
+libc assumed lame, using fprintf to emulate fputs.
+header_gap=%d lines_to_next_header=%d
+screen_cols=%d screen_rows=%d
+personality=0x%08x (from "%s")
+EUID=%d TTY=%d,%d Hertz=%ld
+********* simple selection *********  ********* selection by list *********
+-A all processes                      -C by command name
+-N negate selection                   -G by real group ID (supports names)
+-a all w/ tty except session leaders  -U by real user ID (supports names)
+-d all except session leaders         -g by session leader OR by group name
+-e all processes                      -p by process ID
+T  all processes on this terminal     -s processes in the sessions given
+a  all w/ tty, including other users  -t by tty
+g  all, even group leaders!           -u by effective user ID (supports names)
+r  only running processes             U  processes for specified users
+x  processes w/o controlling ttys     t  by tty
+*********** output format **********  *********** long options ***********
+-o,o user-defined  -f full            --Group --User --pid --cols
+-j,j job control   s  signal          --group --user --sid --rows
+-O,O preloaded -o  v  virtual memory  --cumulative --format --deselect
+-l,l long          u  user-oriented   --sort --tty --forest --version
+                   X  registers       --heading --no-heading
+                    ********* misc options *********
+-V,V show version       L  list format codes  f  ASCII art forest
+-m,m show threads       S  children in sum    -y change -l format
+-n,N set namelist file  c  true command name  n  numeric WCHAN,UID
+-w,w wide output        e  show environment   -H process heirarchy
+Process selection options conflict.
+Internal error in ps! Please report this bug.
+\end{lstlisting}
+
+\vspace{1em}
+
+These strings prove that \texttt{/dev/.pst} was an unstripped, unmodified copy of \texttt{ps}.
+
+\texttt{/dev/.nst}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+.nst: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
+dynamically linked (uses shared libs), stripped
+\end{lstlisting}
+
+\vspace{1em}
+
+Extracting embedded strings:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+net-tools 1.60
+netstat 1.42 (2001-04-15)
+Fred Baumgarten, Alan Cox, Bernd Eckenfels, Phil Blundell, Tuan Hoang and others
+usage: netstat [-veenNcCF] [<Af>] -r         netstat {-V|--version|-h|--help}
+       netstat [-vnNcaeol] [<Socket> ...]
+       netstat { [-veenNac] -i | [-cnNe] -M | -s }
+        -r, --route              display routing table
+        -i, --interfaces         display interface table
+        -g, --groups             display multicast group memberships
+        -s, --statistics         display networking statistics (like SNMP)
+        -M, --masquerade         display masqueraded connections
+        -v, --verbose            be verbose
+        -n, --numeric            don't resolve names
+        --numeric-hosts          don't resolve host names
+        --numeric-ports          don't resolve port names
+        --numeric-users          don't resolve user names
+        -N, --symbolic           resolve hardware names
+        -e, --extend             display other/more information
+        -p, --programs           display PID/Program name for sockets
+        -c, --continuous         continuous listing
+        -l, --listening          display listening server sockets
+        -a, --all, --listening   display all sockets (default: connected)
+        -o, --timers             display timers
+        -F, --fib                display Forwarding Information Base (default)
+        -C, --cache              display routing cache instead of FIB
+  <Socket>={-t|--tcp} {-u|--udp} {-w|--raw} {-x|--unix} --ax25 --ipx --netrom
+Usage: x25_route [-v] del Target[/mask] [dev] If
+\end{lstlisting}
+
+\vspace{1em}
+
+This established that \texttt{/dev/.nst} was an authentic copy of \texttt{netstat}.
+
+\texttt{/dev/.tree}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+.tree: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, dynamically 
+linked (uses shared libs), stripped
+\end{lstlisting}
+
+\vspace{1em}
+
+Extracting strings:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+usage: pstree [ -a ] [ -c ] [ -h | -H pid ] [ -l ] [ -n ] [ -p ] [ -u ]
+%14s[ -G | -U ] [ pid | user]
+       pstree -V
+    -a     show command line arguments
+    -c     don't compact identical subtrees
+    -h     highlight current process and its ancestors
+    -H pid highlight process "pid" and its ancestors
+    -G     use VT100 line drawing characters
+    -l     don't truncate long lines
+    -n     sort output by PID
+    -p     show PIDs; implies -c
+    -u     show uid transitions
+    -U     use UTF-8 (Unicode) line drawing characters
+    -V     display version information
+    pid    start at pid, default 1 (init)
+    user   show only trees rooted at processes of that user
+\end{lstlisting}
+
+\vspace{1em}
+
+The hidden binary \texttt{.tree} was an authentic copy of \texttt{pstree}. The presence of these clean utilities hidden in \texttt{/dev} demonstrated that the system binaries installed under \texttt{/bin/ps}, \texttt{/bin/netstat}, and \texttt{/usr/bin/pstree} had been deliberately compromised to hide malicious activity from administrative tools.
+
+Executing \texttt{/dev/.tree} on the live system generated an uncensored process tree:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+[1minit,1)[0m  
+  |-(keventd,2)
+  |-(i2oevtd,7)
+  |-(kjournald,8)
+  |-(khubd,57)
+  |-(kjournald,112)
+  |-portmap,152,daemon) 
+  |-(rpciod,163)
+  |-(lockd,164)
+  |-syslogd,252) 
+  |-klogd,265) 
+  |-inetd,284) 
+  |-lpd,299,daemon)   
+  |-sshd,314) 
+  |   |-sshd,6951) 
+  |   |   `-sshd,6953,duende) 
+  |   |       `-tcsh,6954) 
+  |   `-sshd,18706) 
+  |       `-bash,18708) 
+  |           `-mc,29247) 
+  |               `-bash,29250) -rcfile .bashrc 
+  |                   `-last,6546) 
+  |                       `-(last,6548)
+  |-xfs,318) -daemon 
+  |-atd,326,daemon) 
+  |-cron,329) 
+  |   |-cron,7772) 
+  |   |   `-sh,7773,mail) -c ...
+  |   |       `-exim,7774) -q 
+  |   `-cron,11793) 
+  |       `-sendmail,11809) -i -FCronDaemon -odi -oem root 
+  |   `-gdm,334) 
+  |   `-(gdm,4739) 
+  |       |-XFree86,4740) :0 -deferglyphs 16 -nolisten tcp vt7 -auth /var/lib/gdm/:0.Xauth 
+  |       `-gdmlogin,5377,gdm) --disable-sound --disable-crash-dialog 
+  |-getty,352) 38400 tty4 
+  |-getty,353) 38400 tty5 
+  |-getty,354) 38400 tty6 
+  |-su,892) 
+  |-su,4609,solanill) 
+  |-bash,6746) 
+  |   `-mc,7342) 
+  |       |-cons.saver,7344) /dev/tty2 
+  |       `-bash,7345) -rcfile .bashrc 
+  |-[1mbash,6747)[0m 
+  |   |-last,7031) 
+  |   |   `-(last,7033)
+  |   `-[1m.tree,7791)[0m -achlnpu 
+  |-notifyme,6787) -C duende 
+  |-bash,7483) 
+  |   `-ps,7724) -u root 
+  |       `-sh,7726) -c ...
+  |           `-egrep,7728) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
+              popclean|popclean|ps 
+  |               `-(egrep,7729)
+  |-exim,7787) -Mc 199GX3-00021V-00 
+  |-tar,11017) chf - sbin 
+  |   `-(tar,11019)
+  |-sendmail,11820) -i -- brenton@helios.ifm.lab.edu.mx 
+  |-egrep,12689,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
+              popclean|popclean|ps 
+  |   `-(egrep,12690)
+  |-egrep,14928,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
+              popclean|popclean|ps 
+  |   `-(egrep,14929)
+  |-echo,19340) a\c 
+  |   `-(echo,19342)
+  |-egrep,19341) c 
+  |   `-(egrep,19343)
+  `-egrep,26825) -l ^[0-5]\040 /dev/.libn 
+      `-(egrep,26826)
+\end{lstlisting}
+
+\vspace{1em}
+
+This uncensored output unmasked active filtering pipelines completely invisible when using the trojanized \texttt{pstree}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+-egrep,14928,duende) -v egrep|dnsquery|-bash|linux|sysinit|db|identd|plogd|screen|ecko|
+            popclean|popclean|ps 
+  |   `-(egrep,14929)
+\end{lstlisting}
+
+\vspace{1em}
+
+This reveals a pipeline running under user \texttt{duende} actively filtering out process signatures associated with the planted malicious tools.
+
+\subsection{Deep Process Analysis and Discovery of \texttt{/dev/.pst}}
+
+To inspect process memory and active environment parameters, \texttt{ps auxe} was executed:
+
+\begin{lstlisting}[style=terminal]
+USER       PID %CPU %MEM   VSZ  RSS TTY      STAT START   TIME COMMAND
+---------------------------------------------------------------------------------------
+[Forensic administrative session (192.0.2.89)]
+root     18706  0.0  0.7  6552 1884 ?        S    13:39   0:03  \_ /usr/sbin/sshd
+root     18708  0.0  0.5  2268 1316 pts/4    S    13:39   0:00  |   \_ -bash
+                                                       [SSH_CLIENT=192.0.2.89 32817 22]
+root     29247  0.0  0.7  2952 1780 pts/4    S    16:22   0:01  |       \_ mc
+                                                       [OLDPWD=/root/chkrootkit-0.40]
+root     29250  0.0  0.5  2236 1288 pts/5    S    16:22   0:00  |           \_ bash -rcfile .bashrc
+root      6546  0.0  0.0  1260  248 pts/5    T    17:54   0:00  |               \_ last
+root      6548  0.0  0.0     0    0 pts/5    Z    17:54   0:00  |                   \_ [last <defunct>]
+
+[Adversary interactive session duende (pivoting from atlas - 192.0.2.20)]
+root      6951  0.0  0.6  6400 1712 ?        S    20:09   0:00  \_ /usr/sbin/sshd
+duende    6953  0.0  0.7  6408 1820 ?        S    20:09   0:00      \_ /usr/sbin/sshd
+duende    6954  0.0  0.6  2780 1528 pts/6    S    20:09   0:00          \_ -tcsh
+                                                       [SSH_CLIENT=192.0.2.20 34189 22]
+                                                       [REMOTEHOST=atlas.ifm.lab.edu.mx]
+
+[Active process filtering pipelines]
+duende   12689  0.0  0.0  1284  252 ?        T    07:43   0:00 /bin/egrep -v "egrep|dnsquery|-bash|..."
+                                                       [PWD=/dev/zqft4]
+                                                       [REMOTEHOST=atlas.ifm.lab.edu.mx]
+duende   14928  0.0  0.0  1284  252 ?        T    10:04   0:00 /bin/egrep -v "egrep|dnsquery|-bash|..."
+                                                       [PWD=/home/staff/duende]
+                                                       [REMOTEHOST=atlas.ifm.lab.edu.mx]
+
+[Live interception: ps substitution by /dev/.pst]
+root      7756  0.0  0.6  3552 1564 tty1     R    21:34   0:00  \_ /dev/.pst eaxfu
+root      6787  0.0  0.1  1260  440 pts/5    S    18:24   0:00 notifyme -C duende
+root      7724  0.0  0.1  1284  388 tty3     T    21:32   0:00  \_ ps -u root
+root      7726  0.0  0.3  2024  888 tty3     T    21:32   0:00      \_ sh -c /dev/.pst -u root | egrep -v ...
+root      7728  0.0  0.0  1280  248 tty3     T    21:32   0:00          \_ /bin/egrep -v "egrep|dnsquery|..."
+root      7729  0.0  0.0     0    0 tty3     Z    21:32   0:00              \_ [egrep <defunct>]
+---------------------------------------------------------------------------------------
+\end{lstlisting}
+
+This dump provided undeniable forensic confirmation:
+\begin{enumerate}
+    \item \textbf{Verified Remote Origin:} The variables \texttt{SSH\_CLIENT=192.0.2.20} and \texttt{REMOTEHOST=}\allowbreak\nolinkurl{atlas.ifm.lab.edu.mx} attached to \texttt{duende}'s processes confirmed that the adversary operated remotely, leveraging departmental server \texttt{atlas} as a pivot jump box into \texttt{helios}.
+    \item \textbf{Deception Wrapper in \texttt{ps}:} The invocation \texttt{ps -u root} (PID 7724) did not execute the authentic system utility, but rather a malicious wrapper that called \texttt{/dev/.pst} and piped its output through an \texttt{egrep -v} regular expression to censor targeted process names: \texttt{dnsquery}, \texttt{popclean}, \texttt{identd}, \texttt{plogd}, and \texttt{screen}.
+    \item \textbf{Working Directory Evidence:} The environment parameter \texttt{PWD=/dev/zqft4} on PID 12689 confirmed that the attacker was actively running tools out of the hidden device tree staging directory.
+\end{enumerate}
+
+To check the scope of system binary corruption, \texttt{chkrootkit} was executed:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+Checking `basename'... INFECTED
+Checking `biff'... INFECTED
+Checking `chfn'... not infected
+Checking `chsh'... not infected
+Checking `cron'... INFECTED
+Checking `date'... INFECTED
+Checking `du'... not infected
+Checking `dirname'... INFECTED
+Checking `echo'... INFECTED
+Checking `egrep'... not infected
+Checking `env'... INFECTED
+Checking `grep'... INFECTED
+Checking `hdparm'... not found
+Checking `su'... not infected
+Checking `ifconfig'... not infected
+Checking `inetd'... INFECTED
+Checking `inetdconf'... INFECTED
+Checking `init'... not infected
+Checking `killall'... not infected
+Checking `ldsopreload'... not infected
+Checking `login'... not infected
+Checking `ls'... not infected
+Checking `lsof'... not infected
+Checking `mail'... not infected
+Checking `netstat'... INFECTED
+Checking `passwd'... not infected
+Checking `pidof'... not infected
+Checking `ps'... not infected
+Checking `pstree'... not infected
+Checking `rpcinfo'... not infected
+Checking `rshd'... not found
+Checking `slogin'... not infected
+Checking `sendmail'... not infected
+Checking `sshd'... not infected
+Checking `syslogd'... not infected
+Checking `tar'... not infected
+Checking `tcpd'... not infected
+Checking `tcpdump'... not infected
+Checking `top'... not infected
+Checking `telnetd'... not infected
+Checking `traceroute'... not infected
+Checking `w'... not infected
+Checking `write'... not infected
+Checking `aliens'... /tmp/982235016-gtkrc-429249277 
+Searching for sniffer's logs, it may take a while... nothing found
+Searching for HiDrootkit's default dir... nothing found
+Searching for t0rn's default files and dirs... nothing found
+Searching for t0rn's v8 defaults... nothing found
+Searching for Lion Worm default files and dirs... nothing found
+Searching for RSHA's default files and dir... nothing found
+Searching for RH-Sharpe's default files... nothing found
+Searching for Ambient's rootkit (ark) default files and dirs... nothing found
+Searching for suspicious files and dirs, it may take a while... nothing found
+Searching for LPD Worm files and dirs... nothing found
+Searching for Ramen Worm files and dirs... nothing found
+Searching for Maniac files and dirs... nothing found
+Searching for RK17 files and dirs... nothing found
+Searching for Ducoci rootkit... nothing found
+Searching for Adore Worm... nothing found
+Searching for ShitC Worm... nothing found
+Searching for Omega Worm... nothing found
+Searching for Sadmind/IIS Worm... nothing found
+Searching for MonKit... nothing found
+Searching for Showtee... nothing found
+Searching for OpticKit... nothing found
+Searching for T.R.K... nothing found
+Searching for Mithra... nothing found
+Searching for OBSD rk v1... nothing found
+Searching for LOC rootkit ... nothing found
+Searching for Romanian rootkit ... nothing found
+Searching for anomalies in shell history files... nothing found
+Checking `asp'... not infected
+Checking `bindshell'... not infected
+Checking `lkm'... You have    11 process hidden for ps command
+Warning: Possible LKM Trojan installed
+Checking `rexedcs'... not found
+Checking `sniffer'... 
+Checking `wted'... Checking `scalper'... not infected
+Checking `slapper'... not infected
+Checking `z2'... 
+\end{lstlisting}
+
+\vspace{1em}
+
+\texttt{chkrootkit} flagged widespread infection across core system utilities (\texttt{basename}, \texttt{cron}, \texttt{date}, \texttt{echo}, \texttt{grep}, \texttt{netstat}, \texttt{inetd}). 
+
+Crucially, \texttt{chkrootkit} reported: \texttt{You have 11 process hidden for ps command} and issued a warning of a \textbf{Possible LKM Trojan installed}. This signaled that a Loadable Kernel Module or direct kernel-memory hook was dynamically intercepting system calls to conceal running processes.
+
+This finding marked a critical turning point in the investigation. When the operating system kernel itself is subverted and tampers with the truth of essential commands such as \texttt{ps}, \texttt{ls}, and \texttt{find}, live analysis on the running host can no longer be trusted. Continuing live operations introduced unacceptable risks of tipping off the adversary and triggering destructive anti-forensic countermeasures. The target server was immediately taken offline, volatile memory preserved, and the bit-stream disk image moved to the forensic laboratory for uncompromised differential RPM benchmarking.
+
+\begin{retoforense}[Discrepancies Between /proc and Userland ps]
+The alert emitted by \texttt{chkrootkit} (\textit{You have 11 process hidden for ps command}) arises by comparing the entries returned by the \texttt{sys\_getdents()} system call on \texttt{/proc} against the output parsed by \texttt{ps}. If an attacker modifies the kernel process list but neglects to conceal the corresponding numeric subdirectories in \texttt{/proc}, how can an examiner list active PIDs using a shell script that bypasses compromised system binaries?
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: EDR and Telemetry Collection]
+In 2004, live adversary surveillance relied on virtual terminal tapping tools (\texttt{ttysnoop}), recurrent \texttt{w} loops, and manual inspection of \texttt{/var/log/wtmp}. Today, modern Endpoint Detection and Response (EDR) agents such as CrowdStrike Falcon, SentinelOne, and Microsoft Defender for Endpoint gather continuous kernel-level telemetry via \textit{eBPF} on Linux or \textit{Kernel Patch Protection (PatchGuard)} on Windows, tracking child process trees, system calls, network sockets, and memory mutations without disrupting the analyst's session.
+\end{perspectiva20}

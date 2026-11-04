@@ -1,0 +1,109 @@
+% ==============================================================================
+% CONTRAPORTADA EXTERIOR EDITORIAL
+% "Linux Forensics: Caso Real" - Alexis Real Santillán
+% ==============================================================================
+\cleardoublepage
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+    % Paleta editorial coordinada con la portada
+    \definecolor{coverred}{RGB}{185, 28, 28}       % Rojo editorial clásico
+    \definecolor{covergray}{RGB}{75, 85, 99}       % Gris neutro para metadatos
+    \definecolor{coverborder}{RGB}{229, 231, 235}  % Gris sutil para divisores
+    \definecolor{cardbg}{RGB}{249, 250, 251}       % Fondo tenue para cajas
+    \definecolor{badgeframe}{RGB}{203, 213, 225}   % Borde sutil para sello digital
+
+    % Fondo continuo blanco inmaculado
+    \fill[white] (current page.south west) rectangle (current page.north east);
+
+    % Filete superior rojo continuo idéntico a la portada
+    \fill[coverred] (current page.north west) rectangle ($(current page.north east) + (0, -4.5mm)$);
+
+    % Cintillo superior de categoría editorial
+    \node[anchor=north west, align=left] 
+        at ($(current page.north west) + (20mm, -12mm)$) {
+        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{coverred} INVESTIGACIÓN PERICIAL} \quad
+        {\fontsize{8.5}{11}\selectfont\sffamily\color{black!30} $\vert$} \quad
+        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{covergray} SEGURIDAD INFORMÁTICA Y RESPUESTA A INCIDENTES (DFIR)}
+    };
+
+    % Filete de separación superior
+    \draw[coverborder, line width=0.6pt] 
+        ($(current page.north west) + (20mm, -17mm)$) -- ($(current page.north east) + (-20mm, -17mm)$);
+
+    % --------------------------------------------------------------------------
+    % BLOQUE DE CABECERA Y PREGUNTA GANCHO (SIN CORTE SILÁBICO)
+    % --------------------------------------------------------------------------
+    \node (headhook) [anchor=north west, align=left, text width=136mm] 
+        at ($(current page.north west) + (20mm, -21mm)$) {
+        {\fontsize{13}{16}\selectfont\sffamily\bfseries\color{coverred}
+        \textquestiondown Qué ocurre cuando la intrusión no es una simulación,\\[2pt]
+        sino un ataque real contra servidores de producción en vivo?}
+    };
+
+    % --------------------------------------------------------------------------
+    % TEXTO SINOPSIS DE LA OBRA
+    % --------------------------------------------------------------------------
+    \node (synopsis) [anchor=north west, align=justify, text width=136mm, font=\fontsize{8.5}{12}\selectfont\sffamily\color{black!85}] 
+        at ($(headhook.south west) + (0, -3.5mm)$) {
+        Esta obra presenta la investigación forense digital completa y exhaustiva llevada a cabo tras el compromiso de servidores de cómputo en un centro de investigación académica. Lejos de las simplificaciones teóricas habituales, el caso documenta la perturbadora convergencia de \textbf{dos intrusiones concurrentes e independientes}: el asalto oportunista externo para la siembra de procesos parásitos de IRC y, de forma paralela, el sigiloso espionaje interno perpetrado por un operador local que aprovechó el incidente para capturar las nuevas contraseñas de \texttt{root} mediante un \textit{rootkit} inyectado en memoria viva (\textit{Suckit}) y binarios del sistema troyanizados.
+        
+        \vspace{1.5mm}
+        Escrito con el rigor de un peritaje judicial alineado formalmente con los estándares \textbf{ISO/IEC 27037} y \textbf{NIST SP 800-86}, el libro acompaña al lector en cada fase de la autopsia técnica: desde la preservación de memoria y la clonación física bit a bit, hasta la reconstrucción de inodos huérfanos en Ext2 y el contraste cronológico de marcas temporales MAC.
+    };
+
+    % --------------------------------------------------------------------------
+    % RECUADRO DE APRENDIZAJES CLAVE
+    % --------------------------------------------------------------------------
+    \node (topicsbox) [anchor=north west, draw=coverborder, fill=cardbg, line width=0.6pt, rounded corners=3pt, inner sep=3.5mm, text width=129mm] 
+        at ($(synopsis.south west) + (0, -4mm)$) {
+        {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{primary} Contenidos fundamentales de la investigación:}\\[2mm]
+        \begin{minipage}{\linewidth}
+        \fontsize{7.8}{10.8}\selectfont\sffamily\color{black!85}
+        \begin{itemize}\setlength{\itemsep}{1.2mm}\setlength{\leftmargin}{3.5mm}
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Preservación y cadena de custodia:} Adquisición bit a bit (\texttt{dd}), sumas criptográficas y montaje de réplicas en solo lectura estricta.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Detección y análisis diferencial:} Verificación contra paquetes del fabricante (RPM), desensamblado con \texttt{strings}/\texttt{gdb} y detección de puertas traseras en \texttt{/bin/ps} y \texttt{/bin/netstat}.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Inodos huérfanos y líneas de tiempo:} Recuperación de datos eliminados en Ext2 mediante \textit{file carving} y reconstrucción con \texttt{mactime}.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Minería de auditoría multisistema:} Correlación de sesiones en \texttt{auth.log}, descargas en \texttt{xferlog}, contabilidad de procesos con \texttt{acct} e intercepción en \textit{OpenWebMail}.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Retrospectiva 2005--2025:} La madurez atemporal de Unix frente a los retos contemporáneos: memoria RAM (\textit{Volatility 3}), telemetría \textit{eBPF} y contenedores en la nube.
+        \end{itemize}
+        \end{minipage}
+    };
+
+    % --------------------------------------------------------------------------
+    % PERFIL DEL AUTOR
+    % --------------------------------------------------------------------------
+    \node (authorhead) [anchor=north west] 
+        at ($(topicsbox.south west) + (0, -3.5mm)$) {
+        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{black} Sobre el autor}
+    };
+
+    \node (authordesc) [anchor=north west, align=justify, text width=136mm, font=\fontsize{7.8}{10.8}\selectfont\sffamily\color{black!80}] 
+        at ($(authorhead.south west) + (0, -1mm)$) {
+        \textbf{Alexis Real Santillán} es Consultor en Ciberseguridad, Arquitectura Cloud e Infraestructura Crítica, y CTO en \textit{Linux Open Source de México} (\href{https://linuxopensource.org}{linuxopensource.org}). Se desempeñó históricamente como Administrador de Sistemas de Cómputo en el Instituto de Física y Matemáticas de la Universidad Michoacana de San Nicolás de Hidalgo (UMSNH), donde dirigió la pericia técnica documentada en esta obra. Su trayectoria profesional, consultoría independiente y portafolio técnico pueden consultarse en \href{https://alexisreal.github.io/cv/}{alexisreal.github.io/cv/}.
+    };
+
+    % --------------------------------------------------------------------------
+    % PIE DE CONTRAPORTADA: METADATOS Y DIFUSIÓN ABIERTA (SIN REGISTRO ISBN)
+    % --------------------------------------------------------------------------
+    % Filete separador inferior
+    \draw[coverborder, line width=0.6pt] 
+        ($(current page.south west) + (20mm, 28mm)$) -- ($(current page.south east) + (-20mm, 28mm)$);
+
+    % Bloque izquierdo: Clasificación y licencia
+    \node[anchor=south west, align=left, text width=92mm] 
+        at ($(current page.south west) + (20mm, 8mm)$) {
+        {\fontsize{7.5}{9.5}\selectfont\sffamily\bfseries\color{coverred} MATERIA DE ESTUDIO:}\\[1.5pt]
+        {\fontsize{7.2}{9.2}\selectfont\sffamily\color{black!75} Ciberseguridad / Informática Forense / Unix y Linux}\\[3pt]
+        {\fontsize{6.8}{8.8}\selectfont\sffamily\color{covergray} Publicación abierta sin fines comerciales $\cdot$ Licencia CC BY-SA 4.0}
+    };
+
+    % Bloque derecho: Sello editorial digital abierto (sin ISBN)
+    \node[anchor=south east, align=right] 
+        at ($(current page.south east) + (-20mm, 8mm)$) {
+        {\fontsize{8}{10}\selectfont\sffamily\bfseries\color{primary} EDICIÓN DIGITAL FORMATIVA}\\[2pt]
+        {\fontsize{7}{9}\selectfont\sffamily\color{covergray} Sin registro ISBN $\cdot$ Acceso libre}\\[2.5pt]
+        {\fontsize{7}{9}\selectfont\ttfamily\bfseries\color{coverred} linuxopensource.org}
+    };
+
+\end{tikzpicture}

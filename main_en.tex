@@ -1,0 +1,94 @@
+\documentclass[10pt,twoside,openright]{book}
+
+% Package loading and styling
+\input{config/preamble_en.tex}
+
+\begin{document}
+
+% ------------------------------------------------------------------------------
+% PRELIMINARIES (FRONTMATTER)
+% ------------------------------------------------------------------------------
+\frontmatter
+\pagestyle{plain}
+
+\input{frontmatter_en/portada.tex}
+\cleardoublepage
+
+\input{frontmatter_en/creditos.tex}
+\cleardoublepage
+
+\input{frontmatter_en/dedicatoria.tex}
+\cleardoublepage
+
+\input{frontmatter_en/prefacio.tex}
+\cleardoublepage
+
+\input{frontmatter_en/resumen.tex}
+\cleardoublepage
+
+\input{frontmatter_en/guia_estudio.tex}
+\cleardoublepage
+
+\tableofcontents
+\cleardoublepage
+
+% ------------------------------------------------------------------------------
+% MAIN BODY (MAINMATTER)
+% ------------------------------------------------------------------------------
+\mainmatter
+\pagestyle{fancy}
+
+% PART I: THE SCENARIO AND FORENSIC PREPARATION
+\part{The Scenario and Forensic Preparation}
+
+\input{chapters_en/cap01_entorno_tecnologico.tex}
+\input{chapters_en/cap02_metodologia_forense.tex}
+
+% PART II: EARLY DETECTION AND LIVE ARTIFACTS
+\part{Early Detection and Live Artifacts}
+
+\input{chapters_en/cap03_deteccion_en_vivo.tex}
+\input{chapters_en/cap04_siembra_servicios_malware.tex}
+\input{chapters_en/cap05_monitoreo_usuarios.tex}
+
+% PART III: POST-MORTEM FORENSIC ANALYSIS AND DEEP RECONSTRUCTION
+\part{Post-Mortem Forensic Analysis and Deep Reconstruction}
+
+\input{chapters_en/cap06_analisis_referencia_rpm.tex}
+\input{chapters_en/cap07_antivirus_rootkits.tex}
+\input{chapters_en/cap08_lineas_tiempo_mactime.tex}
+\input{chapters_en/cap09_mineria_bitacoras.tex}
+\input{chapters_en/cap10_cuentas_comprometidas.tex}
+\input{chapters_en/cap11_recuperacion_archivos_borrados.tex}
+\input{chapters_en/cap12_correlacion_multisistema.tex}
+\input{chapters_en/cap13_servidor_correo_webmail.tex}
+
+% PART IV: FORENSIC VERDICT, ATTRIBUTION AND CONTEMPORARY PERSPECTIVE
+\part{Forensic Verdict, Attribution and Contemporary Perspective}
+
+\input{chapters_en/cap14_veredicto_y_atribucion.tex}
+\input{chapters_en/cap15_retrospectiva_20_anios.tex}
+
+% ------------------------------------------------------------------------------
+% APPENDICES AND COMPLEMENTARY MATERIAL
+% ------------------------------------------------------------------------------
+\appendix
+\part{Technical Appendices and Practical Guides}
+
+\input{appendices_en/apendice_a_iocs.tex}
+\input{appendices_en/apendice_b_bitacoras_completas.tex}
+\input{appendices_en/apendice_c_glosario.tex}
+\input{appendices_en/apendice_d_comandos_forenses.tex}
+\input{appendices_en/apendice_e_cadena_custodia_modelo.tex}
+
+% ------------------------------------------------------------------------------
+% BACKMATTER
+% ------------------------------------------------------------------------------
+\backmatter
+
+\input{biblio/bibliografia_en.tex}
+
+% Outside Back Cover
+\input{frontmatter_en/contraportada.tex}
+
+\end{document}

@@ -1,0 +1,20 @@
+\chapter*{Executive Summary}
+\addcontentsline{toc}{chapter}{Executive Summary}
+
+This document presents the findings of an exhaustive digital forensic investigation conducted on a central departmental production server (\nolinkurl{helios.ifm.lab.edu.mx}) belonging to an academic research institution, following the discovery of unauthorized activity and the implantation of malicious software operating with administrative privileges.
+
+The investigation comprised two complementary methodological phases:
+\begin{enumerate}
+    \item \textbf{Live Response and Active Monitoring:} Executed while the server remained in production to contain imminent operational risks, capture volatile in-memory processes, intercept network communications, and monitor suspect interactive sessions without prematurely alerting the adversaries.
+    \item \textbf{Post-Mortem Forensic Analysis:} Rigorous examination of bit-stream forensic images of the storage drives conducted on dedicated reference and control workstations (\textit{Dell Precision 350}). This phase encompassed operating system package integrity verification (RPM), heuristic malware detection, chronological inode timeline analysis (\textit{mactime} using MAC timestamps), system log mining (\texttt{syslog}, \texttt{wtmp}, \texttt{xferlog}), deleted file recovery (\textit{file carving}), and multi-system correlation across mail and web authentication services (\textit{OpenWebMail}).
+\end{enumerate}
+
+\begin{notaforense}[Core Forensic Finding of the Investigation]
+Forensic evidence conclusively demonstrated the convergence of \textbf{two independent intrusions}:
+\begin{itemize}
+    \item An \textbf{opportunistic external attack}, originating via weak credentials over an exposed FTP service, whose primary objective was exploiting server compute and bandwidth to host IRC bouncers, relay bots, and file repositories.
+    \item A \textbf{second, concurrent internal attack}, perpetrated by an insider with physical access to the building and direct knowledge of local network topology. This second actor took advantage of the confusion created by the initial breach to plant network sniffers, replace core administrative utilities with rootkits, and capture newly updated \texttt{root} administrative credentials.
+\end{itemize}
+\end{notaforense}
+
+The conclusions of this expert report enabled the institution to isolate compromised systems, eradicate malware persistence from the institutional network, attribute responsibility, and deploy hardened authentication and network segmentation architectures.

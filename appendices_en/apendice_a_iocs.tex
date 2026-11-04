@@ -1,0 +1,31 @@
+\chapter{Catalog of Indicators of Compromise (IoCs)}
+
+This appendix compiles the malicious artifacts, suspicious file paths, and persistence mechanisms identified throughout the forensic investigation on server \texttt{helios}.
+
+\section{Identified File Paths and Malicious Binaries}
+
+\begin{table}[h!]
+\centering
+\footnotesize
+\begin{tabularx}{\textwidth}{@{} l l X @{}}
+\toprule
+\textbf{Artifact Path} & \textbf{Owner / Permissions} & \textbf{Description / Detected Function} \\
+\midrule
+\texttt{/dev/ptyp} & \texttt{root:root (drwxr-xr-x)} & Hidden staging and execution directory \\
+\texttt{/dev/ptyp/energyb} & \texttt{root:root (rwxr-xr-x)} & IRC bot with DCC and channel relay support \\
+\texttt{/dev/ptyp/psybnc} & \texttt{root:root (rwxr-xr-x)} & IRC bouncer for bouncing and cloaking connections \\
+\texttt{/usr/lib/popclean} & \texttt{root:root (-u--ia-----)} & Trojanized sniffer binary with immutable attribute \\
+\texttt{/usr/local/lib/dsniff.services} & \texttt{root:root (-u--ia-----)} & Service configuration for credential harvester \\
+\texttt{/tmp/...} & \texttt{duende:duende (drwxrwxrwx)} & Temporary malware unpacking and build tree \\
+\bottomrule
+\end{tabularx}
+\caption{Suspicious artifacts and executables identified on the compromised system.}
+\end{table}
+
+\section{Special Ext2 Filesystem Attributes}
+
+Several trojanized executables were hardened with special Ext2 filesystem attributes to prevent modification or deletion, even by \texttt{root}:
+\begin{itemize}
+    \item \textbf{Immutable Attribute (\texttt{+i}):} Prohibits the file from being modified, renamed, deleted, or truncated. It can only be cleared by explicitly stripping the attribute via \texttt{chattr -i}.
+    \item \textbf{Append-Only Attribute (\texttt{+a}):} Restricts write operations strictly to appending data to the end of the file, preventing existing content from being overwritten or zeroed out.
+\end{itemize}

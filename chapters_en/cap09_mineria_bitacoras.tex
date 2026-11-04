@@ -1,0 +1,856 @@
+\chapter{System Log Mining and Event Correlation}
+
+Operating system audit logs (\texttt{/var/log/messages}, \texttt{secure}, \texttt{wtmp}, \texttt{xferlog}) provide chronological testimony of authentication attempts, remote network sessions, and privileged execution. This chapter examines the logged event sequences while unravelling the adversary's calculated attempts to sanitize and manipulate system accounting records.
+
+\begin{notaforense}[Syslog Architecture and Local Storage Vulnerability]
+The standard Unix logging daemon (\texttt{syslogd} / RFC 3164) categorizes events by facility (\textit{facility}: \texttt{auth}, \texttt{authpriv}, \texttt{daemon}, \texttt{kern}, \texttt{mail}) and severity (\textit{severity}: \texttt{info}, \texttt{warning}, \texttt{err}, \texttt{alert}). On standalone servers of that era lacking remote syslog forwarding (over UDP 514), audit logs resided strictly as local cleartext flat files under \texttt{/var/log/}. Consequently, once an intruder attained superuser (\texttt{root}) privileges, they possessed unrestricted capabilities to alter, truncate, or rewrite logs to excise their traces (as demonstrated by utility \texttt{clean!}). For this reason, examiners must always cross-validate disk logs against filesystem inode timelines (\textit{mactime}) and binary accounting records (\textit{acct}).
+\end{notaforense}
+
+\section{System Log Audits (\texttt{syslog}, \texttt{secure}, and \texttt{xferlog})}
+
+The log excerpts below are distilled to essential sequences; certain repetitive entries that appeared hundreds of times are abridged to representative occurrences illustrating patterns.
+
+\texttt{auth.log}
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+Apr  8 05:23:01 helios PAM_unix[1157]: (cron) session closed for user mail
+Apr  8 05:29:22 helios sshd[1232]: Did not receive identification string from 198.18.16.225
+Apr  8 05:30:20 helios PAM_unix[1234]: check pass; user unknown
+Apr  8 05:30:20 helios PAM_unix[1234]: authentication failure; (uid=0) -> **unknown** for login service
+Apr  8 05:30:22 helios login[1234]: FAILED LOGIN (1) on `pts/2' from `200-161-199-225.dsl.telesp.net.br' 
+                     FOR `UNKNOWN', Authentication servic
+Apr  8 05:30:29 helios PAM_unix[1234]: (login) session opened for user proa by (uid=0)
+Apr  8 05:31:37 helios newgrp[1242]: unknown gid: 523
+Apr  8 05:31:45 helios newgrp[1247]: unknown gid: 523
+Apr  8 05:31:56 helios passwd[1252]: can't change pwd for `root'
+Apr  8 05:33:02 helios PAM_unix[1262]: (login) session opened for user proa by (uid=0)
+Apr  8 05:33:52 helios newgrp[1287]: unknown gid: 523
+Apr  8 05:34:58 helios passwd[4388]: can't change pwd for `root'
+Apr  8 05:35:19 helios newgrp[4391]: unknown gid: 523
+Apr  8 05:35:26 helios newgrp[4394]: unknown gid: 523
+Apr  8 05:36:23 helios PAM_unix[4402]: (login) session opened for user proa by (uid=0)
+Apr  8 05:36:49 helios PAM_unix[4404]: authentication failure; proa(uid=523) -> irc for su service
+Apr  8 05:36:51 helios su[4404]: pam_authenticate: Authentication failure
+Apr  8 05:36:51 helios su[4404]: - pts/5 proa-irc
+Apr  8 05:37:30 helios newgrp[4416]: unknown gid: 523
+Apr  8 05:38:01 helios PAM_unix[4430]: (cron) session opened for user mail by (uid=0)
+Apr  8 05:41:54 helios newgrp[4570]: unknown gid: 523
+Apr  8 05:43:05 helios PAM_unix[4588]: (login) session opened for user proa by (uid=0)
+Apr  8 10:04:22 helios PAM_unix[7098]: (login) session opened for user apached by (uid=0)
+Apr  8 10:04:32 helios PAM_unix[7099]: authentication failure; apached(uid=1) -> smtpd for su service
+Apr  8 10:04:34 helios su[7099]: pam_authenticate: Authentication failure
+Apr  8 10:04:34 helios su[7099]: - pts/11 apached-smtpd
+Apr  8 10:06:14 helios PAM_unix[31115]: (gdm) session closed for user stevens
+Apr  8 10:06:28 helios PAM_unix[7118]: (login) session opened for user lester by (uid=0)
+Apr  8 10:06:46 helios PAM_unix[7103]: authentication failure; apached(uid=1) -> smtpd for su service
+Apr  8 10:06:48 helios su[7103]: pam_authenticate: Authentication failure
+Apr  8 10:06:48 helios su[7103]: - pts/11 apached-smtpd
+Apr  8 10:06:59 helios passwd[7120]: can't change pwd for `smtpd'
+Apr  8 10:07:05 helios PAM_unix[7121]: authentication failure; apached(uid=1) -> smtpd for su service
+Apr  8 10:07:07 helios su[7121]: pam_authenticate: Authentication failure
+Apr  8 10:07:07 helios su[7121]: - pts/11 apached-smtpd
+Apr  8 10:07:23 helios PAM-securetty[7123]: access denied: tty 'pts/7' is not secure!
+Apr  8 10:07:27 helios login[7123]: FAILED LOGIN (1) on `pts/7' from `198.18.1.45' FOR `smtpd', 
+            Authentication failure
+Apr  8 10:07:56 helios PAM_unix[7128]: Password for apached was changed
+Apr  8 10:08:00 helios PAM_unix[7129]: Password for smtpd was changed
+Apr  8 10:08:01 helios PAM_unix[7130]: (cron) session opened for user mail by (uid=0)
+Apr  8 10:08:01 helios PAM_unix[7130]: (cron) session closed for user mail
+Apr  8 10:08:36 helios PAM_unix[7207]: (login) session opened for user apached by (uid=0)
+Apr  8 10:08:39 helios su[7208]: + pts/7 apached-smtpd
+Apr  8 10:08:39 helios PAM_unix[7208]: (su) session opened for user smtpd by apached(uid=1)
+Apr  8 10:09:49 helios sshd[7226]: Bad protocol version identification '\233è^]W±\215/5^O\2027Do\226\
+            F^_"Ðù' from 198.18.1.45
+Apr  8 10:10:15 helios PAM_unix[7228]: (login) session opened for user apached by (uid=0)
+Apr  8 10:10:18 helios su[7229]: + pts/2 apached-smtpd
+Apr  8 10:10:18 helios PAM_unix[7229]: (su) session opened for user smtpd by apached(uid=1)
+Apr  8 14:08:44 helios PAM_unix[9147]: (login) session opened for user zopilote by (uid=0)
+Apr  8 14:11:36 helios sshd[9228]: Accepted password for root from 192.0.2.104 port 32769 ssh2
+Apr  8 14:11:36 helios PAM_unix[9228]: (ssh) session opened for user root by (uid=0)
+Apr  8 14:13:02 helios PAM_unix[9228]: (ssh) session closed for user root
+Apr  8 14:13:02 helios sshd[9228]: PAM pam_putenv: delete non-existent entry; MAIL
+Apr  8 14:23:01 helios PAM_unix[9298]: (cron) session opened for user mail by (uid=0)
+Apr  8 14:23:02 helios PAM_unix[9298]: (cron) session closed for user mail
+Apr  8 14:33:15 helios PAM_unix[9372]: (ftp) session opened for user proa by (uid=0)
+Apr  8 14:38:01 helios PAM_unix[9378]: (cron) session opened for user mail by (uid=0)
+Apr  8 14:38:02 helios PAM_unix[9378]: (cron) session closed for user mail
+Apr  8 14:40:41 helios PAM_unix[9372]: (ftp) session closed for user proa
+Apr  8 14:48:23 helios PAM_unix[9465]: (ftp) session opened for user proa by (uid=0)
+Apr  8 14:49:12 helios PAM_unix[9465]: (ftp) session closed for user proa
+Apr  8 14:50:03 helios PAM_unix[9467]: (ftp) session opened for user proa by (uid=0)
+Apr  8 14:51:33 helios PAM_unix[9467]: (ftp) session closed for user proa
+Apr  8 14:53:01 helios PAM_unix[9471]: (cron) session opened for user mail by (uid=0)
+Apr  8 14:53:02 helios PAM_unix[9471]: (cron) session closed for user mail
+Apr  8 14:54:07 helios PAM_unix[31115]: (gdm) session opened for user stevens by (uid=0)
+Apr  8 14:54:48 helios PAM_unix[9545]: authentication failure; (uid=0) -> proa for ftp service
+Apr  8 14:55:12 helios PAM_unix[9613]: (ftp) session opened for user proa by (uid=0)
+Apr  8 14:58:10 helios PAM_unix[9613]: (ftp) session closed for user proa
+Apr  8 15:57:45 helios PAM_unix[9967]: (login) session opened for user proa by (uid=0)
+Apr  8 16:00:40 helios ftpd[10008]: PAM-listfile: Refused user anonymous for service ftp
+Apr  8 16:00:40 helios ftpd[10009]: PAM-listfile: Refused user ftp for service ftp
+Apr  8 16:00:41 helios PAM_unix[10012]: check pass; user unknown
+Apr  8 16:00:41 helios PAM_unix[10012]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:41 helios PAM_unix[10008]: auth could not identify password for [ftp]
+Apr  8 16:00:41 helios PAM_unix[10009]: auth could not identify password for [ftp]
+Apr  8 16:00:44 helios PAM_unix[10013]: check pass; user unknown
+Apr  8 16:00:44 helios PAM_unix[10013]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:44 helios PAM_unix[10014]: check pass; user unknown
+Apr  8 16:00:44 helios PAM_unix[10014]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:45 helios PAM_unix[10010]: check pass; user unknown
+Apr  8 16:00:45 helios PAM_unix[10010]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:45 helios PAM_unix[10011]: check pass; user unknown
+Apr  8 16:00:45 helios PAM_unix[10011]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:49 helios PAM_unix[10015]: check pass; user unknown
+Apr  8 16:00:49 helios PAM_unix[10015]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:49 helios PAM_unix[10016]: check pass; user unknown
+Apr  8 16:00:49 helios PAM_unix[10016]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:49 helios PAM_unix[10017]: check pass; user unknown
+Apr  8 16:00:49 helios PAM_unix[10017]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:50 helios PAM_unix[10018]: check pass; user unknown
+Apr  8 16:00:50 helios PAM_unix[10018]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:50 helios PAM_unix[10019]: check pass; user unknown
+Apr  8 16:00:50 helios PAM_unix[10019]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:56 helios PAM_unix[10020]: check pass; user unknown
+Apr  8 16:00:56 helios PAM_unix[10020]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:56 helios PAM_unix[10021]: check pass; user unknown
+Apr  8 16:00:56 helios PAM_unix[10021]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:56 helios ftpd[10023]: PAM-listfile: Refused user anonymous for service ftp
+Apr  8 16:00:56 helios ftpd[10024]: PAM-listfile: Refused user ftp for service ftp
+Apr  8 16:00:56 helios ftpd[10025]: PAM-listfile: Refused user root for service ftp
+Apr  8 16:00:57 helios PAM_unix[10023]: auth could not identify password for [ftp]
+Apr  8 16:00:57 helios PAM_unix[10024]: auth could not identify password for [ftp]
+Apr  8 16:00:57 helios PAM_unix[10025]: authentication failure; (uid=0) -> root for ftp service
+Apr  8 16:00:57 helios PAM_unix[10027]: authentication failure; (uid=0) -> daemon for ftp service
+Apr  8 16:00:57 helios PAM_unix[10028]: check pass; user unknown
+Apr  8 16:00:57 helios PAM_unix[10028]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:00:57 helios PAM_unix[10029]: bad username [ñkim]
+Apr  8 16:01:00 helios PAM_unix[10026]: authentication failure; (uid=0) -> bin for ftp service
+Apr  8 16:01:00 helios PAM_unix[10031]: authentication failure; (uid=0) -> games for ftp service
+Apr  8 16:01:00 helios PAM_unix[10030]: authentication failure; (uid=0) -> lp for ftp service
+Apr  8 16:01:01 helios PAM_unix[10032]: check pass; user unknown
+Apr  8 16:01:01 helios PAM_unix[10032]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:01:02 helios PAM_unix[10033]: check pass; user unknown
+Apr  8 16:01:02 helios PAM_unix[10033]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:01:02 helios PAM_unix[10035]: check pass; user unknown
+Apr  8 16:01:02 helios PAM_unix[10035]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:01:03 helios PAM_unix[10037]: check pass; user unknown
+Apr  8 16:01:03 helios PAM_unix[10037]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:01:03 helios PAM_unix[10036]: check pass; user unknown
+Apr  8 16:01:03 helios PAM_unix[10036]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:01:03 helios PAM_unix[10038]: authentication failure; (uid=0) -> postgres for ftp service
+Apr  8 16:01:05 helios PAM_unix[10040]: check pass; user unknown
+Apr  8 16:01:05 helios PAM_unix[10040]: authentication failure; (uid=0) -> **unknown** for ftp service
+Apr  8 16:01:05 helios PAM_unix[10034]: check pass; user unknown
+Apr  9 06:25:01 helios PAM_unix[16510]: (cron) session opened for user root by (uid=0)
+Apr  9 06:25:02 helios su[16579]: + ??? root-nobody
+Apr  9 06:25:02 helios PAM_unix[16579]: (su) session opened for user nobody by (uid=0)
+Apr  9 06:29:35 helios PAM_unix[16510]: (cron) session closed for user root
+Apr 12 20:44:38 helios passwd[19695]: password for `mail' changed by `root'
+Apr 12 20:44:46 helios userdel[19700]: delete user `smtpd'
+Apr 16 12:19:54 helios PAM_unix[18346]: authentication failure; (uid=0) -> proa for login service
+Apr 16 12:19:57 helios login[18346]: FAILED LOGIN (1) on `pts/6' from 
+                    `host-203.0.113.186-cust.telemedia.net.mx' FOR `proa', 
+                    Authentication
+Apr 16 12:20:07 helios login[18346]: FAILED LOGIN (2) on `pts/6' from 
+                    `host-203.0.113.186-cust.telemedia.net.mx' FOR `proa', 
+                    Authentication
+Apr 16 12:20:19 helios PAM_unix[18346]: authentication failure; (uid=0) -> zopilote for login service
+Apr 16 12:20:21 helios login[18346]: FAILED LOGIN (3) on `pts/6' from 
+                    `host-203.0.113.186-cust.telemedia.net.mx' FOR `zopilote', 
+                    Authenticat
+Apr 16 12:20:39 helios PAM_unix[18349]: authentication failure; (uid=0) -> brenton for login service
+Apr 16 12:20:42 helios login[18349]: FAILED LOGIN (1) on `pts/6' from `test.ifm.lab.edu.mx' FOR `brenton', 
+                    Authentication failure
+Apr 16 12:20:48 helios PAM_unix[18352]: authentication failure; (uid=0) -> zena for login service
+Apr 16 12:20:52 helios login[18352]: FAILED LOGIN (1) on `pts/7' from 
+                    `host-203.0.113.186-cust.telemedia.net.mx' FOR `zena', 
+                    Authentication
+Apr 16 12:20:53 helios PAM_unix[18349]: (login) session opened for user guest by (uid=0)
+Apr 16 12:20:57 helios PAM_unix[18352]: check pass; user unknown
+Apr 16 12:20:57 helios PAM_unix[18352]: authentication failure; (uid=0) -> **unknown** for login service
+Apr 16 12:21:00 helios login[18352]: FAILED LOGIN (2) on `pts/7' from 
+                    `host-203.0.113.186-cust.telemedia.net.mx' FOR `UNKNOWN', 
+                    Authentication
+Apr 16 12:21:37 helios PAM_unix[18354]: authentication failure; (uid=0) -> proa for ssh service
+Apr 16 12:21:39 helios sshd[18354]: Failed password for proa from 203.0.113.186 port 1127 ssh2
+Apr 16 12:36:25 helios PAM_unix[18490]: (login) session opened for user proa by (uid=0)
+Apr 16 12:36:39 helios PAM_unix[18492]: Password for proa was changed
+Apr 16 14:08:02 helios PAM_unix[19069]: (cron) session closed for user mail
+Apr 16 14:11:19 helios sshd[19150]: Accepted password for root from 192.0.2.89 port 32779 ssh2
+Apr 16 14:11:20 helios PAM_unix[19150]: (ssh) session opened for user root by (uid=0)
+Apr 16 14:11:52 helios su[19159]: + pts/6 root-zopilote
+Apr 16 14:11:52 helios PAM_unix[19159]: (su) session opened for user zopilote by root(uid=0)
+Apr 16 14:56:07 helios sshd[1543]: Accepted password for zena from 198.18.2.78 port 1388 ssh2
+Apr 16 14:56:08 helios PAM_unix[1545]: (ssh) session opened for user zena by (uid=521)
+Apr 16 14:57:16 helios PAM_unix[1545]: (ssh) session closed for user zena
+Apr 16 14:57:16 helios sshd[1545]: PAM pam_putenv: delete non-existent entry; MAIL
+Apr 16 15:22:05 helios sshd[2293]: Accepted password for duende from 192.0.2.20 port 32870 ssh2
+Apr 16 15:22:05 helios PAM_unix[2295]: (ssh) session opened for user duende by (uid=500)
+Apr 16 15:23:01 helios PAM_unix[2313]: (cron) session opened for user mail by (uid=0)
+Apr 16 15:23:02 helios PAM_unix[2313]: (cron) session closed for user mail
+Apr 16 15:26:54 helios PAM_unix[2295]: (ssh) session closed for user duende
+Apr 16 15:26:54 helios sshd[2295]: PAM pam_putenv: delete non-existent entry; MAIL
+Apr 16 15:30:37 helios sshd[2442]: Accepted password for duende from 192.0.2.20 port 32871 ssh2
+Apr 16 15:30:37 helios PAM_unix[2444]: (ssh) session opened for user duende by (uid=500)
+Apr 16 15:34:00 helios PAM_unix[2444]: (ssh) session closed for user duende
+Apr 21 11:07:20 helios PAM_unix[14410]: authentication failure; (uid=0) -> proa for ftp service
+Apr 21 11:07:41 helios PAM_unix[14411]: authentication failure; (uid=0) -> proa for ftp service
+Apr 21 11:08:01 helios PAM_unix[14413]: (cron) session opened for user mail by (uid=0)
+Apr 21 11:08:01 helios PAM_unix[14413]: (cron) session closed for user mail
+Apr 21 11:08:06 helios PAM_unix[14412]: authentication failure; (uid=0) -> proa for ftp service
+Apr 21 11:08:58 helios PAM_unix[14490]: (login) session opened for user zena by (uid=0)
+Apr 21 11:09:12 helios PAM_unix[14500]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:09:14 helios su[14500]: pam_authenticate: Authentication failure
+Apr 21 11:09:14 helios su[14500]: - pts/2 zena-proa
+Apr 21 11:09:24 helios PAM_unix[14503]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:09:26 helios su[14503]: pam_authenticate: Authentication failure
+Apr 21 11:09:26 helios su[14503]: - pts/2 zena-proa
+Apr 21 11:09:32 helios PAM_unix[14505]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:09:34 helios su[14505]: pam_authenticate: Authentication failure
+Apr 21 11:09:34 helios su[14505]: - pts/2 zena-proa
+Apr 21 11:09:41 helios PAM_unix[14507]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:09:43 helios su[14507]: pam_authenticate: Authentication failure
+Apr 21 11:09:43 helios su[14507]: - pts/2 zena-proa
+Apr 21 11:10:30 helios PAM_unix[14517]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:10:32 helios su[14517]: pam_authenticate: Authentication failure
+Apr 21 11:10:32 helios su[14517]: - pts/2 zena-proa
+Apr 21 11:10:40 helios PAM_unix[14519]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:10:42 helios su[14519]: pam_authenticate: Authentication failure
+Apr 21 11:10:42 helios su[14519]: - pts/2 zena-proa
+Apr 21 11:11:01 helios PAM_unix[14529]: authentication failure; zena(uid=521) -> elisa for su service
+Apr 21 11:11:03 helios su[14529]: pam_authenticate: Authentication failure
+Apr 21 11:11:03 helios su[14529]: - pts/2 zena-elisa
+Apr 21 11:11:11 helios PAM_unix[14531]: authentication failure; zena(uid=521) -> proa for su service
+Apr 21 11:11:14 helios su[14531]: pam_authenticate: Authentication failure
+Apr 21 11:11:14 helios su[14531]: - pts/2 zena-proa
+Apr 21 11:15:33 helios PAM_unix[14534]: authentication failure; (uid=0) -> zopilote for login service
+Apr 21 11:15:37 helios login[14534]: FAILED LOGIN (1) on `pts/1' from 
+                `dup-200-64-234-196.prodigy.net.mx' FOR `zopilote', 
+                Authentication fail
+Apr 21 11:15:48 helios login[14534]: FAILED LOGIN (2) on `pts/1' from 
+                `dup-200-64-234-196.prodigy.net.mx' FOR `zopilote', Authentication fail
+Apr 21 11:15:58 helios PAM_unix[14534]: authentication failure; (uid=0) -> zena for login service
+Apr 21 11:16:02 helios login[14534]: FAILED LOGIN (3) on `pts/1' from 
+                `dup-200-64-234-196.prodigy.net.mx' FOR `zena', Authentication failure
+Apr 21 11:16:07 helios PAM_unix[14534]: (login) session opened for user zena by (uid=0)
+Apr 21 11:17:28 helios passwd[14564]: can't change pwd for `bin'
+Apr 21 11:17:33 helios passwd[14566]: can't change pwd for `proa'
+Apr 21 11:17:50 helios newgrp[14569]: unknown gid: 521
+\end{lstlisting}
+
+\vspace{1em}
+
+\texttt{daemon.log}
+
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+Apr  8 02:28:50 helios identd[32667]: started
+Apr  8 02:47:05 helios identd[32754]: started
+Apr  8 04:42:09 helios in.telnetd[924]: connect from 192.0.2.109
+Apr  8 04:43:41 helios identd[934]: started
+Apr  8 04:55:53 helios identd[1032]: started
+Apr  8 05:12:42 helios in.telnetd[1116]: connect from 192.0.2.109
+Apr  8 05:14:44 helios identd[1124]: started
+Apr  8 05:22:11 helios identd[1149]: started
+Apr  8 05:29:28 helios in.telnetd[1233]: connect from 198.18.16.225
+Apr  8 05:42:55 helios in.telnetd[4587]: connect from 198.18.16.225
+Apr  8 06:12:11 helios identd[5063]: started
+Apr  8 06:19:49 helios in.telnetd[5071]: connect from 192.0.2.30
+Apr  8 06:34:05 helios in.telnetd[5430]: connect from 192.0.2.1069
+Apr  8 08:39:32 helios in.telnetd[6121]: connect from 192.0.2.109
+Apr  8 08:45:50 helios identd[6131]: started
+Apr  8 09:58:10 helios in.telnetd[7010]: connect from 198.18.1.45
+Apr  8 10:01:52 helios in.telnetd[7030]: connect from 192.0.2.30
+Apr  8 10:02:21 helios identd[7071]: started
+Apr  8 10:04:17 helios in.telnetd[7097]: connect from 198.18.1.45
+Apr  8 10:06:24 helios in.telnetd[7117]: connect from 192.0.2.30
+Apr  8 10:07:17 helios in.telnetd[7122]: connect from 198.18.1.45
+Apr  8 10:07:42 helios in.qpopper[7124]: connect from 198.18.1.45
+Apr  8 10:08:27 helios in.telnetd[7206]: connect from 198.18.1.45
+Apr  8 10:09:36 helios in.qpopper[7223]: connect from 198.18.1.45
+Apr  8 10:09:38 helios imapd[7224]: connect from 198.18.1.45
+Apr  8 10:09:43 helios in.ftpd[7225]: connect from 198.18.1.45
+Apr  8 10:10:05 helios in.telnetd[7227]: connect from 198.18.1.45
+Apr  8 10:11:36 helios in.qpopper[7253]: connect from 198.18.1.45
+Apr  8 10:12:42 helios in.telnetd[7256]: connect from 192.0.2.30
+Apr  8 10:56:35 helios in.telnetd[7514]: connect from 192.0.2.1082
+Apr  8 11:09:39 helios identd[7835]: started
+Apr  8 11:45:41 helios in.telnetd[8175]: connect from 192.0.2.1082
+Apr  8 11:50:29 helios in.ftpd[8177]: connect from 198.18.28.2
+Apr  8 12:01:14 helios in.ftpd[8267]: connect from 198.18.28.2
+Apr  8 12:03:46 helios gdm[6229]: gdm_slave_xioerror_handler: Fatal X error - Restarting 192.0.2.29:0
+Apr  8 12:11:28 helios in.qpopper[8353]: connect from 198.18.1.45
+Apr  8 12:21:54 helios in.telnetd[8372]: connect from 192.0.2.67
+Apr  8 12:24:49 helios in.ftpd[8453]: connect from 198.18.51.24
+Apr  8 12:25:17 helios in.telnetd[8454]: connect from 192.0.2.1069
+Apr  8 12:28:57 helios identd[8475]: started
+Apr  8 12:45:39 helios in.qpopper[8729]: connect from 198.18.1.45
+Apr  8 13:53:43 helios in.ftpd[9126]: connect from 198.18.22.7
+Apr  8 13:54:56 helios in.ftpd[9127]: connect from 198.18.22.7
+Apr  8 14:02:04 helios identd[9138]: started
+Apr  8 14:07:51 helios in.telnetd[9146]: connect from 198.18.5.9
+Apr  8 14:12:51 helios rpc.statd[20443]: Caught signal 15, un-registering and exiting.
+Apr  8 14:12:52 helios rpc.statd[9252]: Version 1.0 Starting
+Apr  8 14:14:31 helios identd[9268]: started
+Apr  8 14:14:33 helios in.telnetd[9276]: connect from 198.18.6.31
+Apr  8 14:14:58 helios telnetd[9276]: ttloop: peer died: EOF
+Apr  8 14:53:59 helios in.ftpd[9545]: connect from 198.18.32.2
+Apr  8 14:54:58 helios in.ftpd[9613]: connect from 198.18.32.2
+Apr  8 15:47:39 helios in.telnetd[9867]: connect from 198.18.10.198
+Apr  8 15:49:51 helios identd[9877]: started
+Apr  8 15:56:54 helios in.telnetd[9966]: connect from 198.18.18.90
+Apr  8 15:57:14 helios identd[9973]: started
+Apr  8 15:58:54 helios in.telnetd[9999]: connect from 198.18.14.5
+Apr  8 15:59:16 helios telnetd[9999]: ttloop: peer died: EOF
+Apr  8 16:00:34 helios in.qpopper[10003]: connect from 198.18.4.71
+Apr  8 16:00:34 helios in.qpopper[10007]: connect from 198.18.4.71
+Apr  8 16:00:37 helios in.ftpd[10008]: connect from 198.18.4.71
+Apr  8 16:00:59 helios in.ftpd[10034]: connect from 198.18.4.71
+Apr  8 16:01:03 helios in.ftpd[10039]: connect from 198.18.31.66
+Apr  8 16:01:03 helios in.ftpd[10042]: connect from 198.18.4.71
+Apr  8 16:01:16 helios identd[10067]: started
+Apr  8 16:01:17 helios in.ftpd[10075]: connect from 198.18.4.71
+Apr  8 16:01:17 helios in.ftpd[10076]: connect from 198.18.4.71
+Apr  8 16:01:21 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr  8 16:07:21 helios in.telnetd[10083]: connect from 198.18.18.90
+Apr  8 16:10:25 helios in.telnetd[10164]: connect from 198.18.18.90
+Apr  8 16:34:10 helios identd[10250]: started
+Apr  8 16:34:46 helios in.telnetd[10263]: connect from 198.18.6.31
+Apr  8 16:35:10 helios telnetd[10263]: ttloop: peer died: EOF
+Apr  8 17:52:18 helios in.telnetd[11819]: connect from 192.0.2.1082
+Apr  8 18:31:07 helios in.telnetd[12226]: connect from 192.0.2.30
+Apr  8 19:52:30 helios gdm[31115]: gdm_slave_xioerror_handler: Fatal X error - Restarting :0
+Apr  8 20:57:07 helios identd[13588]: started
+Apr  8 20:57:09 helios in.telnetd[13596]: connect from 198.18.6.31
+Apr  8 20:57:34 helios telnetd[13596]: ttloop: peer died: EOF
+Apr  8 21:40:23 helios in.ftpd[13830]: connect from 198.18.15.4
+Apr  8 22:02:11 helios identd[13910]: started
+Apr  8 22:34:43 helios in.ftpd[14071]: connect from 198.18.13.145
+Apr  8 22:37:02 helios in.ftpd[14072]: connect from 198.18.13.145
+Apr  9 03:29:08 helios identd[15574]: started
+Apr  9 05:35:15 helios in.telnetd[16184]: connect from 192.0.2.109
+Apr  9 05:47:28 helios identd[16268]: started
+Apr  9 05:52:26 helios in.telnetd[16280]: connect from 192.0.2.30
+Apr  9 08:28:27 helios gnome-name-server[17694]: starting
+Apr  9 08:28:27 helios gnome-name-server[17694]: name server starting
+Apr  9 08:28:29 helios gnome-name-server[17701]: server_is_alive: cnx[IDL:GNOME/Panel2:1.0] = 0x8054a78
+Apr  9 08:28:30 helios gnome-name-server[17702]: server_is_alive: cnx[IDL:GNOME/Panel2:1.0] = 0x8054c90
+Apr  9 08:28:35 helios gnome-name-server[17706]: server_is_alive: cnx
+                        [IDL:GNOME/Terminal/TerminalFactory:1.0] = 0x8054f48
+Apr  9 08:33:39 helios gnome-name-server[17694]: input condition is: 0x11, exiting
+Apr  9 08:39:13 helios in.telnetd[17800]: connect from 192.0.2.109
+Apr  9 08:57:00 helios identd[17968]: started
+Apr  9 09:25:29 helios in.telnetd[18187]: connect from 198.18.6.31
+Apr  9 09:25:56 helios telnetd[18187]: ttloop: peer died: EOF
+Apr  9 09:30:13 helios identd[18188]: started
+Apr  9 10:49:00 helios gnome-name-server[19077]: name server starting
+Apr  9 10:49:02 helios gnome-name-server[19081]: server_is_alive: cnx[IDL:GNOME/Panel2:1.0] = 0x8054a88
+Apr  9 10:49:02 helios gnome-name-server[19086]: server_is_alive: cnx[IDL:GNOME/Panel2:1.0] = 0x8054e58
+Apr  9 10:49:02 helios gnome-name-server[19087]: server_is_alive: cnx[IDL:GNOME/Panel2:1.0] = 0x8055068
+Apr  9 10:49:15 helios in.telnetd[19106]: connect from 192.0.2.109
+Apr  9 10:49:22 helios gnome-name-server[19112]: server_is_alive: cnx
+                        [IDL:GNOME/Terminal/TerminalFactory:1.0] = 0x8055340
+Apr  9 10:55:18 helios gnome-name-server[19077]: input condition is: 0x11, exiting
+Apr  9 10:58:46 helios identd[19221]: started
+Apr  9 11:13:01 helios in.telnetd[19328]: connect from 192.0.2.1069
+Apr  9 11:14:09 helios in.ftpd[19344]: connect from 198.18.40.17
+Apr  9 11:18:03 helios in.telnetd[19385]: connect from 192.0.2.30
+Apr  9 11:19:33 helios identd[19388]: started
+Apr  9 11:21:34 helios in.telnetd[19397]: connect from 192.0.2.1069
+Apr  9 11:57:57 helios in.ftpd[19644]: connect from 198.18.13.145
+Apr  9 12:25:50 helios identd[19801]: started
+Apr  9 12:25:52 helios in.telnetd[19809]: connect from 198.18.6.31
+Apr  9 12:26:14 helios in.telnetd[19816]: connect from 198.18.5.180
+Apr  9 12:26:21 helios telnetd[19809]: ttloop: peer died: EOF
+Apr  9 12:27:17 helios in.telnetd[19823]: connect from 198.18.5.180
+Apr  9 12:27:34 helios in.telnetd[19827]: connect from 192.0.2.109
+Apr  9 12:30:07 helios identd[19840]: started
+Apr  9 12:48:54 helios in.ftpd[19947]: connect from 198.18.21.238
+Apr  9 12:48:54 helios in.ftpd[19948]: connect from 198.18.21.238
+Apr  9 12:48:54 helios in.ftpd[19949]: connect from 198.18.21.238
+Apr  9 12:50:23 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr  9 12:56:42 helios in.telnetd[20099]: connect from 198.18.5.180
+Apr  9 12:57:31 helios telnetd[20099]: ttloop: peer died: EOF
+Apr  9 13:00:22 helios in.telnetd[20101]: connect from 192.0.2.1069
+Apr  9 13:00:46 helios in.telnetd[20103]: connect from 192.0.2.30
+Apr  9 13:12:15 helios identd[20180]: started
+Apr  9 13:29:25 helios in.telnetd[20267]: connect from 192.0.2.109
+Apr  9 13:34:00 helios in.ftpd[20270]: connect from 198.18.2.157
+Apr  9 13:34:01 helios in.ftpd[20273]: connect from 198.18.2.157
+Apr  9 13:34:41 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr  9 14:00:41 helios identd[20477]: started
+Apr  9 14:00:42 helios in.telnetd[20485]: connect from 198.18.6.31
+Apr  9 14:01:08 helios telnetd[20485]: ttloop: peer died: EOF
+Apr  9 14:26:14 helios in.ftpd[20709]: connect from 198.18.8.5
+Apr  9 14:40:04 helios in.telnetd[20846]: connect from 192.0.2.67
+Apr  9 16:49:13 helios identd[21496]: started
+Apr  9 18:41:50 helios in.telnetd[22502]: connect from 198.18.14.5
+Apr  9 18:42:08 helios telnetd[22502]: ttloop: peer died: EOF
+Apr  9 18:55:06 helios identd[22609]: started
+Apr 10 05:37:45 helios in.telnetd[25844]: connect from 192.0.2.109
+Apr 10 05:42:07 helios identd[25928]: started
+Apr 10 08:20:07 helios in.ftpd[27017]: connect from 198.18.13.145
+Apr 10 08:33:40 helios in.telnetd[27093]: connect from 192.0.2.109
+Apr 10 08:38:03 helios identd[27182]: started
+Apr 10 08:40:58 helios in.ftpd[27190]: connect from 198.18.39.1
+Apr 10 08:55:14 helios in.telnetd[27281]: connect from 192.0.2.109
+Apr 10 09:08:05 helios identd[27375]: started
+Apr 10 10:03:08 helios in.telnetd[27825]: connect from 192.0.2.109
+Apr 10 10:03:49 helios identd[27845]: started
+Apr 10 10:06:17 helios gnome-name-server[27920]: starting
+Apr 10 10:06:17 helios gnome-name-server[27920]: name server starting
+Apr 10 10:07:21 helios identd[27946]: started
+Apr 10 10:39:55 helios gnome-name-server[27920]: input condition is: 0x11, exiting
+Apr 10 11:25:51 helios in.ftpd[28565]: connect from 192.0.2.105
+Apr 10 11:28:15 helios in.telnetd[28574]: connect from 192.0.2.109
+Apr 10 11:28:53 helios in.telnetd[28579]: connect from 192.0.2.1069
+Apr 10 11:28:58 helios identd[28586]: started
+Apr 10 12:05:51 helios in.telnetd[29039]: connect from 192.0.2.109
+Apr 10 13:21:34 helios in.telnetd[29449]: connect from 192.0.2.30
+Apr 10 13:56:02 helios identd[29679]: started
+Apr 10 14:42:41 helios identd[29937]: started
+Apr 10 14:45:56 helios in.telnetd[29945]: connect from 198.18.10.217
+Apr 10 14:47:01 helios identd[29955]: started
+Apr 10 15:16:39 helios in.ftpd[30179]: connect from 198.18.8.5
+Apr 10 15:55:49 helios in.ftpd[30529]: connect from 198.18.8.5
+Apr 10 15:58:23 helios in.ftpd[30531]: connect from 198.18.8.5
+Apr 10 15:59:06 helios in.ftpd[30533]: connect from 198.18.33.121
+Apr 10 15:59:06 helios in.ftpd[30534]: connect from 198.18.33.121
+Apr 10 16:00:12 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr 10 16:11:41 helios in.ftpd[30674]: connect from 198.18.43.22
+Apr 10 16:12:33 helios in.ftpd[30683]: connect from 198.18.8.5
+Apr 10 17:12:22 helios identd[30989]: started
+Apr 10 17:35:37 helios identd[31100]: started
+Apr 10 17:52:35 helios in.telnetd[31184]: connect from 192.0.2.20
+Apr 10 18:58:22 helios in.telnetd[31578]: connect from 198.18.58.121
+Apr 10 19:12:19 helios identd[31661]: started
+Apr 10 19:36:21 helios in.telnetd[31803]: connect from 192.0.2.10
+Apr 10 20:08:28 helios identd[32051]: started
+Apr 10 21:59:25 helios identd[32591]: started
+Apr 10 22:27:11 helios identd[32754]: started
+Apr 10 22:31:32 helios in.telnetd[32764]: connect from 198.18.14.5
+Apr 10 22:31:54 helios telnetd[32764]: ttloop: peer died: EOF
+Apr 10 22:59:08 helios identd[459]: started
+Apr 10 23:32:49 helios identd[640]: started
+Apr 11 00:33:56 helios identd[958]: started
+Apr 11 05:49:11 helios in.telnetd[2568]: connect from 192.0.2.109
+Apr 11 05:50:46 helios identd[2579]: started
+Apr 11 06:22:13 helios in.telnetd[2736]: connect from 192.0.2.30
+Apr 11 06:25:40 helios in.telnetd[2893]: connect from 192.0.2.1069
+Apr 11 06:47:50 helios in.telnetd[3187]: connect from 192.0.2.30
+Apr 11 06:57:07 helios identd[3274]: started
+Apr 11 07:02:38 helios in.telnetd[3282]: connect from 192.0.2.30
+Apr 11 07:09:39 helios in.telnetd[3359]: connect from 192.0.2.1069
+Apr 11 07:27:03 helios identd[3441]: started
+Apr 11 07:59:12 helios in.telnetd[3617]: connect from 192.0.2.109
+Apr 11 08:17:15 helios identd[3732]: started
+Apr 11 09:35:09 helios in.telnetd[4474]: connect from 192.0.2.109
+Apr 11 09:41:11 helios identd[4556]: started
+Apr 11 09:46:11 helios identd[4574]: started
+Apr 11 09:57:30 helios in.telnetd[4678]: connect from 192.0.2.1082
+Apr 11 10:36:39 helios identd[4844]: started
+Apr 11 11:07:11 helios in.telnetd[5045]: connect from 192.0.2.109
+Apr 11 11:18:24 helios identd[5129]: started
+Apr 11 11:27:10 helios in.telnetd[5211]: connect from 192.0.2.1069
+Apr 11 11:28:21 helios in.ftpd[5218]: connect from 198.18.19.246
+Apr 11 11:37:58 helios in.ftpd[5232]: connect from 198.18.19.246
+Apr 11 11:49:03 helios identd[5308]: started
+Apr 11 11:50:32 helios in.telnetd[5321]: connect from 192.0.2.1069
+Apr 11 12:15:53 helios in.telnetd[5540]: connect from 198.18.47.178
+Apr 11 12:20:05 helios identd[5543]: started
+Apr 11 12:32:49 helios in.telnetd[5639]: connect from 192.0.2.1069
+Apr 11 12:43:40 helios in.ftpd[5718]: connect from 198.18.20.195
+Apr 11 12:43:55 helios in.telnetd[5719]: connect from 198.18.20.195
+Apr 11 12:44:48 helios in.telnetd[5721]: connect from 198.18.20.195
+Apr 11 12:55:34 helios identd[5804]: started
+Apr 11 12:57:18 helios in.telnetd[5812]: connect from 192.0.2.109
+Apr 11 13:13:05 helios in.telnetd[5894]: connect from 192.0.2.1069
+Apr 11 13:43:30 helios identd[6049]: started
+Apr 11 13:43:56 helios in.telnetd[6057]: connect from 198.18.42.85
+Apr 11 13:44:36 helios in.telnetd[6059]: connect from 198.18.27.152
+Apr 11 13:45:16 helios in.telnetd[6061]: connect from 198.18.27.152
+Apr 11 14:09:10 helios identd[6239]: started
+Apr 11 14:53:34 helios in.telnetd[6495]: connect from 198.18.8.5
+Apr 11 14:54:32 helios modprobe: modprobe: Can't locate module net-pf-14
+Apr 11 14:55:08 helios in.ftpd[6535]: connect from 198.18.52.66
+Apr 11 14:56:18 helios in.telnetd[6659]: connect from 127.0.0.1
+Apr 11 15:13:59 helios identd[6778]: started
+Apr 11 15:51:48 helios in.ftpd[7022]: connect from 198.18.12.51
+Apr 11 15:53:02 helios identd[7099]: started
+Apr 11 15:58:11 helios in.ftpd[7117]: connect from 198.18.48.22
+Apr 11 16:00:25 helios identd[7118]: started
+Apr 11 16:00:40 helios in.ftpd[7127]: connect from 198.18.25.10
+Apr 11 16:04:56 helios identd[7132]: started
+Apr 11 18:13:05 helios in.ftpd[8110]: connect from 198.18.9.98
+Apr 11 18:16:07 helios in.ftpd[8112]: connect from 198.18.9.98
+Apr 11 18:18:48 helios identd[8115]: started
+Apr 11 18:19:52 helios in.ftpd[8124]: connect from 198.18.9.98
+Apr 11 18:20:59 helios identd[8129]: started
+Apr 11 18:21:52 helios in.telnetd[8138]: connect from 198.18.3.186
+Apr 11 18:22:17 helios in.telnetd[8141]: connect from 198.18.3.186
+Apr 11 18:25:14 helios identd[8225]: started
+Apr 11 18:28:43 helios in.ftpd[8243]: connect from 198.18.9.98
+Apr 11 18:29:06 helios in.ftpd[8244]: connect from 198.18.9.98
+Apr 11 18:31:53 helios identd[8249]: started
+Apr 11 20:22:38 helios in.telnetd[9009]: connect from 198.18.3.186
+Apr 11 20:26:22 helios identd[9160]: started
+Apr 11 23:00:52 helios in.ftpd[10251]: connect from 198.18.12.51
+Apr 11 23:01:45 helios identd[10252]: started
+Apr 11 23:06:00 helios identd[10269]: started
+Apr 11 23:13:19 helios identd[10355]: started
+Apr 11 23:14:30 helios in.ftpd[10364]: connect from 198.18.25.10
+Apr 11 23:15:37 helios identd[10365]: started
+Apr 12 04:25:25 helios in.ftpd[12629]: connect from 198.18.34.249
+Apr 12 04:25:25 helios in.ftpd[12630]: connect from 198.18.34.249
+Apr 12 04:26:15 helios identd[12684]: started
+Apr 12 05:17:33 helios in.telnetd[13015]: connect from 198.18.14.5
+Apr 12 05:17:55 helios telnetd[13015]: ttloop: peer died: EOF
+Apr 12 05:21:00 helios identd[13016]: started
+Apr 12 09:13:27 helios in.telnetd[14525]: connect from 198.18.57.237
+Apr 12 09:13:29 helios identd[14528]: started
+Apr 12 10:06:34 helios in.ftpd[15003]: connect from 198.18.31.66
+Apr 12 10:06:45 helios identd[15004]: started
+Apr 12 11:30:26 helios in.ftpd[15674]: connect from 198.18.26.50
+Apr 12 11:30:27 helios in.telnetd[15676]: connect from 198.18.26.50
+Apr 12 11:30:27 helios telnetd[15676]: ttloop: peer died: EOF
+Apr 12 11:32:37 helios identd[15677]: started
+Apr 12 12:29:52 helios gdm[15990]: gdm_slave_xioerror_handler: Fatal X error - 
+                    Restarting 192.0.2.29:0
+Apr 12 12:32:46 helios identd[16018]: started
+Apr 12 14:49:01 helios in.telnetd[17064]: connect from 198.18.41.195
+Apr 12 14:50:17 helios identd[17068]: started
+Apr 12 16:20:45 helios in.telnetd[17724]: connect from 198.18.2.46
+Apr 12 16:22:57 helios identd[17731]: started
+Apr 12 17:00:51 helios in.telnetd[18071]: connect from 198.18.2.46
+Apr 12 17:01:29 helios identd[18076]: started
+Apr 12 17:04:37 helios in.telnetd[18100]: connect from 198.18.2.46
+Apr 12 17:11:16 helios identd[18111]: started
+Apr 12 18:02:45 helios in.ftpd[18483]: connect from 198.18.2.227
+Apr 12 18:02:45 helios in.ftpd[18484]: connect from 198.18.2.227
+Apr 12 18:03:21 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr 12 18:04:44 helios identd[18525]: started
+Apr 12 19:05:23 helios in.telnetd[19165]: connect from 192.0.2.1082
+Apr 12 19:08:10 helios identd[19254]: started
+Apr 12 20:11:31 helios in.telnetd[19557]: connect from 198.18.17.145
+Apr 12 20:15:27 helios identd[19575]: started
+Apr 13 12:57:39 helios in.ftpd[26399]: connect from 198.18.35.241
+Apr 13 12:57:39 helios in.ftpd[26400]: connect from 198.18.35.241
+Apr 13 12:58:25 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr 13 13:05:35 helios identd[26483]: started
+Apr 13 14:47:31 helios identd[27058]: started
+Apr 13 15:25:38 helios in.telnetd[27293]: connect from 198.18.29.29
+Apr 13 15:25:44 helios in.ftpd[27294]: connect from 198.18.29.29
+Apr 13 15:25:47 helios telnetd[27293]: ttloop: peer died: EOF
+Apr 13 15:50:48 helios in.telnetd[27377]: connect from 198.18.7.219
+Apr 13 15:52:18 helios in.telnetd[27386]: connect from 198.18.7.219
+Apr 13 15:52:49 helios identd[27393]: started
+Apr 13 15:55:55 helios in.telnetd[27478]: connect from 198.18.7.219
+Apr 13 15:59:08 helios in.ftpd[27483]: connect from 198.18.15.252
+Apr 13 15:59:08 helios in.ftpd[27484]: connect from 198.18.15.252
+Apr 13 16:46:01 helios inetd[341]: ftp/tcp server failing (looping), service terminated
+Apr 13 18:46:14 helios in.ftpd[29570]: connect from 198.18.50.18
+Apr 13 19:55:30 helios identd[29884]: started
+Apr 13 20:30:09 helios in.telnetd[30046]: connect from 192.0.2.1082
+Apr 13 22:16:12 helios in.telnetd[30378]: connect from 198.18.37.253
+Apr 14 01:00:30 helios in.ftpd[31195]: connect from 198.18.46.138
+Apr 14 04:01:52 helios identd[32061]: started
+Apr 14 05:45:39 helios in.telnetd[32638]: connect from 192.0.2.109
+Apr 14 05:55:49 helios identd[32727]: started
+Apr 14 13:38:53 helios in.ftpd[2984]: connect from 198.18.54.51
+Apr 15 15:07:32 helios in.telnetd[11057]: connect from 203.0.113.89
+Apr 15 15:08:09 helios in.telnetd[11157]: connect from 203.0.113.89
+Apr 15 15:18:56 helios identd[11245]: started
+Apr 15 15:35:22 helios in.telnetd[11384]: connect from 203.0.113.89
+Apr 15 15:36:26 helios in.telnetd[11387]: connect from 203.0.113.89
+Apr 15 15:36:48 helios identd[11395]: started
+Apr 15 15:37:34 helios in.ftpd[11408]: connect from 198.18.30.226
+Apr 15 15:46:13 helios in.ftpd[11499]: connect from 198.18.49.252
+Apr 15 15:49:23 helios identd[11507]: started
+Apr 15 15:51:14 helios in.ftpd[11515]: connect from 198.18.30.226
+Apr 15 15:53:47 helios in.ftpd[11594]: connect from 198.18.12.51
+Apr 15 15:54:18 helios in.ftpd[11595]: connect from 198.18.12.51
+Apr 15 16:18:33 helios in.ftpd[11680]: connect from 198.18.55.214
+Apr 15 18:05:08 helios in.telnetd[12313]: connect from 198.18.59.103
+Apr 15 18:06:25 helios identd[12320]: started
+Apr 15 18:15:11 helios identd[12365]: started
+Apr 15 18:16:07 helios in.telnetd[12373]: connect from 198.18.53.174
+Apr 15 18:25:13 helios identd[12457]: started
+Apr 15 18:28:02 helios telnetd[12373]: ttloop: peer died: EOF
+Apr 15 18:33:10 helios in.telnetd[12467]: connect from 198.18.44.222
+\end{lstlisting}
+
+\vspace{1em}
+
+The preceding log entries document substantial activity across student accounts \texttt{proa}, \texttt{zopilote}, and \texttt{zena}. Access to these accounts was revoked on April 15, immediately halting the operation of planted backdoor daemons---and it was at this exact moment that active sessions for user \texttt{duende} first materialized. Services such as FTP, Telnet, and SMTP were heavily exploited up to that juncture. Connections originated from diverse IP addresses worldwide, consistent with distributed automated scanning; however, intentional proxying and spoofed network routing to mask a local insider attack cannot be ruled out.
+
+Critically, no logs substantiate user \texttt{duende} accessing the server prior to April 15. It was precisely when the compromised student accounts were locked down and monitored that \texttt{duende}'s activity surfaced in system logs. His prior logins were likely purged from disk logs using the automated log cleaning tools described earlier.
+
+
+\texttt{wtmp}
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+duende  pts/0        Mon Apr 28 03:39 - 03:40  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 27 22:27 - 22:29  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 27 22:19 - 22:19  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 27 19:07 - 19:07  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sun Apr 27 15:32 - 15:32  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sun Apr 27 15:06 - 15:08  (00:02)     atlas.ifm.lab.edu.mx
+reboot   system boot  Sun Apr 27 04:42         (1+06:49)    2.4.18-bf2.4
+duende  pts/3        Sun Apr 27 04:27 - 04:29  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/2        Sun Apr 27 01:20 - 01:39  (00:18)     dsl-200-78-118-164.prodigy.net.mx
+reboot   system boot  Sat Apr 26 22:52          (05:49)     2.4.18-bf2.4
+reboot   system boot  Sat Apr 26 22:48          (05:53)     2.4.18-bf2.4
+reboot   system boot  Sat Apr 26 22:38          (00:08)     2.4.18-bf2.4
+duende  pts/6        Sat Apr 26 04:09 - 06:21  (02:12)     atlas.ifm.lab.edu.mx
+duende  pts/7        Sat Apr 26 02:04 - 02:07  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/5        Fri Apr 25 21:50 - 21:55  (00:05)     atlas.ifm.lab.edu.mx
+duende  pts/4        Fri Apr 25 20:19 - 20:21  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/9        Fri Apr 25 18:03 - 18:06  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/7        Fri Apr 25 18:02 - 18:10  (00:08)     atlas.ifm.lab.edu.mx
+duende  pts/5        Fri Apr 25 15:43 - 15:45  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 15:27 - 15:43  (00:16)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 15:24 - 15:25  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 14:19 - 15:09  (00:49)     atlas.ifm.lab.edu.mx
+duende  pts/4        Fri Apr 25 14:10 - 15:10  (00:59)     atlas.ifm.lab.edu.mx
+duende  pts/3        Fri Apr 25 05:05 - 05:07  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/2        Thu Apr 24 23:22 - 23:24  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/2        Thu Apr 24 23:17 - 23:19  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 24 20:30 - 20:30  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 24 16:49 - 16:50  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/3        Thu Apr 24 03:59 - 04:02  (00:02)     atlas.ifm.lab.edu.mx
+reboot   system boot  Thu Apr 24 01:22         (2+05:43)    2.4.18-bf2.4
+reboot   system boot  Thu Apr 24 01:17         (2+05:48)    2.4.18-bf2.4
+duende  pts/0        Thu Apr 24 01:14 - 01:14  (00:00)     dsl-200-67-75-152.prodigy.net.mx
+duende  pts/5        Wed Apr 23 23:18 - 23:29  (00:10)     atlas.ifm.lab.edu.mx
+duende  pts/5        Wed Apr 23 23:06 - 23:17  (00:11)     atlas.ifm.lab.edu.mx
+duende  pts/11       Wed Apr 23 22:57 - 23:05  (00:07)     atlas.ifm.lab.edu.mx
+duende  pts/2        Wed Apr 23 22:47 - 23:28  (00:41)     atlas.ifm.lab.edu.mx
+duende  pts/1        Wed Apr 23 22:19 - 22:22  (00:03)     atlas.ifm.lab.edu.mx
+zena     ftp          Wed Apr 23 21:24 - 21:25  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/2        Wed Apr 23 18:55 - 19:01  (00:05)     atlas.ifm.lab.edu.mx
+duende  pts/1        Wed Apr 23 16:06 - 16:08  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/2        Wed Apr 23 03:06 - 03:19  (00:13)     atlas.ifm.lab.edu.mx
+bob  pts/1        Wed Apr 23 02:42 - 13:55  (11:12)     192.0.2.1082
+fired  pts/2        Tue Apr 22 23:19 - 23:19  (00:00)     atlas.ifm.lab.edu.mx
+zena     ftp          Tue Apr 22 23:16 - 23:16  (00:00)     pepe.rutgers.edu
+duende  pts/1        Tue Apr 22 23:04 - 23:05  (00:01)     atlas.ifm.lab.edu.mx
+zena     pts/1        Tue Apr 22 22:55 - 23:04  (00:08)     dup-200-64-59-119.prodigy.net.mx
+zena     pts/0        Tue Apr 22 22:50 - 01:14 (1+02:24)    dup-200-64-59-119.prodigy.net.mx
+zena     pts/0        Tue Apr 22 22:44 - 22:50  (00:05)     dup-200-64-59-119.prodigy.net.mx
+duende  pts/1        Tue Apr 22 19:45 - 19:46  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/0        Tue Apr 22 14:04 - 14:06  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Tue Apr 22 04:52 - 04:55  (00:02)     atlas.ifm.lab.edu.mx
+bob  pts/0        Tue Apr 22 04:52 - 13:33  (08:41)     192.0.2.1082
+duende  pts/0        Tue Apr 22 04:42 - 04:43  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Tue Apr 22 01:37 - 01:47  (00:09)     atlas.ifm.lab.edu.mx
+zena     pts/4        Mon Apr 21 21:43 - 23:00 (2+01:16)    dup-200-64-123-100.prodigy.net.mx
+duende  pts/5        Mon Apr 21 20:32 - 20:54  (00:21)     atlas.ifm.lab.edu.mx
+zena     pts/1        Mon Apr 21 19:16 - 20:45  (01:29)     dup-200-64-234-196.prodigy.net.mx
+zena     pts/2        Mon Apr 21 19:08 - 19:34  (00:25)     dup-200-64-234-196.prodigy.net.mx
+duende  pts/2        Mon Apr 21 17:33 - 17:34  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Mon Apr 21 15:55 - 15:56  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Mon Apr 21 06:21 - 06:24  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/0        Mon Apr 21 02:49 - 02:49  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 23:33 - 23:34  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 15:11 - 15:13  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 15:02 - 15:04  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 04:38 - 04:38  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Sun Apr 20 01:23 - 01:24  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/2        Sat Apr 19 20:45 - 20:52  (00:07)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sat Apr 19 15:10 - 15:10  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Sat Apr 19 04:05 - 04:05  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 23:28 - 23:29  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 19:57 - 19:59  (00:01)     192.0.2.20
+duende  pts/1        Fri Apr 18 14:02 - 14:03  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 05:00 - 05:03  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/0        Fri Apr 18 00:59 - 01:00  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/0        Thu Apr 17 20:59 - 21:00  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 17 13:54 - 13:55  (00:00)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 17 04:43 - 04:44  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/0        Thu Apr 17 04:42 - 04:45  (00:02)     atlas.ifm.lab.edu.mx
+duende  pts/1        Thu Apr 17 01:41 - 01:43  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/0        Wed Apr 16 23:30 - 23:34  (00:03)     atlas.ifm.lab.edu.mx
+duende  pts/0        Wed Apr 16 23:22 - 23:26  (00:04)     atlas.ifm.lab.edu.mx
+zena     pts/2        Wed Apr 16 22:56 - 22:57  (00:01)     host-198.18.2.78-cust.telemedia.net.mx
+reboot   system boot  Wed Apr 16 22:34         (7+02:41)    2.4.18-bf2.4
+proa     pts/7        Wed Apr 16 20:36 - down   (01:52)     dup-200-64-59-111.prodigy.net.mx
+proa     pts/7        Wed Apr 16 20:29 - 20:30  (00:00)     dup-200-64-59-111.prodigy.net.mx
+zopilote ftp          Wed Apr 16 20:11 - 20:16  (00:04)     bluet.yonsei.ac.kr
+zena     pts/6        Wed Apr 16 19:57 - 20:16  (00:19)     dsl-200-67-43-212.prodigy.net.mx
+zena     pts/6        Wed Apr 16 19:39 - 19:57  (00:17)     host-198.18.2.78-cust.telemedia.net.mx
+zena     pts/6        Wed Apr 16 19:37 - 19:39  (00:01)     host-198.18.2.78-cust.telemedia.net.mx
+zena     ftp          Wed Apr 16 19:23 - 19:27  (00:03)     host-198.18.2.78-cust.telemedia.net.mx
+duende  pts/6        Wed Apr 16 19:11 - 19:13  (00:01)     atlas.ifm.lab.edu.mx
+duende  pts/9        Wed Apr 16 14:15 - 14:30  (00:15)     atlas.ifm.lab.edu.mx
+duende  pts/6        Wed Apr 16 14:05 - 14:24  (00:18)     atlas.ifm.lab.edu.mx
+proa     ftp          Wed Apr 16 08:51 - 08:52  (00:00)     dup-200-64-59-56.prodigy.net.mx
+proa     ftp          Wed Apr 16 08:51 - 08:51  (00:00)     orion.insnet.com
+proa     ftp          Wed Apr 16 08:14 - 08:14  (00:00)     orion.insnet.com
+proa     ftp          Wed Apr 16 07:58 - 08:00  (00:01)     198.18.23.114
+proa     ftp          Wed Apr 16 07:58 - 07:59  (00:00)     cs1.anyang.ac.kr
+proa     ftp          Wed Apr 16 07:56 - 07:56  (00:00)     198.18.23.114
+duende  pts/9        Wed Apr 16 03:51 - 04:04  (00:12)     atlas.ifm.lab.edu.mx
+duende  pts/6        Wed Apr 16 03:48 - 04:18  (00:29)     atlas.ifm.lab.edu.mx
+duende  pts/7        Wed Apr 16 01:57 - 03:48  (01:51)     atlas.ifm.lab.edu.mx
+duende  pts/6        Wed Apr 16 01:55 - 03:17  (01:22)     atlas.ifm.lab.edu.mx
+proa     ftp          Wed Apr 16 00:18 - 00:21  (00:02)     61-221-27-214.HINET-IP.hinet.net
+proa     ftp          Tue Apr 15 23:54 - 23:57  (00:02)     mail.ubec.com.tw
+proa     ftp          Tue Apr 15 23:51 - down   (22:37)     home.obsgyn.org
+proa     ftp          Tue Apr 15 23:37 - 23:38  (00:00)     home.obsgyn.org
+proa     pts/6        Tue Apr 15 23:36 - 01:55  (02:18)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/6        Tue Apr 15 23:17 - 23:36  (00:18)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/6        Tue Apr 15 23:14 - 23:17  (00:03)     host-203.0.113.89-cust.telemedia.net.mx
+zena     pts/12       Tue Apr 15 23:08 - down   (23:20)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/12       Tue Apr 15 23:07 - 23:08  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+duende  pts/11       Tue Apr 15 23:06 - 22:14  (23:07)     atlas.ifm.lab.edu.mx
+duende  pts/7        Tue Apr 15 22:59 - 01:57  (02:57)     atlas.ifm.lab.edu.mx
+proa     pts/6        Tue Apr 15 22:59 - 23:14  (00:14)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/7        Tue Apr 15 22:59 - 22:59  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+duende  pts/6        Tue Apr 15 22:56 - 22:59  (00:02)     atlas.ifm.lab.edu.mx
+proa     pts/6        Tue Apr 15 22:56 - 22:56  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/6        Tue Apr 15 22:47 - 22:56  (00:08)     host-203.0.113.89-cust.telemedia.net.mx
+proa     ftp          Tue Apr 15 22:41 - 22:41  (00:00)     198.18.45.12
+proa     pts/7        Tue Apr 15 22:29 - 22:59  (00:29)     host-203.0.113.89-cust.telemedia.net.mx
+zena     pts/12       Tue Apr 15 21:45 - 23:07  (01:21)     dsl-200-67-43-212.prodigy.net.mx
+zena     pts/11       Tue Apr 15 21:44 - 21:47  (00:03)     host-198.18.2.78-cust.telemedia.net.mx
+zena     pts/12       Tue Apr 15 21:42 - 21:45  (00:02)     host-203.0.113.89-cust.telemedia.net.mx
+zena     pts/11       Tue Apr 15 21:38 - 21:43  (00:04)     host-198.18.2.78-cust.telemedia.net.mx
+zena     pts/10       Tue Apr 15 21:36 - 02:05  (04:28)     host-203.0.113.89-cust.telemedia.net.mx
+zena     pts/10       Tue Apr 15 21:34 - 21:35  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+proa     ftp          Tue Apr 15 21:07 - 21:16  (00:09)     extremepages.com
+proa     ftp          Tue Apr 15 21:03 - 21:03  (00:00)     extremepages.com
+proa     pts/7        Tue Apr 15 18:17 - 18:21  (00:03)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/7        Tue Apr 15 00:04 - 05:31  (05:26)     host-203.0.113.239-cust.telemedia.net.mx
+proa     pts/7        Mon Apr 14 23:58 - 00:04  (00:05)     host-203.0.113.239-cust.telemedia.net.mx
+proa     pts/7        Mon Apr 14 23:56 - 23:58  (00:01)     host-203.0.113.239-cust.telemedia.net.mx
+proa     pts/7        Mon Apr 14 21:51 - 21:51  (00:00)     host-198.18.17.202-cust.telemedia.net.mx
+proa     ftp          Mon Apr 14 00:22 - 00:23  (00:00)     198.18.24.240
+proa     ftp          Mon Apr 14 00:22 - 00:22  (00:00)     198.18.24.240
+proa     pts/6        Sun Apr 13 23:56 - 04:30  (04:33)     host-198.18.7.219-cust.telemedia.net.mx
+proa     pts/6        Sun Apr 13 23:52 - 23:56  (00:04)     host-198.18.7.219-cust.telemedia.net.mx
+proa     pts/6        Sun Apr 13 23:51 - 23:52  (00:01)     host-198.18.7.219-cust.telemedia.net.mx
+proa     ftp          Sat Apr 12 07:14 - 07:15  (00:00)     ftp.iivip.com
+proa     ftp          Sat Apr 12 07:01 - 07:02  (00:01)     mail.ubec.com.tw
+proa     pts/2        Sat Apr 12 04:24 - 04:25  (00:00)     host-198.18.3.186-cust.telemedia.net.mx
+proa     pts/6        Sat Apr 12 04:23 - 04:25  (00:01)     host-198.18.3.186-cust.telemedia.net.mx
+proa     ftp          Sat Apr 12 02:30 - 02:31  (00:00)     extremepages.com
+proa     ftp          Sat Apr 12 02:29 - 02:30  (00:00)     extremepages.com
+proa     pts/2        Sat Apr 12 02:22 - 04:24  (02:02)     host-198.18.3.186-cust.telemedia.net.mx
+proa     ftp          Sat Apr 12 02:20 - 02:20  (00:00)     extremepages.com
+proa     ftp          Sat Apr 12 02:16 - 02:18  (00:02)     extremepages.com
+proa     ftp          Sat Apr 12 02:13 - 02:14  (00:00)     extremepages.com
+proa     pts/2        Fri Apr 11 22:56 - 02:22  (03:26)     localhost
+proa     pts/1        Fri Apr 11 22:53 - down  (4+23:34)    orion.insnet.com
+zopilote ftp          Fri Apr 11 19:38 - 19:42  (00:04)     smartns.smartweb.net
+proa     ftp          Fri Apr 11 19:29 - 19:32  (00:02)     198.18.19.246
+proa     ftp          Fri Apr 11 00:12 - 00:14  (00:01)     orion.insnet.com
+proa     ftp          Thu Apr 10 23:58 - 23:59  (00:00)     orion.insnet.com
+proa     ftp          Thu Apr 10 23:55 - 23:56  (00:00)     orion.insnet.com
+proa     ftp          Thu Apr 10 23:35 - 23:40  (00:05)     orion.insnet.com
+proa     ftp          Thu Apr 10 23:20 - 23:22  (00:02)     orion.insnet.com
+proa     ftp          Thu Apr 10 23:18 - 23:18  (00:00)     orion.insnet.com
+proa     ftp          Thu Apr 10 23:17 - 23:17  (00:00)     orion.insnet.com
+proa     pts/1        Thu Apr 10 22:46 - 00:12  (01:25)     host-198.18.10.217-cust.telemedia.net.mx
+proa     ftp          Thu Apr 10 16:41 - 16:44  (00:03)     iqunam.iquimica.unam.mx
+proa     ftp          Thu Apr 10 16:20 - 16:24  (00:03)     mbel.kaist.ac.kr
+proa     ftp          Wed Apr  9 22:27 - 22:29  (00:01)     orion.insnet.com
+proa     pts/1        Wed Apr  9 20:27 - 21:00  (00:32)     dup-200-64-234-180.prodigy.net.mx
+proa     ftp          Wed Apr  9 19:58 - 19:59  (00:00)     mbel.kaist.ac.kr
+proa     pts/9        Wed Apr  9 19:17 - 19:18  (00:00)     host-198.18.3.172-cust.telemedia.net.mx
+proa     ftp          Wed Apr  9 19:14 - 19:31  (00:16)     cs1.anyang.ac.kr
+proa     pts/8        Wed Apr  9 19:10 - 21:17  (02:07)     host-198.18.17.237-cust.telemedia.net.mx
+proa     ftp          Wed Apr  9 06:37 - 06:37  (00:00)     mbel.kaist.ac.kr
+proa     ftp          Wed Apr  9 06:35 - 06:36  (00:00)     mbel.kaist.ac.kr
+proa     pts/1        Wed Apr  9 00:11 - 00:14  (00:02)     dup-200-64-239-90.prodigy.net.mx
+proa     ftp          Wed Apr  9 00:02 - 00:07  (00:04)     blackbox.insikt.org
+proa     pts/5        Tue Apr  8 23:57 - down  (7+22:30)    dup-200-64-239-90.prodigy.net.mx
+proa     ftp          Tue Apr  8 22:55 - 22:58  (00:02)     www2.ecis.com
+proa     ftp          Tue Apr  8 22:50 - 22:51  (00:01)     www2.ecis.com
+proa     ftp          Tue Apr  8 22:48 - 22:49  (00:00)     www2.ecis.com
+proa     ftp          Tue Apr  8 22:33 - 22:40  (00:07)     www2.ecis.com
+zopilote pts/1        Tue Apr  8 22:08 - 00:11  (02:02)     dup-200-64-234-9.prodigy.net.mx
+proa     ftp          Tue Apr  8 21:55 - 21:57  (00:02)     198.18.22.7
+proa     ftp          Tue Apr  8 20:25 - 20:26  (00:00)     bambi.visi.com
+proa     ftp          Tue Apr  8 20:01 - 20:02  (00:00)     cugb.edu.cn
+proa     ftp          Tue Apr  8 19:51 - 19:52  (00:00)     cugb.edu.cn
+proa     pts/1        Tue Apr  8 13:43 - 13:52  (00:09)     200-161-199-225.dsl.telesp.net.br
+proa     pts/5        Tue Apr  8 13:36 - 13:42  (00:06)     200-161-199-225.dsl.telesp.net.br
+proa     pts/2        Tue Apr  8 13:33 - 13:42  (00:09)     200-161-199-225.dsl.telesp.net.br
+proa     pts/2        Tue Apr  8 13:30 - 13:32  (00:02)     200-161-199-225.dsl.telesp.net.br
+proa     pts/1        Mon Apr  7 23:01 - 23:04  (00:02)     dup-200-64-123-76.prodigy.net.mx
+proa     ftp          Mon Apr  7 17:01 - 17:02  (00:00)     server1.rrudder.com
+proa     pts/0        Sun Apr  6 21:13 - 21:14  (00:00)     cpe-66-169-63-039.spart.sc.charter.com
+proa     ftp          Sun Apr  6 01:08 - 01:08  (00:00)     www.tvf.com
+proa     ftp          Sun Apr  6 01:00 - 01:03  (00:02)     www.tvf.com
+proa     ftp          Sun Apr  6 00:55 - 00:55  (00:00)     www.tvf.com
+zopilote pts/0        Sun Apr  6 00:02 - 00:03  (00:00)     host-198.18.11.221-cust.telemedia.net.mx
+proa     pts/2        Sat Apr  5 23:31 - 23:32  (00:00)     host-198.18.11.221-cust.telemedia.net.mx
+proa     pts/1        Sat Apr  5 23:29 - 23:32  (00:03)     host-198.18.11.221-cust.telemedia.net.mx
+proa     pts/0        Sat Apr  5 23:25 - 23:31  (00:06)     host-198.18.11.221-cust.telemedia.net.mx
+proa     ftp          Sat Apr  5 23:17 - 23:17  (00:00)     www.parner.com.tw
+proa     ftp          Sat Apr  5 22:29 - 22:29  (00:00)     www.tvf.com
+zopilote ftp          Fri Apr  4 23:12 - 23:27  (00:15)     198.18.36.130
+zopilote ftp          Fri Apr  4 21:55 - 22:01  (00:06)     juno.math.msu.edu
+proa     ftp          Fri Apr  4 21:39 - 21:40  (00:00)     camar.inn.bppt.go.id
+zopilote ftp          Fri Apr  4 20:30 - 20:51  (00:21)     camar.inn.bppt.go.id
+proa     ftp          Fri Apr  4 20:29 - 20:29  (00:00)     camar.inn.bppt.go.id
+proa     ftp          Fri Apr  4 20:24 - 20:24  (00:00)     198.18.56.6
+zopilote ftp          Fri Apr  4 00:22 - 00:23  (00:00)     luna.ifm.lab.edu.mx
+zopilote ftp          Thu Apr  3 23:56 - 23:58  (00:02)     bambi.visi.com
+proa     ftp          Thu Apr  3 23:44 - 23:48  (00:04)     ns1.vitalspeeds.com
+zopilote ftp          Thu Apr  3 23:24 - 23:28  (00:03)     cs1.anyang.ac.kr
+zopilote ftp          Thu Apr  3 23:11 - 23:15  (00:04)     cs1.anyang.ac.kr
+zopilote ftp          Thu Apr  3 22:49 - 22:49  (00:00)     cs1.anyang.ac.kr
+zopilote ftp          Thu Apr  3 22:31 - 22:32  (00:01)     extremepages.com
+zopilote ftp          Thu Apr  3 22:26 - 22:30  (00:04)     extremepages.com
+proa     ftp          Thu Apr  3 22:23 - 22:23  (00:00)     extremepages.com
+zopilote pts/0        Thu Apr  3 22:21 - 22:30  (00:08)     dup-200-64-234-186.prodigy.net.mx
+proa     pts/2        Thu Apr  3 22:19 - 22:21  (00:01)     dup-200-64-234-186.prodigy.net.mx
+proa     ftp          Thu Apr  3 22:13 - 22:18  (00:04)     extremepages.com
+proa     ftp          Thu Apr  3 22:02 - 22:06  (00:04)     extremepages.com
+proa     ftp          Thu Apr  3 00:23 - 00:23  (00:00)     comp1.kongju.ac.kr
+zopilote pts/1        Thu Apr  3 00:18 - 00:23  (00:04)     gobmorelia30.terra.net.mx
+proa     pts/1        Wed Apr  2 02:35 - 02:37  (00:02)     gobmorelia34.terra.net.mx
+proa     ftp          Wed Apr  2 01:35 - 01:37  (00:01)     bambi.visi.com
+zopilote pts/3        Wed Apr  2 00:30 - 00:31  (00:01)     dup-200-64-234-8.prodigy.net.mx
+proa     pts/3        Wed Apr  2 00:29 - 00:29  (00:00)     dup-200-64-234-8.prodigy.net.mx
+\end{lstlisting}
+
+\vspace{1em}
+
+ Logins for \texttt{duende} appear in system records beginning April 15: 
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+zena     pts/12       Tue Apr 15 23:08 - down   (23:20)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/12       Tue Apr 15 23:07 - 23:08  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+duende  pts/11       Tue Apr 15 23:06 - 22:14  (23:07)     atlas.ifm.lab.edu.mx
+duende  pts/7        Tue Apr 15 22:59 - 01:57  (02:57)     atlas.ifm.lab.edu.mx
+proa     pts/6        Tue Apr 15 22:59 - 23:14  (00:14)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/7        Tue Apr 15 22:59 - 22:59  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+duende  pts/6        Tue Apr 15 22:56 - 22:59  (00:02)     atlas.ifm.lab.edu.mx
+proa     pts/6        Tue Apr 15 22:56 - 22:56  (00:00)     host-203.0.113.89-cust.telemedia.net.mx
+proa     pts/6        Tue Apr 15 22:47 - 22:56  (00:08)     host-203.0.113.89-cust.telemedia.net.mx
+\end{lstlisting}
+
+\vspace{1em}
+
+This sequence reveals that the moment \texttt{proa} disconnects, \texttt{duende} logs in, and conversely, when \texttt{duende} exits, \texttt{proa} returns. Notably, \texttt{duende} and \texttt{zena} maintained simultaneous concurrent sessions lasting over 23 hours. This tight coordination indicates that \texttt{proa}, \texttt{zena}, and \texttt{duende} may represent a single human operator; yet \texttt{duende} consistently connected via \texttt{atlas} despite having direct access to \texttt{helios}. This recurring behavioral pattern is far from coincidental.
+
+This synchronized interplay between student accounts and the departmental staff account required exhaustive inspection of their home directories. To establish what tools were compiled, what artifacts were staged in hidden subdirectories, and how these accounts coordinated the intrusion logistics, the investigation thoroughly scrutinized personal directories under \texttt{/home}, as detailed in Chapter~\ref{cap:cuentas_comprometidas}.
+
+\begin{retoforense}[Temporal Correlation Between Concurrent Accounts]
+Based on the connection excerpt from April 15, analyze the timing sequence between \texttt{proa} (connected via external ISP Telemedia) and \texttt{duende} (connected internally from \texttt{atlas}). What forensic hypothesis explains an operator alternating between an external dialup/DSL link and internal local network pivoting? How would you verify whether this reflected two collaborating individuals or a single operator managing concurrent terminal windows?
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: From Local Syslog to SIEM and Immutable Data Lakes]
+In 2004, log mining required manual filtering of gigabytes of flat text using piped chains of \texttt{grep}, \texttt{awk}, and \texttt{sed} on local files vulnerable to malicious scrubbing. Today, Security Operations Centers (SOCs) ingest events in real time using Security Information and Event Management (SIEM) systems such as Splunk, Microsoft Sentinel, or Elastic Security. Audit logs are shipped instantaneously via mTLS-encrypted agents to immutable data lakes and analyzed via automated anomaly detection and identity analytics (UEBA---User and Entity Behavior Analytics).
+\end{perspectiva20}
+

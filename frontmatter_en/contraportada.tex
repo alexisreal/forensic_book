@@ -1,0 +1,107 @@
+% ==============================================================================
+% EDITORIAL OUTSIDE BACK COVER (ENGLISH EDITION)
+% "Linux Forensics: A Real Case" - Alexis Real Santillán
+% ==============================================================================
+\cleardoublepage
+\thispagestyle{empty}
+
+\begin{tikzpicture}[remember picture, overlay]
+    % Editorial color palette coordinated with front cover
+    \definecolor{coverred}{RGB}{185, 28, 28}       % Classic editorial crimson
+    \definecolor{covergray}{RGB}{75, 85, 99}       % Neutral gray for metadata
+    \definecolor{coverborder}{RGB}{229, 231, 235}  % Subtle gray dividers
+    \definecolor{cardbg}{RGB}{249, 250, 251}       % Soft card background
+
+    % Pure white background
+    \fill[white] (current page.south west) rectangle (current page.north east);
+
+    % Top crimson band identical to front cover
+    \fill[coverred] (current page.north west) rectangle ($(current page.north east) + (0, -4.5mm)$);
+
+    % Top category bar
+    \node[anchor=north west, align=left] 
+        at ($(current page.north west) + (20mm, -12mm)$) {
+        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{coverred} FORENSIC INVESTIGATION} \quad
+        {\fontsize{8.5}{11}\selectfont\sffamily\color{black!30} $\vert$} \quad
+        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{covergray} DIGITAL FORENSICS AND INCIDENT RESPONSE (DFIR)}
+    };
+
+    % Separator rule
+    \draw[coverborder, line width=0.6pt] 
+        ($(current page.north west) + (20mm, -17mm)$) -- ($(current page.north east) + (-20mm, -17mm)$);
+
+    % --------------------------------------------------------------------------
+    % HEADER HOOK
+    % --------------------------------------------------------------------------
+    \node (headhook) [anchor=north west, align=left, text width=136mm] 
+        at ($(current page.north west) + (20mm, -21mm)$) {
+        {\fontsize{13}{16}\selectfont\sffamily\bfseries\color{coverred}
+        What happens when the intrusion is not a simulation,\\[2pt]
+        but a real attack against live production servers?}
+    };
+
+    % --------------------------------------------------------------------------
+    % SYNOPSIS
+    % --------------------------------------------------------------------------
+    \node (synopsis) [anchor=north west, align=justify, text width=136mm, font=\fontsize{8.5}{12}\selectfont\sffamily\color{black!85}] 
+        at ($(headhook.south west) + (0, -3.5mm)$) {
+        This book delivers an exhaustive, real-world digital forensic investigation conducted following the compromise of departmental servers at an academic research center. Far from sanitized theoretical scenarios, the evidence reveals the unsettling convergence of \textbf{two independent, concurrent intrusions}: an opportunistic external attack repurposing the server for parasitic IRC bots and, in parallel, stealthy insider espionage by a local operator who exploited the operational chaos to capture newly changed \texttt{root} passwords using an in-memory kernel rootkit (\textit{Suckit}) and trojanized system binaries.
+        
+        \vspace{1.5mm}
+        Written with the rigor of a formal expert witness report aligned with \textbf{ISO/IEC 27037} and \textbf{NIST SP 800-86} standards, this manual guides the reader through every phase of the technical post-mortem: from volatile memory preservation and bit-stream disk cloning to orphan inode recovery in Ext2 and multi-source timeline reconstruction.
+    };
+
+    % --------------------------------------------------------------------------
+    % CORE TOPICS CARD
+    % --------------------------------------------------------------------------
+    \node (topicsbox) [anchor=north west, draw=coverborder, fill=cardbg, line width=0.6pt, rounded corners=3pt, inner sep=3.5mm, text width=129mm] 
+        at ($(synopsis.south west) + (0, -4mm)$) {
+        {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{primary} Key Investigation Topics:}\\[2mm]
+        \begin{minipage}{\linewidth}
+        \fontsize{7.8}{10.8}\selectfont\sffamily\color{black!85}
+        \begin{itemize}\setlength{\itemsep}{1.2mm}\setlength{\leftmargin}{3.5mm}
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Evidence Preservation and Chain of Custody:} Bit-stream cloning (\texttt{dd}), cryptographic hashes, and read-only loopback mount verification.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Differential Analysis and Integrity Checks:} Package verification (RPM), disassembly with \texttt{strings}/\texttt{gdb}, and backdoor detection in \texttt{/bin/ps} and \texttt{/bin/netstat}.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Orphan Inodes and Timelines:} File carving in Ext2, recovering deleted evidence, and sub-second chronology via \texttt{mactime}.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{Multi-System Audit Log Mining:} Correlating sessions in \texttt{auth.log}, FTP transfers in \texttt{xferlog}, kernel process accounting with \texttt{acct}, and webmail manipulation.
+            \item[\color{coverred}\scriptsize$\blacksquare$] \textbf{2005--2025 Retrospective:} The timeless resilience of Unix principles against modern frontiers: volatile memory (\textit{Volatility 3}), \textit{eBPF} telemetry, and ephemeral cloud workloads.
+        \end{itemize}
+        \end{minipage}
+    };
+
+    % --------------------------------------------------------------------------
+    % ABOUT THE AUTHOR
+    % --------------------------------------------------------------------------
+    \node (authorhead) [anchor=north west] 
+        at ($(topicsbox.south west) + (0, -3.5mm)$) {
+        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{black} About the Author}
+    };
+
+    \node (authordesc) [anchor=north west, align=justify, text width=136mm, font=\fontsize{7.8}{10.8}\selectfont\sffamily\color{black!80}] 
+        at ($(authorhead.south west) + (0, -1mm)$) {
+        \textbf{Alexis Real Santillán} is a Consultant in Cybersecurity, Cloud Architecture, and Critical Infrastructure, and serves as CTO at \textit{Linux Open Source de México} (\href{https://linuxopensource.org}{linuxopensource.org}). He previously served as Systems Administrator at the Institute of Physics and Mathematics of the Universidad Michoacana de San Nicolás de Hidalgo (UMSNH), where he led the forensic investigation documented in this work. His professional career, independent consulting, and technical portfolio can be explored at \href{https://alexisreal.github.io/cv/}{alexisreal.github.io/cv/}.
+    };
+
+    % --------------------------------------------------------------------------
+    % FOOTER: METADATA AND OPEN ACCESS BADGE (NO ISBN)
+    % --------------------------------------------------------------------------
+    \draw[coverborder, line width=0.6pt] 
+        ($(current page.south west) + (20mm, 28mm)$) -- ($(current page.south east) + (-20mm, 28mm)$);
+
+    % Left block: Classification and open license
+    \node[anchor=south west, align=left, text width=92mm] 
+        at ($(current page.south west) + (20mm, 8mm)$) {
+        {\fontsize{7.5}{9.5}\selectfont\sffamily\bfseries\color{coverred} SUBJECT CLASSIFICATION:}\\[1.5pt]
+        {\fontsize{7.2}{9.2}\selectfont\sffamily\color{black!75} Cybersecurity / Digital Forensics / Unix \& Linux Systems}\\[3pt]
+        {\fontsize{6.8}{8.8}\selectfont\sffamily\color{covergray} Non-commercial open publication $\cdot$ Licensed under CC BY-SA 4.0}
+    };
+
+    % Right block: Open Digital Edition Seal
+    \node[anchor=south east, align=right] 
+        at ($(current page.south east) + (-20mm, 8mm)$) {
+        {\fontsize{8}{10}\selectfont\sffamily\bfseries\color{primary} OPEN DIGITAL EDITION}\\[2pt]
+        {\fontsize{7}{9}\selectfont\sffamily\color{covergray} No commercial ISBN $\cdot$ Free Educational Access}\\[2.5pt]
+        {\fontsize{7}{9}\selectfont\ttfamily\bfseries\color{coverred} linuxopensource.org}
+    };
+
+\end{tikzpicture}

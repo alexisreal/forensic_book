@@ -1,15 +1,84 @@
-\chapter{Glosario de términos y herramientas clásicas}
+\chapter{Glosario técnico de términos y herramientas}
+\label{apendice:glosario}
+
+El presente glosario define y contextualiza los conceptos arquitectónicos de sistemas Unix/Linux, los artefactos forenses y las herramientas de análisis citadas a lo largo de la investigación.
 
 \begin{description}
-    \item[Atributos Ext2 (chattr / lsattr):] Banderas extendidas del sistema de archivos Linux Ext2/Ext3 que permiten fijar políticas de inmutabilidad (\texttt{+i}) o escritura append-only (\texttt{+a}) a nivel del controlador de disco, inaccesibles a las llamadas estándar de permisos POSIX.
-    \item[Eggdrop:] Uno de los bots IRC más populares y longevos de la historia de Internet, creado originalmente en 1993 por Robey Pointer. Escrito en C y extensible mediante scripts en Tcl, solía ser empleado para mantener presencia en canales IRC.
-    \item[Grave-robber:] Herramienta modular de recolección de evidencia pericial perteneciente al paquete \textit{The Coroner's Toolkit} (TCT), diseñada para recopilar información volátil y estática de un sistema Unix de manera forense.
-    \item[Inodo (Inode):] Estructura de datos fundamental en sistemas de archivos Unix que almacena todos los metadatos de un archivo (propietario, grupo, permisos, tamaño, marcas de tiempo y punteros a bloques de datos) excepto su nombre y el contenido mismo de los datos.
-    \item[mactime:] Utilidad de correlación temporal que toma la salida de herramientas de inspección de inodos (como \texttt{ils} o \texttt{fls}) y genera una línea de tiempo ordenada cronológicamente de todas las modificaciones, accesos y cambios en los metadatos de los archivos.
-    \item[psyBNC:] Servidor proxy / bouncer para IRC multiusuario que permite a los clientes ocultar su dirección IP real al conectarse a redes IRC y mantener conexiones persistentes aun cuando el cliente desconecte su equipo.
-    \item[Rootkit:] Conjunto de herramientas y binarios maliciosos diseñados para ocultar la presencia de un intruso y garantizar su acceso continuo con privilegios de administrador (\texttt{root}) evadiendo los mecanismos ordinarios de detección del sistema operativo.
-    \item[SUID (Set User ID):] Bit de permiso especial en sistemas Unix que instruye al sistema operativo a ejecutar un programa con los privilegios del propietario del archivo (frecuentemente \texttt{root}) en lugar de los privilegios del usuario que lo invoca.
-    \item[The Coroner's Toolkit (TCT):] Colección pionera de programas para análisis forense digital y respuesta a incidentes en sistemas Unix, concebida por Dan Farmer y Wietse Venema en 1999.
-    \item[The Sleuth Kit (TSK):] Biblioteca y conjunto de utilidades forenses de línea de comandos desarrollada por Brian Carrier como sucesora y evolución de TCT, base del entorno gráfico \textit{Autopsy}.
-    \item[unrm:] Herramienta especializada en la recuperación de datos no asignados en sistemas de archivos Unix, capaz de examinar los bloques del disco marcados como libres y extraer su contenido antes de que sea sobreescrito.
+    \item[Acct / Process Accounting:] Subsistema del núcleo Linux que registra formalmente la ejecución de cada proceso una vez que este termina (\texttt{do\_exit()}), almacenando el nombre del ejecutable, el usuario efectivo (UID), el tiempo de CPU consumido y las banderas de salida. Al operar a nivel de kernel, resulta invulnerable a la eliminación del historial de consola (\texttt{.bash\_history}) en espacio de usuario.
+
+    \item[Adquisición bit a bit (\textit{Bit-stream copy}):] Procedimiento pericial de copia sector a sector idéntica de un medio de almacenamiento físico hacia un archivo de imagen forense, garantizando la preservación íntegra de particiones, tablas de inodos, sectores no asignados y espacio residual.
+
+    \item[Atributos extendidos Ext2 (\texttt{chattr} / \texttt{lsattr}):] Banderas especiales del sistema de archivos Linux Ext2/Ext3/Ext4 que operan por encima de los permisos POSIX convencionales. Destacan el atributo inmutable (\texttt{+i}), que impide la modificación, renombrado o eliminación de un archivo incluso al usuario \texttt{root}, y el atributo de adición (\texttt{+a}), que únicamente permite anexar datos al final del archivo.
+
+    \item[Autopsy:] Plataforma pericial de análisis forense digital con interfaz gráfica que opera como capa de abstracción sobre \textit{The Sleuth Kit} (TSK), permitiendo la búsqueda de palabras clave, visualización de líneas de tiempo y análisis de imágenes forenses.
+
+    \item[Bouncer (\textit{psyBNC}):] Servidor proxy multiusuario especializado para redes IRC. Opera como un intermediario persistente que mantiene la presencia de un cliente en los canales de chat aun cuando la conexión física del operador se interrumpa, ocultando a la vez la dirección IP de origen detrás de la dirección del servidor comprometido.
+
+    \item[Cadena de custodia:] Principio formal y procesal que documenta la cronología completa de posesión, resguardo, traslado, análisis y disposición final de la evidencia física y digital, garantizando judicialmente que el indicio analizado en laboratorio es idéntico al recabado en la escena del incidente.
+
+    \item[chkrootkit / rkhunter:] Herramientas clásicas de auditoría en espacio de usuario que detectan la presencia de rootkits conocidos mediante la búsqueda de firmas de archivos, diferencias entre la salida de \texttt{ps} y \texttt{/proc}, y análisis diferencial de puertos y binarios esenciales.
+
+    \item[Descriptor de archivo (\textit{File Descriptor}):] Identificador numérico entero que el kernel Unix asigna a un proceso para representar un archivo abierto, un socket de red, una tubería (\textit{pipe}) o un dispositivo de caracteres, consultable pericialmente a través de \texttt{/proc/<PID>/fd/}.
+
+    \item[Dentry (\textit{Directory Entry}):] Estructura en la memoria del kernel que vincula un nombre de archivo legible con su número de inodo correspondiente dentro de la jerarquía de un sistema de archivos en Unix.
+
+    \item[DKOM (\textit{Direct Kernel Object Manipulation}):] Técnica ofensiva avanzada consistente en modificar directamente las estructuras de datos dinámicas en la memoria del kernel (como desenganchar un proceso de la lista circular doblemente enlazada de \texttt{task\_struct}) para volverlo completamente invisible ante herramientas como \texttt{ps} sin alterar el código ejecutable del núcleo.
+
+    \item[eBPF (\textit{Extended Berkeley Packet Filter}):] Máquina virtual en el kernel de Linux que permite ejecutar programas verificados en espacio de núcleo en respuesta a eventos de red, llamadas al sistema o trazas de ejecución. En el plano defensivo provee telemetría pericial de alta precisión; en el plano ofensivo permite la creación de rootkits contemporáneos sin necesidad de compilar módulos externos.
+
+    \item[EDR (\textit{Endpoint Detection and Response}):] Solución defensiva moderna compuesta por agentes a nivel de kernel que recopilan telemetría continua de procesos, memoria y tráfico de red para detectar anomalías de comportamiento y responder automáticamente a incidentes.
+
+    \item[Eggdrop / EnergyMech (\textit{emech}):] Familias clásicas de robots automatizados para IRC (\textit{bots}). Escritos originalmente en lenguaje C y controlados mediante canales encubiertos, eran sembrados masivamente en servidores vulnerados para participar en guerras de canales, ataques distribuidos de denegación de servicio (DDoS) y enlaces inter-red.
+
+    \item[Espacio no asignado (\textit{Unallocated space}):] Conjunto de bloques o sectores en un sistema de archivos que no están asociados actualmente a ningún inodo o archivo activo, pero que pueden albergar datos residuales de archivos eliminados hasta que sean sobrescritos por el sistema.
+
+    \item[File Carving (Tallado de datos):] Metodología forense para recuperar archivos del espacio no asignado basándose exclusivamente en sus firmas de cabecera (\textit{magic bytes}), estructuras de pie y heurísticas de longitud, sin requerir metadatos del sistema de archivos.
+
+    \item[Fileless Malware (Malware sin archivos):] Código malicioso que reside y se ejecuta exclusivamente en la memoria RAM volátil (p. ej., a través de \texttt{memfd\_create()} o inyección en procesos legítimos) sin almacenar artefactos binarios estáticos en el sistema de archivos del disco rígido.
+
+    \item[Grave-robber:] Utilidad central de recolección de evidencia pericial perteneciente al paquete pionero \textit{The Coroner's Toolkit} (TCT), diseñada por Dan Farmer y Wietse Venema para capturar el estado estático y volátil de un sistema Unix.
+
+    \item[Hash criptográfico:] Algoritmo determinista unidireccional (como MD5, SHA-1 o SHA-256) que transforma un volumen arbitrario de datos en una cadena alfanumérica de longitud fija. En informática forense se utiliza para certificar la autenticidad e integridad inalterada de la evidencia digital.
+
+    \item[Inodo (\textit{Inode}):] Estructura de metadatos fundamental en sistemas de archivos Unix que almacena los permisos de acceso, el propietario (UID), el grupo (GID), el tamaño, las marcas de tiempo MAC y los punteros directos e indirectos a los bloques de datos físicos.
+
+    \item[Inodo huérfano (\textit{Orphan inode}):] Inodo cuyo contador de enlaces (\texttt{i\_links\_count}) ha caído a cero tras ser desasociado de su entrada de directorio mediante \texttt{unlink()}, pero cuyos bloques de datos y metadatos aún pueden recuperarse antes de su sobreescritura.
+
+    \item[LiME (\textit{Linux Memory Extractor}):] Módulo del kernel de Linux de código abierto diseñado para capturar volcados forenses de memoria volátil (RAM) en caliente, minimizando la alteración de la evidencia en ejecución y soportando compresión sobre la marcha.
+
+    \item[Living off the Land (LotL):] Paradigma ofensivo contemporáneo donde el adversario prescinde de descargar herramientas externas y utiliza exclusivamente binarios administrativos legítimos preinstalados en el sistema operativo para realizar reconocimiento, persistencia y movimiento lateral.
+
+    \item[LKM (\textit{Loadable Kernel Module}):] Módulo dinámico cargable del kernel en Linux que permite extender las funcionalidades del núcleo en tiempo de ejecución. Históricamente constituía el método preferido para implantar rootkits a nivel de anillo cero.
+
+    \item[mactime:] Herramienta de análisis cronológico perteneciente a TCT y TSK que procesa tablas de inodos y genera una línea de tiempo ordenada de eventos basada en las marcas de tiempo de modificación, acceso y cambio de metadatos.
+
+    \item[Marcas de tiempo MACB:] Conjunto de marcas cronológicas registradas en el sistema de archivos: \textbf{M}odification (\textit{mtime}, cambio en el contenido), \textbf{A}ccess (\textit{atime}, lectura del archivo), \textbf{C}hange (\textit{ctime}, cambio en los metadatos o inodo), y \textbf{B}irth/Deletion (\textit{crtime/dtime}, creación o eliminación).
+
+    \item[Midnight Commander (\texttt{mc}):] Administrador de archivos interactivo visual en consola para sistemas Unix. Deja artefactos temporales característicos (\texttt{mc.pipe.*}) que permiten al perito reconstruir la navegación interactiva de un intruso en el árbol de directorios.
+
+    \item[NIST SP 800-86 / ISO/IEC 27037:] Marcos normativos internacionales que establecen las directrices formales para la identificación, recolección, adquisición y preservación probatoria de la evidencia digital en investigaciones periciales.
+
+    \item[Principio de intercambio de Locard:] Axioma fundamental de la criminalística formulado por Edmond Locard: \textit{<<Toda acción humana deja un rastro>>}. En el plano digital postula que todo acceso o ejecución de comandos provoca una transferencia o mutación de estado en los registros, memoria o estructuras de datos del sistema.
+
+    \item[Rootkit:] Colección de programas y rutinas diseñadas para garantizar el acceso continuo de un atacante con privilegios máximos y ocultar procesos, archivos, módulos y conexiones de red. Se clasifican primordialmente en rootkits de espacio de usuario (modificación de librerías y binarios) y rootkits de kernel (parcheo en anillo cero).
+
+    \item[RPM Verification (\texttt{rpm -V}):] Comando de verificación de integridad en sistemas basados en Red Hat / Fedora que contrasta el tamaño, sumas MD5, enlaces, permisos y propietarios de los binarios instalados frente a la base de datos oficial del empaquetado del distribuidor.
+
+    \item[Slack space (Espacio remanente):] Fracción de almacenamiento no utilizada al final de un bloque o sector asignado a un archivo cuando el tamaño del archivo no llena exactamente el múltiplo del bloque del sistema de archivos, frecuentemente investigada en búsqueda de fragmentos ocultos de datos.
+
+    \item[Suckit rootkit:] Célebre rootkit para Linux creado por \textit{sd} en 2001, caracterizado por su capacidad de inyectarse en el kernel en caliente a través de la memoria física (\texttt{/dev/kmem}) sin requerir la carga de un módulo LKM, modificando la tabla de vectores de llamadas al sistema (\texttt{sys\_call\_table}) y enmascarando archivos mediante el sufijo \texttt{!}.
+
+    \item[SUID / SGID (\textit{Set User/Group ID}):] Banderas de permisos en sistemas Unix (\texttt{chmod 4755}) que instruyen al sistema operativo a ejecutar un binario con los privilegios del propietario del archivo (frecuentemente \texttt{root}) o del grupo, en lugar de los privilegios del usuario invocador.
+
+    \item[The Coroner's Toolkit (TCT):] Colección histórica de programas forenses desarrollada en 1999 por Dan Farmer y Wietse Venema para la reconstrucción \textit{post-mortem} de incidentes en Unix, antecesora directa de \textit{The Sleuth Kit}.
+
+    \item[The Sleuth Kit (TSK):] Biblioteca y colección de utilidades forenses de línea de comandos de referencia universal desarrollada por Brian Carrier para la inspección y análisis de bajo nivel de estructuras en sistemas de archivos.
+
+    \item[unlink():] Llamada al sistema POSIX que desvincula una entrada de directorio de su correspondiente inodo; cuando el contador de enlaces desciende a cero y ningún proceso mantiene abierto el archivo, el sistema operativo marca los bloques e inodo como disponibles en el mapa de bits.
+
+    \item[unrm:] Herramienta forense especializada en volcar la totalidad de los bloques no asignados en un sistema de archivos para permitir la extracción y tallado de datos eliminados.
+
+    \item[VFS (\textit{Virtual File System}):] Capa de abstracción arquitectónica del núcleo Linux que define una interfaz estandarizada para todas las operaciones sobre archivos, permitiendo que el sistema operativo interactúe de forma homogénea con diversos sistemas de archivos (Ext2, NFS, procfs, sysfs).
+
+    \item[Volatility Framework:] Estándar de la industria para el análisis forense de memoria RAM volátil, capaz de inspeccionar volcados en crudo y extraer procesos, llamadas hookeadas, módulos cargados y artefactos de red en sistemas Linux, Windows y macOS.
 \end{description}

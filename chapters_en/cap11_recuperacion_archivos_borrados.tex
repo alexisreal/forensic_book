@@ -1,0 +1,133 @@
+\chapter{Recovery of Deleted Files and Orphan Inodes}
+
+When an intruder suspects impending detection or concludes an operational phase, they routinely execute deletion commands (\texttt{rm -rf}) to scrub tools, build trees, and intermediate logs. However, in the Linux Ext2/Ext3 filesystem architecture, deleting a file unlinks the inode from its parent directory but preserves data blocks intact on magnetic sectors until overwritten by subsequent write operations.
+
+\begin{notaforense}[Ext2 Deletion Mechanics: Orphan Inodes and File Carving]
+When the \texttt{unlink()} system call executes on an Ext2 filesystem:
+\begin{enumerate}
+    \item The directory entry (\textit{dentry}) unlinks the filename from its inode number.
+    \item The inode link counter (\texttt{i\_links\_count}) decrements to 0.
+    \item The deletion timestamp (\texttt{i\_dtime}) is populated with the current Epoch time.
+    \item Inode and block allocation bitmaps mark the corresponding structures as free.
+    \item \textbf{Physical data blocks are NOT destroyed}: they persist intact within magnetic sectors (\textit{unallocated clusters}) until claimed and overwritten by a new file.
+\end{enumerate}
+Using low-level forensic utilities like \texttt{ils} (to enumerate unlinked inodes retaining deletion timestamps), \texttt{icat} (to extract data blocks referenced by orphan inodes), and file carving techniques based on header/footer magic bytes, examiners can resurrect deleted files months after deletion provided blocks were not reused. The Ext2 unlinking mechanics are summarized in Figure~\ref{fig:ext2_deletion_carving}.
+\end{notaforense}
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    dentry/.style={draw=secondary, thick, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.6cm, minimum height=0.9cm},
+    inodebox/.style={draw=primary, thick, fill=primary!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=3.0cm, minimum height=1.3cm},
+    blockbox/.style={draw=accent, thick, fill=retobg, rounded corners=2pt, align=center, font=\scriptsize, minimum width=3.2cm, minimum height=1.3cm},
+    pointer/.style={draw=primary, thick, -{Stealth[length=2.5mm]}},
+    delpointer/.style={draw=accent, thick, dashed, -{Stealth[length=2.5mm]}}
+]
+
+% State 1: Active Allocated File
+\draw[draw=gray!30, fill=gray!2, rounded corners=4pt] (-0.5, 2.5) rectangle (11.5, 5.0);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.3, 4.8) {Active State: File Linked to Directory};
+
+\node[dentry] (d1) at (1.5, 3.5) {\textbf{Directory Entry}\\\scriptsize \texttt{mc.pipe.12891}\\\tiny Inode: 130461};
+\node[inodebox] (i1) at (5.5, 3.5) {\textbf{Inode 130461 (Ext2)}\\\tiny \texttt{i\_links\_count = 1}, \texttt{i\_dtime = 0}\\\tiny Direct block pointers};
+\node[blockbox] (b1) at (9.8, 3.5) {\textbf{Data Sectors (Disk)}\\\tiny Contents: \texttt{dnsquery}, \texttt{sysinit}...\\\tiny Bitmap: allocated blocks};
+
+\draw[pointer] (d1) -- (i1) node[midway, above=2pt, font=\tiny] {Link};
+\draw[pointer] (i1) -- (b1) node[midway, above=2pt, font=\tiny] {Pointers};
+
+% State 2: Unlinked Deleted File
+\draw[draw=gray!30, fill=gray!2, rounded corners=4pt] (-0.5, -0.6) rectangle (11.5, 1.9);
+\node[font=\bfseries\small\color{accent}, anchor=north west] at (-0.3, 1.7) {Post-Deletion State: Orphan Inode and Unallocated Blocks};
+
+\node[dentry, draw=gray!40, text=gray] (d2) at (1.5, 0.4) {\textbf{Unlinked Entry}\\\scriptsize \texttt{[Deleted entry]}\\\tiny Inode: 0};
+\node[inodebox, draw=accent, fill=accent!5] (i2) at (5.5, 0.4) {\textbf{Orphan Inode}\\\tiny \texttt{i\_links\_count = 0}, \texttt{i\_dtime = Epoch}\\\tiny Pointers to unallocated blocks};
+\node[blockbox, draw=accent, fill=retobg] (b2) at (9.8, 0.4) {\textbf{Unallocated Space}\\\tiny Intact magnetic data\\\tiny Recoverable via carving};
+
+\draw[draw=gray!40, dashed] (d2) -- (i2);
+\draw[delpointer] (i2) -- (b2) node[midway, above=2pt, font=\tiny\bfseries\color{accent}] {Carving / \texttt{icat}};
+
+\end{tikzpicture}
+\caption{Internal mechanics of file unlinking (\textit{unlink}) and orphan block preservation in Ext2 filesystems.}
+\label{fig:ext2_deletion_carving}
+\end{figure}
+
+\section{Recovery of Orphan Inodes and Unallocated Space (\textit{Carving})}
+
+Deleted file contents that had not yet been overwritten were systematically extracted from the forensic image. Diverse carving and data reconstruction techniques were applied, including raw sector carving across unallocated clusters. Due to high operational I/O on the production server, many transient deleted blocks were quickly reclaimed; however, for files that could not be fully recovered through standard tools, inode metadata was extracted and entropy analysis applied across contiguous block sequences to reconstruct targeted artifacts.
+
+\subsection{Identification of Key Deleted Forensic Artifacts}
+
+Parsing filesystem structures with \texttt{ils} and \texttt{fls} cataloged over 300,000 orphan inode records. Filtering out routine operating system temporary files isolated five critical deleted artifacts directly documenting adversary operations, summarized in Table~\ref{tab:archivos_recuperados}.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{@{} l >{\raggedright\arraybackslash}X l l l r @{}}
+\toprule
+\textbf{Type} & \textbf{Recovered Path} & \textbf{Modified (\textit{mtime})} & \textbf{Deleted (\textit{dtime})} & \textbf{UID:GID} & \textbf{Inode} \\
+\midrule
+\texttt{r/r} & \texttt{/dev/zqft4/algo}    & 2003-05-10 00:05:03 & 2003-05-10 00:05:09 & \texttt{0:0} (root)      & 532496 \\
+\texttt{s/s} & \texttt{/dev/log}           & 2003-05-08 22:23:03 & 2003-05-10 03:00:57 & \texttt{0:0} (root)      & 305889 \\
+\texttt{d/r} & \texttt{/tmp/.sxp}          & 2003-05-09 12:25:06 & 2003-04-23 22:34:05 & \texttt{0:0} (root)      & 130441 \\
+\texttt{r/r} & \texttt{sh}                 & 2003-04-26 16:00:32 & 2003-04-15 22:29:00 & \texttt{523:523} (proa)  & 786702 \\
+\texttt{f/r} & \texttt{mc.pipe.12891}      & 2003-05-08 03:01:44 & 2003-04-11 20:55:39 & \texttt{500:100} (duende)& 130461 \\
+\bottomrule
+\end{tabularx}
+\caption{Key deleted artifacts and files recovered through orphan inode analysis.}
+\label{tab:archivos_recuperados}
+\end{table}
+
+\noindent
+\begin{minipage}{\linewidth}
+\begin{lstlisting}[style=terminal]
+# ils2mac -v /dev/hda1 | grep -E "algo|log|sxp|pipe"
+TIPO  RUTA RECUPERADA      MTIME (MODIF)        DTIME (BORRADO)      UID:GID   INODO
+---------------------------------------------------------------------------------------
+r/r   /dev/zqft4/algo      2003.05.10 00:05:03  2003.05.10 00:05:09  0:0       532496
+s/s   /dev/log             2003.05.08 22:23:03  2003.05.10 03:00:57  0:0       305889
+d/r   /tmp/.sxp            2003.05.09 12:25:06  2003.04.23 22:34:05  0:0       130441
+r/r   sh                   2003.04.26 16:00:32  2003.04.15 22:29:00  523:523   786702
+f/r   mc.pipe.12891        2003.05.08 03:01:44  2003.04.11 20:55:39  500:100   130461
+---------------------------------------------------------------------------------------
+\end{lstlisting}
+\end{minipage}
+
+\vspace{1em}
+
+These files represent system logs, temporary pipes, and IRC executables. Of particular investigative note is the deleted file named \texttt{algo} within the hidden directory \texttt{/dev/zqft4}. This file was created and deleted within six seconds as a sanity check. The word \texttt{algo} is Spanish for "something", providing linguistic evidence that the operator was a native Spanish speaker. File \texttt{/tmp/.sxp} was recovered and identified as part of the Sendmail exploitation toolkit staged in \texttt{ex/}.
+
+The recovered FIFO pipe \texttt{mc.pipe.12891} was an interactive temporary pipe spawned by \textit{Midnight Commander} (\texttt{mc}), owned by user \texttt{duende}, containing the command sequence executed through his interface:
+
+\vspace{1em}
+
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+linux
+sysinit
+dnsquery
+identd
+plogd
+db
+sh
+.tree
+screen
+popclean
+ecko
+\end{lstlisting}
+}
+
+\vspace{1em}
+
+This provides incontrovertible proof that on April 11, user \texttt{duende} executed multiple malicious programs under investigation from Midnight Commander.
+
+The recovery of these deleted files tightened the evidentiary chain on \texttt{helios}. Yet a central puzzle endured: all of \texttt{duende}'s interactive sessions documented in audit logs and active process memory originated from internal IP address \texttt{192.0.2.20}, assigned to departmental compute server \texttt{atlas}. Why did the adversary consistently route access through an internal peer if external access was unrestricted? Had \texttt{atlas} also been compromised to serve as a stepping stone? To resolve this lateral pivot, the investigation formally extended to server \texttt{atlas}, as detailed in Chapter~\ref{cap:correlacion_multisistema}.
+
+\begin{retoforense}[Recovery of Application Temporary Artifacts]
+File \texttt{mc.pipe.12891} recorded the adversary's simulated malware process list. Why do interactive console utilities like \texttt{mc}, \texttt{screen}, or editors like \texttt{vim} leave residual temporary artifacts in \texttt{/tmp} or \texttt{/var/tmp}, and how can an investigator exploit them to reconstruct session activity when an attacker has purged their \texttt{.bash\_history}?
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: File Recovery on Modern SSDs and TRIM]
+In 2004, deleted file carving on magnetic IDE/SCSI hard drives achieved high success rates because magnetic sectors remained physically unaltered until explicitly reused. In contrast, modern NVMe Solid State Drives (SSDs) enforce the \textit{TRIM / Deallocate} command, which immediately instructs the SSD controller to zero out freed flash cells to optimize write performance. On modern TRIM-enabled drives, static file carving returns only null bytes (\texttt{0x00}), driving modern forensics to prioritize volatile memory acquisition and immutable cloud backups.
+\end{perspectiva20}

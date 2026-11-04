@@ -1,0 +1,93 @@
+\chapter{Quick Reference Guide to GNU/Linux Forensic Commands}
+
+This appendix provides a practical quick-reference cheat sheet containing essential command-line tools that forensic examiners and incident responders utilize when auditing Unix and GNU/Linux systems, during both live response triage and static post-mortem disk analysis.
+
+\section{Live System Triage and State Inspection}
+
+\subsection{Running Processes and Volatile State}
+\begin{lstlisting}[style=terminal]
+# List all running processes with user, PID, resource usage, and full command-line:
+ps auxwww
+
+# Hierarchical parent-child process tree (reveals orphan or injected processes):
+pstree -p -a
+
+# Open file descriptors and active network sockets for a specific process (e.g., PID 1234):
+lsof -p 1234
+
+# Verify actual binary executable on disk invoked by the process:
+ls -l /proc/1234/exe
+
+# Extract process environment variables from memory:
+strings -a /proc/1234/environ | tr '\0' '\n'
+
+# Dump virtual memory mapping for a process:
+cat /proc/1234/maps
+\end{lstlisting}
+
+\subsection{Network Sockets and Active Connections}
+\begin{lstlisting}[style=terminal]
+# Listening and established TCP/UDP sockets with PID and program name:
+netstat -tulpn
+# Modern alternative (iproute2):
+ss -tulpan
+
+# List all processes maintaining active network connections:
+lsof -i -n -P
+
+# Raw packet capture on a specific network interface (bypassing DNS resolution):
+tcpdump -i eth0 -nn -s 0 -w incident_capture.pcap
+\end{lstlisting}
+
+\subsection{Privileged Binaries and Special Attributes}
+\begin{lstlisting}[style=terminal]
+# Locate all files with SUID or SGID permission bits enabled:
+find / -type f \( -perm -04000 -o -perm -02000 \) -exec ls -l {} \; 2>/dev/null
+
+# Search for non-root owned files inside system binary paths:
+find /bin /sbin /usr/bin /usr/sbin /dev -not -user root -ls
+
+# Recursive audit of immutable (+i) and append-only (+a) Ext2/3/4 attributes:
+lsattr -aR /dev /bin /sbin /usr/lib /etc 2>/dev/null | grep -E "(\-i\-|\-a\-)"
+\end{lstlisting}
+
+\section{Forensic Image Analysis with The Sleuth Kit (TSK)}
+
+When examining a raw bit-stream disk or partition image (\texttt{disk.img}):
+
+\begin{lstlisting}[style=terminal]
+# 1. General filesystem telemetry (block size, inode range, metadata counts):
+fsstat disk.img
+
+# 2. Recursive file listing with associated inodes (including deleted entries):
+fls -r -p -m "/" disk.img > bodyfile.txt
+
+# 3. In-depth inspection of a specific inode (MAC timestamps, block pointers):
+istat disk.img 533487
+
+# 4. Direct extraction of inode content into an external output file:
+icat disk.img 533487 > carved_binary.bin
+
+# 5. Enumerate deleted and orphan inodes only:
+ils -r -m disk.img >> bodyfile.txt
+
+# 6. Generate formatted chronological timeline (mactime):
+mactime -b bodyfile.txt -d -z CST > forensic_timeline.csv
+\end{lstlisting}
+
+\section{Integrity Verification and Anomaly Detection}
+
+\begin{lstlisting}[style=terminal]
+# Compute cryptographic hashes for evidentiary integrity preservation:
+md5sum disk.img > disk.img.md5
+sha256sum disk.img > disk.img.sha256
+
+# Extract printable ASCII and Unicode string constants from a suspicious binary:
+strings -a -t x suspicious_binary.bin
+
+# Package integrity audit on Debian/Ubuntu systems:
+debsums -c -s
+
+# Package integrity audit on Red Hat/CentOS/Fedora systems:
+rpm -Va
+\end{lstlisting}

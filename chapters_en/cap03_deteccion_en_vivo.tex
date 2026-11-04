@@ -1,0 +1,367 @@
+\chapter{Early Detection and Live Artifacts}
+
+Initial intrusion detection typically surfaces through subtle discrepancies in routine system operations. In mid-April 2004, systems administration identified files bearing unusual ownership and elevated permissions nestled within system directories. This chapter documents the first live response actions and the preliminary inventory of anomalous artifacts.
+
+\begin{notaforense}[Legacy Concealment Techniques in /dev]
+The \texttt{/dev} directory was historically the favored hideout for intruders in Unix/Linux environments. Because it houses hundreds of block and character device nodes, attackers routinely established obfuscated subdirectories bearing simulated device names (such as \texttt{/dev/ptyp} or \texttt{/dev/...}) to conceal toolchains, packet sniffers, and Set-UID binaries.
+\end{notaforense}
+
+\section{Initial Detection: Files with SUID and SGID Permissions}
+
+In mid-April, systems administration discovered that unauthorized programs with root privileges had been planted on the server. An exhaustive filesystem search was executed to locate all files owned by root that possessed the \textbf{SUID} and/or \textbf{SGID} permission bits, running the command \texttt{find / -type f \( -perm -4000 -o -perm -2000 \) -ls}. This query revealed that user \texttt{duende}\footnote{Throughout this report, user account logins are cited exactly as they appear in system logs, omitting real personal names.} harbored executables with unauthorized elevated privileges within his private home directories.
+
+Under Unix access control architecture, a binary bearing the \textbf{SUID} (\textit{Set User ID}, octal 4000) or \textbf{SGID} (\textit{Set Group ID}, octal 2000) bit executes with the effective privileges (\textit{effective UID / GID}) of the \textbf{file owner on disk}, rather than those of the invoking user. Consequently, if a binary is owned by \texttt{root} with the SUID bit set (\texttt{-rwsr-xr-x}), any unprivileged local user executing it instantly commands full superuser privileges on the operating system.
+
+The non-standard \textbf{SUID} and \textbf{SGID} executables identified across the system were:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+702242 92 -rwsr-sr-x 1 root root 88531 Feb 11 1999 /home/staff/duende/prog/bin/registro
+620791 20 -rwsrwsr-x 1 root root 18256 Jan 9 2000 /home/staff/duende/prog/gtk/registros
+\end{lstlisting}
+
+\vspace{1em}
+Up to this juncture, no particular suspicion had fallen upon user \texttt{duende} or UID 500, which are identically the same entity.\footnote{We will use the numerical user identifier (UID) and the login name interchangeably depending on the output format of each forensic tool.}
+
+\section{Anomalous Presence in System Directories}
+
+A secondary search was conducted to identify files owned by non-root users (UID $\neq$ 0) located inside system directories:
+
+\vspace{3mm}
+
+\begin{lstlisting}[style=terminal]
+501289   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:18 ./usr/bin/top
+501292   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:19 ./usr/bin/pstree
+388613   24 -rwxr-xr-x   1 500      users       20705 Apr 11 16:24 ./usr/bin/getty
+227367  392 -rwxr-xr-x   1 500      users      395235 Apr 15 20:23 ./usr/lib/popclean
+227360    4 -rwxr-xr-x   1 500      users        1013 Apr 15 20:23 ./usr/local/lib/dsniff.services
+227358    4 -rwxr-xr-x   1 500      users         236 Apr 15 20:23 ./etc/cron.daily/dnsquery
+501288   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/ps
+388620   32 -rwxrwxr-x   1 500      users       29220 Mar 18  2002 ./bin/kevent
+469100    4 -rwxr-xr-x   1 500      users         475 Nov 14  2002 ./bin/endl
+501291   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/netstat
+227355  708 -rwxr-xr-x   1 500      users      718863 Apr 11 16:13 ./bin/sysinit
+324280    4 -rwxr-xr-x   1 501      users         240 Oct  1  2002 ./bin/weit
+227351    4 -rwxr-xr-x   1 500      users         627 Mar  8 06:14 ./dev/rd/c2d3b2
+227352    4 -rwxr-xr-x   1 500      users         531 Nov 14  2002 ./dev/rd/c6d0b2
+227353    4 -rwxr-xr-x   1 500      users         512 Nov 14  2002 ./dev/rd/c6d3b2
+130454    4 -rwxr-xr-x   1 500      users          36 Nov 14  2002 ./dev/.libn
+130456    4 -rwxr-xr-x   1 500      users          66 Mar  8 06:12 ./dev/.libpt
+130461    4 -rwxr-xr-x   1 500      users          69 Mar  8 06:13 ./dev/.libtr
+130458    4 -rwxr-xr-x   1 500      users          65 Mar  8 06:12 ./dev/.libtp
+533480    4 drwxr-xr-x   2 500      users        4096 May  9 19:05 ./dev/zqft4
+\end{lstlisting}
+
+\vspace{3mm}
+
+None of the executables above should legitimately belong to regular unprivileged users. 
+
+The core administrative binaries:
+
+\vspace{1em}
+\begin{lstlisting}[style=terminal]
+501289   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:18 ./usr/bin/top
+501292   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:19 ./usr/bin/pstree
+388613   24 -rwxr-xr-x   1 500      users       20705 Apr 11 16:24 ./usr/bin/getty
+501288   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/ps
+388620   32 -rwxrwxr-x   1 500      users       29220 Mar 18  2002 ./bin/kevent
+469100    4 -rwxr-xr-x   1 500      users         475 Nov 14  2002 ./bin/endl
+501291   24 -rwxr-xr-x   1 500      users       22837 Apr 11 16:13 ./bin/netstat
+227355  708 -rwxr-xr-x   1 500      users      718863 Apr 11 16:13 ./bin/sysinit
+\end{lstlisting}
+\vspace{1em}
+
+represent foundational system management tools tasked with reporting running processes and active network connections. Having these binaries owned by UID 500 indicated severe system tampering.
+
+The hidden device tree artifacts:
+
+\vspace{1em}
+\begin{lstlisting}[style=terminal]
+130454    4 -rwxr-xr-x   1 500      users          36 Nov 14  2002 ./dev/.libn
+130456    4 -rwxr-xr-x   1 500      users          66 Mar  8 06:12 ./dev/.libpt
+130461    4 -rwxr-xr-x   1 500      users          69 Mar  8 06:13 ./dev/.libtr
+130458    4 -rwxr-xr-x   1 500      users          65 Mar  8 06:12 ./dev/.libtp
+533480    4 drwxr-xr-x   2 500      users        4096 May  9 19:05 ./dev/zqft4
+\end{lstlisting}
+\vspace{1em}
+
+have no legitimate basis for existing on a production Unix host; the leading dot signifies hidden entries purposefully omitted from default directory listings.
+
+Finally, the planted services:
+
+\vspace{1em}
+\begin{lstlisting}[style=terminal]
+227367  392 -rwxr-xr-x   1 500      users      395235 Apr 15 20:23 ./usr/lib/popclean
+227360    4 -rwxr-xr-x   1 500      users        1013 Apr 15 20:23 ./usr/local/lib/dsniff.services
+227358    4 -rwxr-xr-x   1 500      users         236 Apr 15 20:23 ./etc/cron.daily/dnsquery
+\end{lstlisting}
+\vspace{1em}
+
+warranted deep forensic scrutiny, as their names directly pointed to sniffer configuration files and automated scheduled persistence.
+
+Noticeably, the overwhelming majority of anomalous files belonged to user 500 (\texttt{duende}). Consequently, this user account was singled out for focused---though by no means exclusive---investigation. A recursive search for all files owned by UID 500 returned only the items listed above alongside his home directory: \texttt{/home/staff/duende}.
+
+An audit of user \texttt{duende}'s interactive command history was undertaken via his shell logs (\texttt{.history} and \texttt{.bash\_history}). In Unix systems, these files record commands executed during interactive shell sessions. An uncompromised user operating normally maintains a continuous backlog of executed commands dating back to account provisioning or system installation. The erasure or truncation of command histories is universally recognized as the primary counter-forensic technique employed by intruders.
+
+Inspection of the user's shell histories yielded:
+\begin{itemize}
+    \item \texttt{.bash\_history} was completely empty (0 bytes). The user may not have utilized \texttt{bash} as his primary login shell, or it was wiped.
+    \item \texttt{.history} (the history file for the \texttt{tcsh} shell) contained only sparse, routine commands dating back several months. It had clearly been sanitized.
+\end{itemize}
+
+\section{Command History Audit and Covert Tool Logs}
+
+Because standard shell histories offered negligible insight into recent user activity, the forensic team audited less obvious logging mechanisms frequently overlooked by attackers. One such record is managed by the visual file manager \textbf{Midnight Commander} (\texttt{mc}), which tracks interactive navigation and command execution within its internal configuration files. Midnight Commander periodically prunes its \texttt{.mc/history} file; thus, any entries present reflect relatively fresh interactions.
+
+Examination of \texttt{/home/staff/duende/.mc/history} revealed a goldmine of investigative intelligence:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+[Dir Hist Directorio Personal]
+0=/home/staff/duende/.gnome-desktop/Directorio Personal
+
+[Dir Hist duende]
+0=/home/staff/duende/.gnome-desktop/duende
+1=/home/staff/duende/.gnome-desktop/duende/doc
+2=/home/staff/duende/.gnome-desktop/duende
+3=/home/staff/duende/.gnome-desktop/duende/doc
+4=/home/staff/duende/.gnome-desktop/duende
+5=/home
+6=/usr/local/netscape
+
+[name]
+
+56=.bash_history
+57=pop.log
+59=test*
+
+[Dir Hist New Left Panel]
+0=/etc
+1=/
+2=/root
+3=/root/chkrootkit-0.40
+4=/root
+5=/root/helios-rh
+6=/root
+
+27=/root
+28=/root/archivos
+29=/root
+30=/root/pine
+31=/root
+32=/
+33=/sbin
+34=/
+35=/tmp
+36=/
+37=/etc
+38=/etc/cron.d
+39=/etc
+40=/etc/cron.daily
+41=/etc
+42=/
+43=/usr
+44=/usr/lib
+45=/usr
+46=/home/staff/duende
+47=/home/staff
+48=/home/staff/duende
+49=/home/staff/duende/xm
+50=/home/staff/duende
+51=/home/staff/duende/o0o.tar#utar
+52=/home/staff/duende/o0o.tar#utar/s8exp
+53=/home/staff/duende/o0o.tar#utar
+54=/home/staff/duende
+55=/home/staff
+56=/var/mail
+57=/var
+58=/home/staff/duende
+59=/var/log
+
+[Dir Hist New Right Panel]
+
+23=/home/est/proa
+24=/home/staff/duende
+25=/home/est/zopilote
+26=/home/est/proa
+27=/home/est/zopilote
+28=/tmp
+29=/home/est/zena
+30=/home/staff/duende
+31=/home/est/zena
+32=/tmp
+33=/tmp/.sxp
+34=/tmp
+35=/home/est/zena
+36=/home/staff/duende
+37=/tmp
+38=/tmp/.sxp
+39=/tmp
+40=/
+41=/temporal
+42=/
+43=/home/staff/duende
+44=/home/staff/duende/prog/c/lc
+45=/home/staff/duende
+46=/home/staff/duende/prog/c/uno
+47=/dev
+48=/dev/zqft4
+49=/home/staff/duende/prog/c/uno
+50=/home/staff/duende/prog/c
+51=/home/staff/duende
+52=/home/staff/duende/xm
+53=/home/staff/duende
+54=/dev
+55=/dev/zqft4
+56=/dev
+57=/home/staff/duende
+58=/home/staff
+59=/home/staff/duende
+
+[cmdline]
+3=ee ladiva.rgb 
+9=cd temp
+10=make
+11=make -f makefile.linux
+12=vi makefile.linux 
+13=make -f makefile.linux
+14=sh fixunix.sh 
+15=cp Makefile.unx Makefile
+16=make
+17=cd
+18=cd bajar
+19=cd
+20=cd /usr/local/include
+21=cd bajar
+22=[6~[6~[6~
+23=cd
+24=cd /tmp
+25=ls -lF
+26=more sm 
+27=less sm 
+28=ls -lF
+29=cd /home/est/proa
+30=[21~0
+31=cd /tmp
+32=qdate
+33=date
+34=[21~0
+35=cd /home/est/zena
+36=cd /tmp
+37=cd /home/est/zena
+38=cd /tmp
+39=du -h
+40=w
+41=cd /home/staff
+42=cd /tmp
+43=cd /etc
+44=less shadow
+45=cd /var/log
+46=cd /dev
+47=ls -lFa dnsquery 
+48=cd /etc
+49=chown root.root dnsquery 
+50=cd /home/staff/duende/
+51=cd /dev
+52=cd
+53=ld -lFa dnsquery 
+54=ls -lFa dnsquery 
+55=cd
+56=date
+57=cd /var/mail
+58=ls -lFa .bash_history 
+59=cd /var/log
+\end{lstlisting}
+
+\vspace{1em}
+
+The last modification timestamp of this file was April 27, establishing that the utility was utilized actively up to the final day the server remained in service:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+-rw-------    1 500      500          7676 Apr 27 04:29 .mc/history
+\end{lstlisting}
+
+\vspace{1em}
+
+This artifact provides conclusive material evidence demonstrating that user \texttt{duende} repeatedly browsed and manipulated unauthorized files bearing his ownership, as well as critical system assets under investigation. Entries beneath the \texttt{[Dir Hist]} headers reflect active directory browsing across both panels of the file manager, while the \texttt{[cmdline]} block chronicles commands executed by the operator.
+
+Of particular significance is repeated access to \texttt{/root}, the superuser's private home directory. No regular user has legitimate cause or authorization to access \texttt{/root}, much less examine confidential files stored therein.
+
+Furthermore, line 44 confirms an attempt to inspect \texttt{/etc/shadow}, the system shadow password file. In Unix systems, read access to \texttt{/etc/shadow} is strictly restricted to root; an unprivileged user can only read it if they possess superuser privileges. User \texttt{duende} was not an administrator and had no operational maintenance roles, making this access strictly prohibited---further compounded by the fact that this account belonged to an individual no longer affiliated with the institution.
+
+Line 49 documents an explicit command changing the ownership of malicious file \texttt{dnsquery}: \texttt{chown root.root dnsquery}. This provides unequivocal proof that the user operated with full root privileges, as only root can reassign arbitrary file ownership.
+
+\subsection{Detailed Breakdown of Recovered Entries}
+
+Analyzing the Midnight Commander logs reveals distinct operational patterns clarifying the intruder's intent:
+
+\subsubsection{System Log and History Auditing}
+
+The operator actively searched and reviewed files where interactive logins and commands are tracked:
+\begin{lstlisting}[style=terminal]
+56=.bash_history
+57=pop.log
+59=test*
+56=/var/mail
+59=/var/log
+\end{lstlisting}
+The targeted inspection of \texttt{.bash\_history} and \texttt{pop.log} underscores an intention to verify whether his previous sessions had left traces, or to monitor the mail activity of other system users.
+
+\subsubsection{Exploration of Restricted Directories and Audit Tools}
+
+The user navigated through directories reserved exclusively for the system administrator:
+\begin{lstlisting}[style=terminal]
+2=/root
+3=/root/chkrootkit-0.40
+5=/root/helios-rh
+28=/root/archivos
+30=/root/pine
+38=/etc/cron.d
+40=/etc/cron.daily
+44=/usr/lib
+\end{lstlisting}
+The access to \texttt{/root/chkrootkit-0.40} is exceptionally revealing: the intruder discovered that the administrator had installed a rootkit detection suite and actively inspected its files to assess whether his covert hooks were detectable. Meanwhile, browsing \texttt{/etc/cron.daily} points toward auditing and deploying persistence mechanisms.
+
+\subsubsection{Pivoting Across Student Accounts and Hidden Paths}
+
+The right panel recorded cross-account navigation across student accounts displaying signs of compromise:
+\begin{lstlisting}[style=terminal]
+23=/home/est/proa
+25=/home/est/zopilote
+29=/home/est/zena
+33=/tmp/.sxp
+48=/dev/zqft4
+49=/home/staff/duende/xm
+\end{lstlisting}
+Access to \texttt{/dev/zqft4} carries profound forensic weight: disguised as a magnetic tape device in the \texttt{/dev} tree, it was utilized as a clandestine staging directory for trojanized binaries.
+
+\subsubsection{Extraction of Exploit Tools and Local Compilation}
+
+The history logged the extraction of compressed archives and tool compilation in temporary directories:
+\begin{lstlisting}[style=terminal]
+51=/home/staff/duende/o0o.tar#utar
+52=/home/staff/duende/o0o.tar#utar/s8exp
+9=cd temp
+10=make
+11=make -f makefile.linux
+14=sh fixunix.sh
+\end{lstlisting}
+The archive \texttt{o0o.tar} contained local kernel exploitation suites (Suckit rootkit and auxiliary elevation scripts). The build sequence executed in \texttt{/tmp} demonstrates compilation and tuning of binaries specifically tailored to the victim system's kernel and library versions.
+
+\subsubsection{Superuser Privilege Abuse and Evidence Tampering}
+
+The concluding sequence of console commands proves beyond doubt that the operator wielded unrestricted root privileges:
+\begin{lstlisting}[style=terminal]
+43=cd /etc
+44=less shadow
+47=ls -lFa dnsquery
+49=chown root.root dnsquery
+58=ls -lFa .bash_history
+\end{lstlisting}
+Directly reading \texttt{/etc/shadow} is only possible under UID 0. Furthermore, running \texttt{chown root.root dnsquery} confirms a deliberate effort to mask the malicious script \texttt{dnsquery} (initially created under user \texttt{duende}) as a legitimate system file owned by root.
+
+Confirming that user \texttt{duende} commanded root privileges and maintained disguised staging directories in \texttt{/dev} raised pressing questions: what roles did the binaries in \texttt{/dev/zqft4} and \texttt{/dev/ptyp} serve, and what operational impact were they having on the server? To resolve this, the forensic team immediately subjected these artifacts to reverse engineering and functional inspection, unraveling an IRC botnet node alongside a covert credential interception engine.

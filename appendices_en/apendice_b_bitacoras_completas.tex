@@ -1,0 +1,177 @@
+\chapter{Annotated Forensic Log Transcriptions}
+\label{apendice:bitacoras}
+
+Throughout this forensic investigation, tens of thousands of audit log entries spanning authentication subsystems, file transfers, process accounting, and network services were parsed across servers \texttt{helios}, \texttt{atlas}, and \texttt{io}.
+
+To maintain analytical momentum and narrative clarity, preceding chapters emphasized entries bearing direct evidentiary relevance. This appendix systematically consolidates representative log excerpts, providing a comprehensive reference catalog for forensic auditing and instructional casework.
+
+\section{Authentication and Access Control Records (\texttt{auth.log} and \texttt{wtmp})}
+
+The \texttt{auth.log} file (managed by the \texttt{syslogd} daemon via the Pluggable Authentication Modules [PAM] framework) constitutes the primary evidentiary source for verifying credential validity, session network origin, and privilege escalation attempts.
+
+\subsection{Concurrent Accesses and Clandestine Interactive Sessions}
+
+The following excerpt illustrates the chronological progression of initial unauthorized sessions established over dial-up and DSL endpoints, combining interactive shell logins with file transfers:
+
+\begin{lstlisting}[style=terminal]
+# Consolidated chronological excerpt of /var/log/auth.log and wtmp on helios
+Apr  8 05:30:22 helios login[1234]: FAILED LOGIN (1) on `pts/2' from `200-161-199-225.dsl.telesp.net.br'
+Apr  8 05:30:29 helios PAM_unix[1234]: (login) session opened for user proa by (uid=0)
+Apr  8 05:33:02 helios PAM_unix[1262]: (login) session opened for user proa by (uid=0)
+Apr  8 05:36:23 helios PAM_unix[4402]: (login) session opened for user proa by (uid=0)
+Apr  8 05:36:51 helios su[4404]: - pts/5 proa-irc
+Apr  8 05:38:01 helios PAM_unix[4430]: (cron) session opened for user mail by (uid=0)
+Apr  8 05:43:05 helios PAM_unix[4588]: (login) session opened for user proa by (uid=0)
+Apr  8 10:04:22 helios PAM_unix[7098]: (login) session opened for user apached by (uid=0)
+Apr  8 10:04:34 helios su[7099]: - pts/11 apached-smtpd
+Apr  8 10:07:23 helios PAM-securetty[7123]: access denied: tty 'pts/7' is not secure!
+Apr  8 10:07:27 helios login[7123]: FAILED LOGIN (1) on `pts/7' from `198.18.1.45' FOR `smtpd'
+Apr  8 10:08:36 helios PAM_unix[7207]: (login) session opened for user apached by (uid=0)
+Apr  8 10:08:39 helios su[7208]: + pts/7 apached-smtpd
+Apr  8 10:08:39 helios PAM_unix[7208]: (su) session opened for user smtpd by apached(uid=1)
+Apr  8 14:08:44 helios PAM_unix[9147]: (login) session opened for user zopilote by (uid=0)
+Apr  8 14:11:36 helios PAM_unix[9228]: (ssh) session opened for user root by (uid=0)
+Apr  8 14:13:02 helios PAM_unix[9228]: (ssh) session closed for user root
+Apr  8 14:33:15 helios PAM_unix[9372]: (ftp) session opened for user proa by (uid=0)
+\end{lstlisting}
+
+\begin{notaforense}[Forensic Interpretation of PAM Audit Records]
+\begin{itemize}
+    \item The entry \texttt{su[4404]: - pts/5 proa-irc} denotes a failed attempt to switch user (\texttt{-}) from \texttt{proa} to system user \texttt{irc}.
+    \item Conversely, the entry \texttt{su[7208]: + pts/7 apached-smtpd} with a plus sign (\texttt{+}) proves successful identity assumption to user \texttt{smtpd}.
+    \item The recurring warning \texttt{PAM-securetty: access denied} confirms that the adversary attempted direct root login over network pseudoterminals (\texttt{pts/X}), a policy explicitly blocked by \texttt{/etc/securetty}, forcing the operator to utilize compromised user accounts as initial jump shells.
+\end{itemize}
+\end{notaforense}
+
+\section{FTP Transfer Records (\texttt{xferlog})}
+
+The FTP daemon (\texttt{wu-ftpd} / \texttt{in.ftpd}) operated as the primary ingress vector for staging compressed malware archives and build scripts. The standardized \texttt{/var/log/xferlog} format comprises 14 mandatory positional fields, detailed in Table~\ref{tab:xferlog_estructura}.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{@{} r l X @{}}
+\toprule
+\textbf{Field} & \textbf{Name} & \textbf{Definition and Representative Values} \\
+\midrule
+1--5 & Date and Time & Chronological record in \texttt{DDD MMM dd hh:mm:ss YYYY} format. \\
+6 & Transfer Duration & Total elapsed transfer time expressed in seconds. \\
+7 & Remote Host & Client IP address or resolved Fully Qualified Domain Name (FQDN). \\
+8 & File Size & Total byte volume transferred across the socket. \\
+9 & File Name & Absolute or relative path of the uploaded or downloaded object. \\
+10 & Transfer Type & \texttt{a} (ASCII mode) or \texttt{b} (binary mode). \\
+11 & Special Action Flag & \texttt{C} (compressed), \texttt{U} (uncompressed), \texttt{T} (tarred), \texttt{\_} (none). \\
+12 & Direction & \texttt{o} (outgoing, downloaded by client) or \texttt{i} (incoming, uploaded to server). \\
+13 & Access Mode & \texttt{a} (anonymous), \texttt{g} (guest), \texttt{r} (authenticated local user). \\
+14 & Username & Account login identifier utilized during authentication. \\
+15 & Service & Invoked protocol identifier (typically \texttt{ftp}). \\
+16 & Auth Method & \texttt{0} (none) or \texttt{1} (RFC 931 ident authentication). \\
+17 & Authenticated User & Remote user identity verified via \textit{identd}, or \texttt{*}. \\
+18 & Completion Status & \texttt{c} (complete, successful transfer) or \texttt{i} (incomplete, aborted). \\
+\bottomrule
+\end{tabularx}
+\caption{Positional field structure of the standardized \texttt{xferlog} record.}
+\label{tab:xferlog_estructura}
+\end{table}
+
+\subsection{Forensic Transcription of Staged Malware Transfers}
+
+The following log sequence captures incoming file uploads staging IRC bot modules and rootkit archives into user \texttt{duende}'s personal directory:
+
+\begin{lstlisting}[style=terminal]
+# Transcription of incoming file transfers into the filesystem
+Tue Apr 13 02:12:04 2004 1 203.0.113.124 152841 /home/duende/b.tar.gz b _ i r duende ftp 0 * c
+Tue Apr 13 02:14:18 2004 1 203.0.113.124 845201 /home/duende/psy.tar.gz b _ i r duende ftp 0 * c
+Tue Apr 13 02:18:55 2004 2 203.0.113.124  42109 /home/duende/popclean.c b _ i r duende ftp 0 * c
+Tue Apr 13 02:22:10 2004 1 203.0.113.124 312048 /home/duende/.sxp/sk.tar.gz b _ i r duende ftp 0 * c
+Wed Apr 14 03:05:12 2004 1 198.51.100.98  12850 /home/proa/emech.tar.gz b _ i r proa ftp 0 * c
+Wed Apr 14 03:11:40 2004 3 198.51.100.98 948202 /home/proa/.../bot.tar.gz b _ i r proa ftp 0 * c
+\end{lstlisting}
+
+Cross-referencing \texttt{xferlog} completion timestamps with inode status change times (\textit{ctime}) obtained via \texttt{fls} confirmed that archives were unpacked and compiled immediately following upload.
+
+\section{Process Accounting Records (\texttt{acct})}
+
+A pivotal evidentiary foundation of this inquiry was the covert activation of kernel process accounting (\texttt{acct}). Unlike shell histories (\texttt{.bash\_history}) which can be disabled via \texttt{unset HISTFILE} or wiped via \texttt{> .bash\_history}, accounting records are logged directly from kernel process exit structures (\texttt{do\_exit()}), rendering them immune to userland anti-forensic tampering.
+
+\subsection{Irrefutable Command Tracking with \texttt{lastcomm}}
+
+Querying the accounting database via \texttt{lastcomm} yielded an exhaustive record of actions executed under UID 500 (\texttt{duende}), refuting claims of inactivity:
+
+\begin{lstlisting}[style=terminal]
+# Output of lastcomm filtered by UID 500 (duende) following simulated host restart
+sshd              SF    duende   pts/2      0.75 secs Sat Apr 26 18:20
+tcsh                    duende   pts/2      0.12 secs Sat Apr 26 18:20
+hostname           F    duende   pts/2      0.00 secs Sat Apr 26 18:24
+cons.saver        S     duende   pts/2      0.00 secs Sat Apr 26 18:24
+mc                 F    duende   pts/2      0.00 secs Sat Apr 26 18:24
+last                    duende   pts/2      0.03 secs Sat Apr 26 18:24
+ls                 F    duende   pts/2      0.00 secs Sat Apr 26 18:26
+ld                      duende   pts/2      0.02 secs Sat Apr 26 18:26
+lynx                    duende   pts/2      0.20 secs Sat Apr 26 18:30
+w                  F    duende   pts/2      0.00 secs Sat Apr 26 18:30
+finger                  duende   pts/2      0.00 secs Sat Apr 26 18:30
+df                 F    duende   pts/2      0.00 secs Sat Apr 26 18:32
+ping              S     duende   pts/2      0.00 secs Sat Apr 26 18:32
+less                    duende   pts/2      0.04 secs Sat Apr 26 18:37
+last                  X duende   pts/2      0.02 secs Sat Apr 26 18:37
+ssh                     duende   pts/2      0.16 secs Sat Apr 26 18:38
+gcc                     duende   pts/2      1.45 secs Sat Apr 26 18:42
+as                      duende   pts/2      0.28 secs Sat Apr 26 18:42
+collect2                duende   pts/2      0.11 secs Sat Apr 26 18:42
+chattr             F    duende   pts/2      0.00 secs Sat Apr 26 18:45
+rm                 F    duende   pts/2      0.00 secs Sat Apr 26 18:46
+\end{lstlisting}
+
+\begin{notaforense}[Process Accounting Execution Flags]
+In the second column of \texttt{lastcomm}:
+\begin{itemize}
+    \item \textbf{S:} Executed with superuser privileges (Set-UID or \texttt{root}).
+    \item \textbf{F:} Process completed following a successful \textit{fork} without subsequently invoking \texttt{exec}.
+    \item \textbf{X:} Process terminated abruptly by a fatal operating system signal (e.g., \texttt{SIGTERM} or \texttt{SIGSEGV}).
+\end{itemize}
+Note the consecutive execution of \texttt{gcc}, \texttt{as} (assembler), \texttt{collect2} (linker), and finally \texttt{chattr} and \texttt{rm}, evidencing on-host compilation, setting immutable filesystem attributes, and deleting source code artifacts.
+\end{notaforense}
+
+\section{Webmail Audit Records (\texttt{openwebmail.log})}
+
+The departmental mail server (\texttt{io.ifm.lab.edu.mx}) hosted the \textit{OpenWebMail} webmail suite. The audit log \texttt{/var/log/openwebmail.log} proved that the adversary accessed and triaged private user correspondence:
+
+\begin{lstlisting}[style=terminal]
+# Annotated CGI transactions in openwebmail.log
+2004-04-18 22:40:15 - [198.51.100.131] - duende - login - session=duende-session-0.269443440091894
+2004-04-18 22:42:01 - [198.51.100.131] - duende - readmsg - folder=INBOX - msgid=<200404151201.i3FC12a09121@ifm.lab.edu.mx>
+2004-04-18 22:44:33 - [198.51.100.131] - duende - movemsg - source=INBOX - dest=mail-trash - msgid=<200404151201.i3FC12a09121@ifm.lab.edu.mx>
+2004-04-18 22:45:10 - [198.51.100.131] - duende - emptytrash - folder=mail-trash
+2004-04-18 22:48:20 - [198.51.100.131] - duende - logout - session=duende-session-0.269443440091894
+\end{lstlisting}
+
+This sequence establishes the complete lifecycle of electronic mail espionage: login from Prodigy DSL (\texttt{198.51.100.131}), opening and reading the email (\texttt{readmsg}), moving the message to trash (\texttt{movemsg}), and purging the trash folder (\texttt{emptytrash}) to cover tracks.
+
+\section{Forensic Excerpt of the Covert Sniffer Log (\texttt{/dev/rd/c2d3b2})}
+
+As documented in Chapter~\ref{cap:siembra_servicios_malware}, daemon \texttt{in.telnetd} was trojanized to intercept interactive terminal keystrokes, dumping captured authentication tokens into hidden character node \texttt{/dev/rd/c2d3b2}.
+
+Below is the forensic format of the intercepted data, illustrating captured origins, timestamps, and credential pairs:
+
+\begin{lstlisting}[style=terminal]
+----------------------------------------------------------------------
+[TELNET-SNIFFER-RECORD]
+TIMESTAMP: 2004-04-21 09:14:02 CST
+REMOTE-HOST: 192.0.2.10 (helios.ifm.lab.edu.mx) -> 192.0.2.20 (atlas)
+TERMINAL: pts/3
+LOGIN: root
+PASSWORD: [NEW-INTERCEPTED-ADMIN-PASSWORD]
+STATUS: SUCCESSFUL-AUTH
+----------------------------------------------------------------------
+[TELNET-SNIFFER-RECORD]
+TIMESTAMP: 2004-04-21 11:22:18 CST
+REMOTE-HOST: 192.0.2.10 (helios.ifm.lab.edu.mx) -> 192.0.2.30 (io)
+TERMINAL: pts/1
+LOGIN: mherrera
+PASSWORD: [INTERCEPTED-MAIL-PASSWORD]
+STATUS: SUCCESSFUL-AUTH
+----------------------------------------------------------------------
+\end{lstlisting}
+
+This artifact provided irrefutable proof that the internal intrusion targeted administrative credentials, exposing the exact mechanism by which the local adversary captured the newly rotated \texttt{root} password immediately after administrative intervention.

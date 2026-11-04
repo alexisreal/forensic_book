@@ -1,0 +1,63 @@
+\chapter*{Methodological Guide for Forensic Analysis}
+\addcontentsline{toc}{chapter}{Methodological Guide for Forensic Analysis}
+
+This book was conceived not merely as the chronological narrative of an incident, but as a \textbf{comprehensive educational manual} for students, security analysts, systems administrators, and professionals seeking a rigorous technical foundation in Digital Forensics and Incident Response (DFIR).
+
+In a landscape saturated with synthetic Capture-the-Flag (CTF) challenges and point-and-click automated tools, this real-world case provides the irreplaceable value of confronting \textbf{unfiltered evidence from a live production compromise}: incomplete or tampered logs, active anti-forensics, concurrent attackers, and real-time operational pressures.
+
+\section*{The Cardinal Axioms of Digital Criminalistics}
+
+Throughout this case study, the reader will observe the practical application of three universal principles governing digital investigations:
+
+\begin{enumerate}
+    \item \textbf{Locard's Exchange Principle Applied to Cyberspace:}
+    Formulated by criminalist Edmond Locard: \textit{<<Every contact leaves a trace>>}. In a multi-user operating system, it is technically impossible for an intruder to execute a command, transfer a file, or modify a process without altering physical storage or kernel memory state (inode timestamps, kernel process accounting, socket tables, or authentication logs). The investigator's role is uncovering the artifacts the adversary believed were obliterated.
+    
+    \item \textbf{The Order of Volatility (RFC 3227):}
+    Evidence collection must proceed in strict adherence to data lifespan, from the most ephemeral to the most persistent:
+    \begin{center}
+    \small\sffamily
+    \textbf{CPU Registers} $\;\longrightarrow\;$ \textbf{System RAM} $\;\longrightarrow\;$ \textbf{Network/Kernel State}\\[4pt]
+    $\;\longrightarrow\;$ \textbf{Disk Storage} $\;\longrightarrow\;$ \textbf{Backup Media}
+    \end{center}
+    In the documented investigation, the methodology carefully balanced non-destructive live response and active session monitoring before taking the server offline for bit-stream disk acquisition.
+
+    \item \textbf{Inmutability and Repeatability of Scientific Proof:}
+    Every forensic finding must be verifiable and independently reproducible. Bit-stream disk cloning and continuous verification via cryptographic checksums (MD5, SHA-1, SHA-256) safeguard the chain of custody.
+\end{enumerate}
+
+\section*{Standardized Methodological Alignment Matrix}
+
+To facilitate academic study and professional certification preparation (e.g., GCFA, GCFE, CHFI, CCFP), the contents of this book are formally mapped against international frameworks \textbf{NIST SP 800-86} and \textbf{ISO/IEC 27037}, as summarized in Table~\ref{tab:matriz_nist}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} p{3.8cm} p{2.6cm} X @{}}
+\toprule
+\textbf{Methodological Phase} & \textbf{Chapters} & \textbf{Analytical Objectives and Skills} \\
+\midrule
+\textbf{1. Identification and Triage} & Chapters 1 and 3 & Anomaly recognition, SUID binary auditing, and live triage. \\
+\addlinespace
+\textbf{2. Acquisition and Custody} & Chapters 2 and 5 & Bit-stream disk imaging, hash verification, and process accounting. \\
+\addlinespace
+\textbf{3. Binary and Malware Analysis} & Chapters 4, 6, and 7 & Static reverse engineering, IRC bot dissection, and kernel rootkits. \\
+\addlinespace
+\textbf{4. Timeline and Log Correlation} & Chapters 8, 9, and 10 & MAC timestamp reconstruction, multi-system log mining, and account analysis. \\
+\addlinespace
+\textbf{5. Advanced Data Recovery} & Chapters 11, 12, and 13 & File carving on orphan inodes, lateral movement, and pivoting analysis. \\
+\addlinespace
+\textbf{6. Verdict and Attribution} & Chapters 14 and 15 & Forensic report synthesis, threat attribution, and 20-year retrospective. \\
+\bottomrule
+\end{tabularx}
+\caption{Methodological mapping between forensic phases and book chapters.}
+\label{tab:matriz_nist}
+\end{table}
+
+\section*{Suggested Reading Pathways}
+
+\begin{itemize}
+    \item \textbf{For students and foundational learners:} Begin with a linear reading of Part~I (Context and Methodology) and Part~II (Live Detection), solidifying fundamental Unix operating system abstractions before diving into reverse engineering.
+    \item \textbf{For systems administrators and incident responders:} Focus on Chapters 4, 6, and 8 to master process spoofing evasion techniques, trojanized binary detection, and filesystem timeline analysis.
+    \item \textbf{For auditors and forensic examiners:} Study Chapter 2 (Chain of Custody), Chapter 14 (Forensic Verdict and Attribution), and Appendices D and E, which provide operational cheat sheets and chain of custody documentation templates.
+\end{itemize}

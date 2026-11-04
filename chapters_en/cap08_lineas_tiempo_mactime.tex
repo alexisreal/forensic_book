@@ -1,0 +1,312 @@
+\chapter{Filesystem Forensic Chronology}
+
+Chronological event reconstruction forms the backbone of digital forensic analysis. Filesystems store critical metadata timestamps for every inode that allow investigators to establish causal sequences of events. Using the \texttt{mactime} utility from \textit{The Coroner's Toolkit} (TCT) and \textit{The Sleuth Kit} (TSK), the team correlated every disk action with second-by-second accuracy.
+
+\begin{notaforense}[Forensic Timestamps: Demystifying ctime in Unix/Linux]
+A frequent misconception among junior examiners is interpreting \texttt{ctime} as file creation time (\textit{birth time}). In classic Unix filesystems (UFS, Ext2, Ext3), a birth timestamp did not exist; it was introduced later in Ext4 and modern filesystems:
+\begin{itemize}
+    \item \textbf{mtime (Modification Time):} The exact instant the file's data blocks were last modified (e.g., saving changes with an editor or issuing \texttt{write()}).
+    \item \textbf{atime (Access Time):} The instant file contents were read (via \texttt{cat}, binary execution, or \texttt{read()}).
+    \item \textbf{ctime (Change Time):} The instant the \textbf{inode metadata} was altered (permission changes via \texttt{chmod}, ownership changes via \texttt{chown}, hard link creation/destruction via \texttt{ln}, or file size alterations). While a user or attacker can arbitrarily forge \texttt{mtime} and \texttt{atime} using the \texttt{utime()} system call or \texttt{touch -d}, \textbf{they cannot arbitrarily forge ctime}, which is updated strictly by the kernel based on the system hardware clock.
+    \item \textbf{dtime (Deletion Time):} In Ext2, records the precise instant the inode was unlinked from its directory structure via \texttt{unlink()}, marking logical file deletion.
+\end{itemize}
+\end{notaforense}
+
+\section{Filesystem Timeline Analysis}
+
+The forensic procedure extracts and chronologically sorts modification (\textit{mtime}), access (\textit{atime}), inode status change (\textit{ctime}), and deletion (\textit{dtime}) timestamps across all inodes on the storage media using \texttt{ils} and \texttt{mactime}.
+
+From this collected telemetry, a \emph{comprehensive timeline} of the entire volume was reconstructed, including unallocated inodes whose raw data blocks had not yet been overwritten by subsequent OS operations. Standard \texttt{mactime} syntax follows the format:
+
+\noindent\texttt{Date and Time | Size | MAC Attribute | Permissions | UID | GID | Inode | File Path}
+
+The overarching temporal sequence derived from this inode correlation is summarized in Figure~\ref{fig:cronologia_mactime}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.79,
+    every node/.style={transform shape, font=\sffamily},
+    tline/.style={draw=primary, ultra thick, -{Stealth[length=3.5mm]}},
+    eventnode/.style={draw=primary, thick, fill=white, rounded corners=3pt, align=center, font=\scriptsize, text width=2.6cm},
+    evdark/.style={draw=accent, thick, fill=accent!10, rounded corners=3pt, align=center, font=\scriptsize, text width=2.6cm},
+    conn/.style={draw=secondary, thick}
+]
+
+% Horizontal axis
+\draw[tline] (0, 0) -- (12.5, 0) node[right, font=\footnotesize\bfseries\color{primary}] {Time (April 2004)};
+
+% Timestamps and events
+% 1. April 8
+\draw[draw=primary, ultra thick] (1.0, 0.2) -- (1.0, -0.2) node[below=2pt, font=\scriptsize\bfseries] {April 8};
+\draw[conn] (1.0, 0.2) -- (1.0, 1.8);
+\node[evdark] at (1.0, 2.5) {\textbf{16:02:08}\\\tiny Deployment of Suckit (\texttt{sk}), patching of \texttt{init}, and \texttt{clean!}};
+
+% 2. April 11
+\draw[draw=primary, ultra thick] (3.2, 0.2) -- (3.2, -0.2) node[below=2pt, font=\scriptsize\bfseries] {April 11};
+\draw[conn] (3.2, -0.2) -- (3.2, -1.5);
+\node[eventnode] at (3.2, -2.2) {\textbf{16:18 - 21:19}\\\tiny Trojanization of \texttt{top}, \texttt{pstree}, \texttt{getty}, and scripts in \texttt{mc.pipe}};
+
+% 3. April 15
+\draw[draw=primary, ultra thick] (5.5, 0.2) -- (5.5, -0.2) node[below=2pt, font=\scriptsize\bfseries] {April 15};
+\draw[conn] (5.5, 0.2) -- (5.5, 1.8);
+\node[eventnode] at (5.5, 2.5) {\textbf{22:47 - 23:08}\\\tiny Logins for \texttt{proa} and \texttt{zena}. First login for \texttt{duende} from \texttt{atlas}};
+
+% 4. April 18
+\draw[draw=primary, ultra thick] (7.7, 0.2) -- (7.7, -0.2) node[below=2pt, font=\scriptsize\bfseries] {April 18};
+\draw[conn] (7.7, -0.2) -- (7.7, -1.5);
+\node[eventnode] at (7.7, -2.2) {\textbf{22:37:42}\\\tiny Brute-force auth attacks against mail server \texttt{io} from Prodigy DSL};
+
+% 5. April 22
+\draw[draw=primary, ultra thick] (9.8, 0.2) -- (9.8, -0.2) node[below=2pt, font=\scriptsize\bfseries] {April 22};
+\draw[conn] (9.8, 0.2) -- (9.8, 1.8);
+\node[evdark] at (9.8, 2.5) {\textbf{06:18:01}\\\tiny Legitimate login to account \texttt{mherrera} on \texttt{io} and \texttt{BAD SU} to root};
+
+% 6. April 24
+\draw[draw=primary, ultra thick] (11.6, 0.2) -- (11.6, -0.2) node[below=2pt, font=\scriptsize\bfseries] {April 24};
+\draw[conn] (11.6, -0.2) -- (11.6, -1.5);
+\node[eventnode] at (11.6, -2.2) {\textbf{Live Triage}\\\tiny Discovery of anomalous SUIDs and forensic freeze};
+
+\end{tikzpicture}
+\caption{Forensic chronological reconstruction of key events derived from MAC time analysis.}
+\label{fig:cronologia_mactime}
+\end{figure}
+
+Example timeline entry:
+
+\vspace{1em}
+
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+Mon Jun 03 1991 15:44:40  1060 m.. -/-rw-r--r-- root  root 356082 /usr/share/texmf/metapost/base/rboxes.mp
+\end{lstlisting}
+}
+
+\vspace{1em}
+
+The target disk produced 701,707 timeline entries, classified chronologically to reconstruct every lifecycle event across all files on disk, recoverable and unallocated alike.
+
+\vspace{1em}
+
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+Tue Apr 08 2003 16:00:05  3383242 m.. -/-rw-r--r-- root     root     147500   /var/cache/apt/archives/
+                                                                              libc6_2.2.5-11.5_i386.deb
+                          2390800 m.. -/-rw-r--r-- root     root     147497   /var/cache/apt/archives/
+                                                                              libc6-dev_2.2.5-11.5_i386.deb
+Tue Apr 08 2003 16:02:08    28472 m.. -/-rwxr-xr-x root     root     533487   /dev/zqft4/sk
+                            27844 m.c -/-rwxr-xr-x root     root     485151   /sbin/init!
+                            25163 ..c -/-rwxr-xr-x huet     1018     533485   /dev/zqft4/local!
+                            28472 m.c -/-rwxr-xr-x root     root     485196   /sbin/init
+Tue Apr 08 2003 16:02:20        0 .a. -/-rw-r--r-- root     root     307489   /usr/include/utmp.h.dpkg-tmp 
+                                                                              (deleted)
+                             9602 m.c -/-rwxr-xr-x root     root     533488   /dev/zqft4/clean!
+                                0 .a. -rw-r--r-- root     root     307489   <helios-root.img-dead-307489>
+                                0 .a. -rw-r--r-- root     root     307490   <helios-root.img-dead-307490>
+                            31707 m.c -/-rwxr-xr-x root     root     533481   /dev/zqft4/bash!
+                                0 .a. -/-rw-r--r-- root     root     307490   /usr/include/lastlog.h.
+                                                                              dpkg-tmp (deleted)
+Tue Apr 08 2003 16:02:45    34304 m.c -/-rw-r--r-- lester    502      787568   /home/staff/lester/tecnico.doc
+Tue Apr 08 2003 16:07:27   260207 ..c -/-rw------- lester    502      1441938  /home/staff/lester/mail/conacyt
+Tue Apr 08 2003 16:10:32    28472 ..c -/-rwxr-xr-x root     root     533487   /dev/zqft4/sk
+Tue Apr 08 2003 16:11:17      236 m.c -/-rw------- root     mail     420675   /var/mail/.bash_history
+\end{lstlisting}
+}
+
+\vspace{1em}
+
+These entries prove that several suspect binaries were deployed on April 8 starting at 16:02:08, establishing their installation timeline.
+
+\vspace{1em}
+
+{\footnotesize
+\begin{lstlisting}[style=terminal]
+Fri Apr 11 2003 20:55:02     4096 m.c d/drwxr-xr-x root     root     243579   /var/lib/tmp
+Fri Apr 11 2003 20:55:03    29220 ..c -/-rwxr-xr-x root     root     227122   /usr/bin/kevent
+                            29220 ..c -/-rwxrwxr-x duende  users    388620   /bin/kevent
+Fri Apr 11 2003 20:55:38    32768 m.c d/drwxr-xr-x root     root     402515   /dev/rd
+                             4096 m.c d/drwxr-xr-x root     root     305831   /var/lib
+                              475 m.c -/-rwxr-xr-x root     root     227370   /usr/bin/endl
+                           711890 m.c -/-rwxr-xr-x root     root     227371   /usr/bin/sysinit
+                              475 ..c -/-rwxr-xr-x duende  users    469100   /bin/endl
+                              531 ..c -/-rwxr-xr-x duende  users    227352   /dev/rd/c6d0b2
+                             4096 m.c d/drwxr-xr-x root     root     179262   /etc/tmp/socket
+                             4096 m.c d/drwxr-xr-x root     root     565675   /etc/tmp
+                              627 ..c -/-rwxr-xr-x duende  users    227351   /dev/rd/c2d3b2
+                              512 ..c -/-rwxr-xr-x duende  users    227353   /dev/rd/c6d3b2
+                                5 m.c -/-rw-r--r-- root     root     404745   /dev/rd/c0d0b1
+Fri Apr 11 2003 20:55:39    58412 ..c -/-rwxr-xr-x root     root     241477   /dev/.pst
+                               69 ..c f/-rwxr-xr-x duende  users    130461   /tmp/mc.pipe.12891 
+                                                                  (deleted-realloc)
+                               36 ..c -/-rwxr-xr-x duende  users    130454   /dev/.libn
+                               69 ..c -/-rwxr-xr-x duende  users    130461   /dev/.libtr
+                           395235 ..c -/-rwxr-xr-x duende  users    227367   /usr/lib/popclean
+                             1013 ..c -/-rwxr-xr-x duende  users    227360   /usr/local/lib/
+                                                                  dsniff.services
+                               65 ..c -/-rwxr-xr-x duende  users    130458   /dev/.libtp
+                               66 ..c -/-rwxr-xr-x duende  users    130456   /dev/.libpt
+                              236 ..c -/-rwxr-xr-x duende  users    227358   /etc/cron.daily/dnsquery
+                            17864 m.c -/-rwxr-xr-x root     root     356429   /var/lib/.identd/identd
+                              115 m.c -/-rwxr-xr-x root     root     356431   /var/lib/.identd/libsnd
+                             4060 m.c -/-rwxr-xr-x root     root     356428   /var/lib/.identd/libs
+                            32236 ..c -/-rwxr-xr-x root     root     225524   /dev/.tp
+                            86892 ..c -/-rwxr-xr-x root     root     241498   /dev/.nst
+                            13224 ..c -/-rwxr-xr-x root     root     225715   /dev/.tree
+Fri Apr 11 2003 21:13:23      240 ..c -/-rwxr-xr-x villasen users    324280   /bin/weit
+Fri Apr 11 2003 21:13:30      240 m.c -/-rwxr-xr-x root     root     227250   /usr/bin/weit
+Fri Apr 11 2003 21:13:58    39925 m.c -/-rwxr-xr-x root     root     241500   /bin/lspci
+                            22157 m.c -/-rwxr-xr-x root     root     241496   /bin/mt-gnu
+                            21701 m.c -/-rwxr-xr-x root     root     241522   /bin/mknod
+                             9697 m.c -/-rwxr-xr-x root     root     241491   /bin/arch
+                            53417 m.c -/-rwxr-xr-x root     root     241460   /bin/grep
+                            22837 m.c -/-rwxr-xr-x duende  users    501288   /bin/ps
+                            17817 m.c -/-rwxr-xr-x root     root     241481   /bin/echo
+                            24869 m.c -/-rwxr-xr-x root     root     241458   /bin/chown
+                           135637 m.c -/-rwxr-xr-x root     root     241489   /bin/tar
+                            11049 m.c -/-rwxr-xr-x root     root     241492   /bin/dmesg
+                            15929 m.c -/-rwxr-xr-x root     root     241486   /bin/true
+                            22789 m.c -/-rwxr-xr-x root     root     241457   /bin/chmod
+                            16757 m.c -/-rwxr-xr-x root     root     241471   /bin/hostname
+                            15929 m.c -/-rwxr-xr-x root     root     241482   /bin/false
+                            26009 m.c -/-rwxr-xr-x root     root     241502   /bin/fuser
+                            30149 m.c -/-rwxr-xr-x root     root     241528   /bin/touch
+                            18421 m.c -/-rwxr-xr-x root     root     241478   /bin/kill
+                            77077 m.c -/-rwsr-xr-x root     root     241475   /bin/mount
+                            50265 m.c -/-rwxr-xr-x root     root     241497   /bin/ed
+                            16757 m.c -/-rwxr-xr-x root     root     241472   /bin/dnsdomainname
+                            32325 m.c -/-rwxr-xr-x root     root     241524   /bin/rm
+                            12481 m.c -/-rwxr-xr-x root     root     241514   /bin/tempfile
+                            55817 m.c -/-rwxr-xr-x root     root     241463   /bin/uncompress
+                            50757 m.c -/-rwxr-xr-x root     root     241520   /bin/ls
+                            55817 m.c -/-rwxr-xr-x root     root     241463   /bin/zcat
+                            20705 m.c -/-rwxr-xr-x root     root     243666   /bin/getty
+                            41753 m.c -/-rwxr-xr-x root     root     241494   /bin/loadkeys
+                            28105 m.c -/-rwxr-xr-x root     root     241479   /bin/sed
+                            34309 m.c -/-rwxr-xr-x root     root     241516   /bin/dd
+                            20705 m.c -/-rwxr-xr-x root     root     243666   /var/lib/nfs/sm/
+                                                                              192.0.2.20 
+                                                                              (deleted-realloc)
+                            16229 m.c -/-rwxr-xr-x root     root     241527   /bin/sync
+                           718863 m.c -/-rwxr-xr-x duende  users    227355   /bin/sysinit
+                            22217 m.c -/-rwsr-xr-x root     root     241499   /bin/ping
+                            55817 m.c -/-rwxr-xr-x root     root     241463   /bin/gzip
+                            32549 m.c -/-rwxr-xr-x root     root     241517   /bin/df
+                            56065 m.c -/-rwxr-xr-x root     root     241495   /bin/cpio
+                            50757 m.c -/-rwxr-xr-x root     root     241518   /bin/dir
+                            26045 m.c -/-rwxr-xr-x root     root     241501   /bin/setserial
+                            11941 m.c -/-rwxr-xr-x root     root     241515   /bin/mktemp
+                            41957 m.c -/-rwsr-xr-x root     root     241473   /bin/login
+                            49061 m.c -/-rwxr-xr-x root     root     241523   /bin/mv
+                            23493 m.c -/-rwxr-xr-x root     root     241521   /bin/mkdir
+                            17477 m.c -/-rwxr-xr-x root     root     241525   /bin/rmdir
+                            16281 m.c -/-rwxr-xr-x root     root     241490   /bin/cat
+                            22949 m.c -/-rwxr-xr-x root     root     241456   /bin/chgrp
+                            30149 m.c -/-rwsr-xr-x root     root     241474   /bin/su
+                            16889 m.c -/-rwxr-xr-x root     root     241483   /bin/pwd
+                            26501 m.c -/-rwxr-xr-x root     root     241519   /bin/ln
+                            32793 m.c -/-rwxr-xr-x root     root     241480   /bin/date
+                            53417 m.c -/-rwxr-xr-x root     root     241462   /bin/fgrep
+                            55817 m.c -/-rwxr-xr-x root     root     241463   /bin/gunzip
+                            50757 m.c -/-rwxr-xr-x root     root     241526   /bin/vdir
+                            43925 m.c -/-rwsr-xr-x root     root     241476   /bin/umount
+                            30933 m.c -/-rwxr-xr-x root     root     241493   /bin/more
+                            41637 m.c -/-rwxr-xr-x root     root     241459   /bin/cp
+                            10649 m.c -/-rwxr-xr-x root     root     241453   /bin/readlink
+                            16465 m.c -/-rwxr-xr-x root     root     241455   /bin/run-parts
+                            22837 m.c -/-rwxr-xr-x duende  users    501291   /bin/netstat
+                            18105 m.c -/-rwxr-xr-x root     root     241484   /bin/sleep
+                            36953 m.c -/-rwxr-xr-x root     root     241485   /bin/stty
+                            15921 m.c -/-rwxr-xr-x root     root     483037   /sbin/killall5
+                            17369 m.c -/-rwxr-xr-x root     root     241487   /bin/uname
+                            53417 m.c -/-rwxr-xr-x root     root     241461   /bin/egrep
+Fri Apr 11 2003 21:18:44    44677 m.c -/-rwxr-xr-x root     root     225480   /usr/bin/install
+                            15741 m.c -/-rwxr-xr-x root     root     225483   /usr/bin/locate
+                            35877 m.c -/-rwxr-xr-x root     root     225601   /usr/bin/shred
+                            40421 m.c -/-rwxr-xr-x root     root     482933   /sbin/genksyms
+                            11341 m.c -/-rwxr-xr-x root     root     225500   /usr/bin/renice
+                            52089 m.c -/-rwxr-xr-x root     root     225481   /usr/bin/find
+                            39077 m.c -/-rwxr-sr-x root     shadow   225511   /usr/bin/chage
+                           148385 m.c -/-rwxr-xr-x root     root     225470   /usr/bin/dselect
+                           101977 m.c -/-rwxr-xr-x root     root     225477   /usr/bin/mawk
+                            22361 m.c -/-rwxr-xr-x root     root     225466   /usr/bin/diff3
+                           146949 m.c -/-rwxr-xr-x root     root     225507   /usr/bin/tack
+                            14677 m.c -/-rwxr-xr-x root     root     225499   /usr/bin/logger
+                            24005 m.c -/-rwxr-xr-x root     root     225471   /usr/bin/md5sum
+                            20857 m.c -/-rwxr-xr-x root     root     225467   /usr/bin/sdiff
+                            31397 m.c -/-rwxr-xr-x root     root     225479   /usr/bin/du
+                            10077 m.c -/-rwxr-xr-x root     root     225607   /usr/bin/clear
+                            14245 m.c -/-rwxr-xr-x root     root     225474   /usr/bin/faillog
+                            16085 m.c -/-rwxr-sr-x root     tty      225501   /usr/bin/wall
+                            12569 m.c -/-rwxr-xr-x root     root     225504   /usr/bin/lsattr
+                            16309 m.c -/-rwxr-xr-x root     root     225464   /usr/bin/cmp
+                            33733 m.c -/-rwxr-xr-x root     root     225506   /usr/bin/toe
+                            15261 m.c -/-rwxr-xr-x root     root     225508   /usr/bin/tput
+                            19493 m.c -/-rwxr-xr-x root     root     225527   /usr/bin/mkfifo
+                            13657 m.c -/-rwxr-xr-x root     root     225503   /usr/bin/chattr
+                            26021 m.c -/-rwsr-xr-x root     root     225473   /usr/bin/newgrp
+                            38309 m.c -/-rwxr-xr-x root     root     225510   /usr/bin/tset
+                            69017 m.c -/-rwxr-xr-x root     root     225465   /usr/bin/diff
+                            12389 m.c -/-rwxr-xr-x root     root     225475   /usr/bin/lastlog
+                            22909 m.c -/-rwxr-xr-x root     root     225576   /usr/bin/whiptail
+                            32837 m.c -/-rwsr-xr-x root     root     225512   /usr/bin/chfn
+                            44525 m.c -/-rwxr-xr-x root     root     225505   /usr/bin/tic
+                            18137 m.c -/-rwxr-xr-x root     root     225482   /usr/bin/xargs
+                            16517 m.c -/-rwxr-xr-x root     root     225604   /usr/bin/link
+                            10553 m.c -/-rwxr-xr-x root     root     225509   /usr/bin/uuidgen
+                            14261 m.c -/-rwxr-xr-x root     root     225459   /usr/bin/script
+                            16421 m.c -/-rwxr-xr-x root     root     225603   /usr/bin/unlink
+                            48549 m.c -/-rwxr-xr-x root     root     225608   /usr/bin/infocmp
+Fri Apr 11 2003 21:18:45    17785 m.c -/-rwxr-xr-x root     root     225623   /usr/bin/users
+                            14677 m.c -/-rwxr-xr-x root     root     225542   /usr/bin/comm
+                            31653 m.c -/-rwsr-xr-x root     root     225516   /usr/bin/passwd
+                            31717 m.c -/-rwxr-xr-x root     root     225543   /usr/bin/csplit
+                            28837 m.c -/-rwxr-xr-x root     root     225551   /usr/bin/od
+                            32837 m.c -/-rwxr-xr-x root     root     225555   /usr/bin/sort
+                            20025 m.c -/-rwxr-xr-x root     root     225533   /usr/bin/id
+                            16869 m.c -/-rwxr-xr-x root     root     225610   /usr/bin/pkill
+                            18905 m.c -/-rwxr-xr-x root     root     225621   /usr/bin/nice
+                            16741 m.c -/-rwxr-xr-x root     root     225548   /usr/bin/head
+                            31245 m.c -/-rwxr-xr-x root     root     225553   /usr/bin/pr
+                            16869 m.c -/-rwxr-xr-x root     root     225610   /usr/bin/pgrep
+                            22837 m.c -/-rwxr-xr-x duende  users    501289   /usr/bin/top
+                            17305 m.c -/-rwxr-xr-x root     root     225530   /usr/bin/env
+                            27065 m.c -/-rwxr-xr-x root     root     225616   /usr/bin/test
+                            22577 m.c -/-rwxr-xr-x root     root     225549   /usr/bin/join
+                            30917 m.c -/-rwsr-xr-x root     root     225513   /usr/bin/chsh
+                            40037 m.c -/-rwsr-xr-x root     root     225515   /usr/bin/gpasswd
+                            23449 m.c -/-rwxr-xr-x root     root     225531   /usr/bin/expr
+                            18109 m.c -/-rwxr-xr-x root     root     225539   /usr/bin/last
+                            17049 m.c -/-rwxr-xr-x root     root     225528   /usr/bin/basename
+                            10277 m.c -/-rwxr-xr-x root     root     225521   /usr/bin/uptime
+                            16697 m.c -/-rwxr-xr-x root     root     225618   /usr/bin/whoami
+                            18113 m.c -/-rwxr-xr-x root     root     225544   /usr/bin/cut
+                            16505 m.c -/-rwxr-xr-x root     root     225620   /usr/bin/hostid
+                            18421 m.c -/-rwxr-xr-x root     root     225494   /usr/bin/skill
+                            23865 m.c -/-rwxr-xr-x root     root     225624   /usr/bin/who
+                            17081 m.c -/-rwxr-xr-x root     root     225529   /usr/bin/dirname
+Fri Apr 11 2003 21:19:00    12709 m.c -/-rwxr-xr-x root     root     225644   /usr/bin/setkeycodes
+                            22837 m.c -/-rwxr-xr-x duende  users    501292   /usr/bin/pstree
+                            20449 m.c -/-rwxr-xr-x root     root     225714   /usr/bin/killall
+                            12697 m.c -/-rwxr-xr-x root     root     225647   /usr/bin/showcfont
+                           322293 m.c -/-rwxr-xr-x root     root     225703   /usr/bin/nview
+Fri Apr 11 2003 21:19:01   171705 m.c -/-rwxr-xr-x root     root     225771   /usr/bin/readelf
+                           121573 m.c -/-rwxr-xr-x root     root     225809   /usr/bin/make
+                            11601 m.c -/-rwxr-xr-x root     root     225861   /usr/bin/lessecho
+                            70421 m.c -/-rwxr-xr-x root     root     225829   /usr/bin/netkit-ftp
+                            58309 m.c -/-rwxr-xr-x root     root     225763   /usr/bin/host
+\end{lstlisting}
+}
+
+\vspace{1em}
+
+This sample is representative of several hundred files modified or planted on April 11 starting at 20:55:02. The timeline definitively establishes this timestamp as the moment essential administration utilities were trojanized and backdoor modules installed. Files owned by \texttt{duende} were modified in this exact operational window.
+
+Unambiguously establishing "ground zero" of the attack (Sunday, April 11, starting at 20:55:02) provided the precise forensic coordinate needed for the subsequent phase: cross-referencing this critical window against system audit logs. Despite the adversary's attempts to scrub records with \texttt{clean!}, granular correlation of authentication logs (\texttt{auth.log}), binary session records (\texttt{wtmp}), and file transfers (\texttt{xferlog}) identified the exact accounts leveraged and payload archives transferred.
+
+\begin{retoforense}[Detecting Timestomping Discrepancies]
+If an attacker executes \texttt{touch -r /bin/sh /dev/zqft4/bash!} to replicate the \texttt{mtime} and \texttt{atime} of the legitimate shell, why does \texttt{mactime} still expose the actual implantation time under the \texttt{c} column (\textit{ctime}), and how does an examiner leverage this discrepancy to refute an adversary's chronological alibi?
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: From mactime to Super-Timelines with Plaso]
+In 2004, \textit{The Coroner's Toolkit} (TCT) and \textit{The Sleuth Kit} (TSK) with \texttt{mactime} represented the zenith of magnetic filesystem timeline reconstruction. Today, contemporary forensics relies on engines like \textit{Plaso / log2timeline}, capable of fusing not only filesystem inode metadata, but browser histories, Windows Event Logs (EVTX), Prefetch execution artifacts, AWS CloudTrail / Azure cloud API logs, and database transaction records into a unified indexed \textit{super-timeline} analyzed via platforms like Timesketch and Elasticsearch.
+\end{perspectiva20}

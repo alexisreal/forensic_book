@@ -1,0 +1,142 @@
+\chapter{Network Topology and Technological Environment}
+
+The starting point of any digital forensics investigation demands a thorough characterization of the target: its hardware architecture, operating system, network topology, and the services exposed at the time of the incident. In the technological landscape of the era, departmental servers routinely assumed multiple concurrent roles---operating simultaneously as mail servers, shared file servers via NFS and Samba, and computation hosts supporting remote X11 graphical sessions. This design substantially expanded the system's attack surface and complicated forensic scoping.
+
+\begin{notaforense}[Production Infrastructure Context]
+The server under investigation represented the standard departmental high-performance computing setup of the period: a single-processor Intel Pentium III x86 architecture operating on a PCI bus with IDE/ATA magnetic storage, interconnected via Fast Ethernet (100~Mbps) switches to a university network with direct public IPv4 addressing and no perimeter application firewalls.
+\end{notaforense}
+
+\section{Technical Profile of the Target System}
+
+The target of this forensic investigation was the department's primary server, designated throughout this report under the technical pseudonym \texttt{helios}. The hardware specifications and base software platform are detailed in Table~\ref{tab:ficha_victima1}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} l X @{}}
+\toprule
+\textbf{Parameter} & \textbf{Technical Specification} \\
+\midrule
+Hostname & \texttt{helios} \\
+Network Domain & \texttt{ifm.lab.edu.mx} \\
+Assigned IP Address & \texttt{192.0.2.10} \\
+Primary Roles & Mail server, file server, X11 compute server \\
+Manufacturer \& Chassis & Custom-built open-architecture server \\
+Central Processing Unit (CPU) & Intel Pentium III @ 750~MHz \\
+Volatile Memory (RAM) & 256~MB SDRAM \\
+Mass Storage & 20~GB ATA-66 IDE Hard Drive \\
+Base Operating System & GNU/Linux Debian 3.0-r1 (\textit{Woody}) \\
+\bottomrule
+\end{tabularx}
+\caption{Technical specifications of the analyzed server (\texttt{helios}).}
+\label{tab:ficha_victima1}
+\end{table}
+
+\section{Physical Location and Network Topology}
+
+The analyzed machine was physically hosted in the departmental computer center on campus. Its physical interconnection to the university's broader network backbone was achieved through a Fast Ethernet (100~Mbps) network interface card connected directly to a central switch via structured cabling in a star topology, as illustrated in Figure~\ref{fig:topologia_red}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.86,
+    every node/.style={transform shape, font=\sffamily},
+    netbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.9cm, minimum height=1.5cm},
+    serverbox/.style={draw=accent, thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=3.3cm, minimum height=1.7cm},
+    routerbox/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, minimum width=3.0cm, minimum height=1.1cm},
+    cloudnode/.style={draw=primary!60, fill=blue!5, rounded corners=8pt, align=center, minimum width=4.5cm, minimum height=1.1cm},
+    line/.style={draw=secondary, thick, -{Stealth[length=2.5mm]}},
+    busline/.style={draw=primary, ultra thick},
+    trustline/.style={draw=accent, thick, dashed, {Stealth[length=2.5mm]}-{Stealth[length=2.5mm]}}
+]
+
+% Upper nodes
+\node[cloudnode] (inet) at (6.0, 5.8) {\small\textbf{Internet / University Backbone}\\\scriptsize External ISP Connections};
+\node[routerbox] (gw) at (6.0, 4.3) {\small\textbf{Perimeter Gateway}\\\scriptsize 192.0.2.1 / \texttt{gw.ifm.lab.edu.mx}};
+
+% Fast Ethernet Switch Bus
+\coordinate (busL) at (0.2, 2.9);
+\coordinate (busR) at (11.8, 2.9);
+\draw[busline] (busL) -- (busR) node[pos=0.03, above, font=\scriptsize\bfseries\color{primary}] {Fast Ethernet Switch 100 Mbps (Single VLAN)};
+
+% Gateway connection to Bus
+\draw[line] (inet) -- (gw);
+\draw[draw=secondary, thick] (gw) -- (6.0, 2.9);
+
+% Servers beneath the bus
+\node[serverbox] (helios) at (1.9, 0.9) {
+    \textbf{helios} (\textit{Target})\\
+    \scriptsize 192.0.2.10 (Debian 3.0)\\
+    \tiny NFS, Mail, X11, FTP, SSH
+};
+
+\node[netbox] (atlas) at (6.0, 0.9) {
+    \textbf{atlas} (\textit{Secondary})\\
+    \scriptsize 192.0.2.20 (Debian 3.0)\\
+    \tiny Compute Server / Telnet
+};
+
+\node[netbox] (io) at (10.1, 0.9) {
+    \textbf{io} (\textit{Mail / Webmail})\\
+    \scriptsize 192.0.2.25 (FreeBSD)\\
+    \tiny Sendmail, IMAP, OpenWebMail
+};
+
+% Vertical connections to bus
+\draw[draw=secondary, thick] (helios.north) -- (1.9, 2.9);
+\draw[draw=secondary, thick] (atlas.north) -- (6.0, 2.9);
+\draw[draw=secondary, thick] (io.north) -- (10.1, 2.9);
+
+% Trust relationship NFS/Samba between helios and atlas
+\draw[trustline] (helios.east) -- (atlas.west) node[midway, below=2pt, font=\tiny\bfseries\color{accent}] {NFS / NIS Trust};
+
+% Workstations below
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.5cm] (ws1) at (1.9, -1.2) {\textbf{X11 Workstation}\\192.0.2.29};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.5cm] (ws2) at (6.0, -1.2) {\textbf{Lab Terminals}\\192.0.2.30 / .67};
+\node[draw=secondary!60, fill=gray!8, rounded corners=2pt, align=center, font=\scriptsize, minimum width=2.5cm] (ws3) at (10.1, -1.2) {\textbf{Admin Workstation}\\192.0.2.89};
+
+\draw[draw=secondary!70, dashed] (ws1.north) -- (helios.south);
+\draw[draw=secondary!70, dashed] (ws2.north) -- (atlas.south);
+\draw[draw=secondary!70, dashed] (ws3.north) -- (io.south);
+
+\end{tikzpicture}
+\caption{Forensic topology and interconnection architecture of the departmental network.}
+\label{fig:topologia_red}
+\end{figure}
+
+Functionally and from a storage standpoint, the server maintained shared network mounts via NFS (\textit{Network File System}) and Samba with secondary server \texttt{atlas} (\texttt{192.0.2.20}), granting authorized users interactive access to their home directories both via remote console sessions (through SSH and legacy Telnet/FTP) and remote graphical terminals over XDMCP.
+
+\section{Exposed Services Matrix and Attack Surface}
+
+The consolidation of diverse services on a single central host was standard practice in computer centers at the time, yet it drastically expanded lateral compromise vectors, as summarized in Table~\ref{tab:servicios_expuestos}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} l l X X @{}}
+\toprule
+\textbf{Port / Protocol} & \textbf{Daemon Service} & \textbf{Operational Purpose} & \textbf{Assessed Risk Vector} \\
+\midrule
+\texttt{21/tcp} & ProFTPD 1.2 & File transfer & Brute-force attacks against local accounts \\
+\texttt{22/tcp} & OpenSSH 3.4p1 & Administrative access & Exposure of interactive login sessions \\
+\texttt{23/tcp} & in.telnetd & Lab terminal access & Cleartext traffic, eavesdropping \\
+\texttt{25/tcp} & Sendmail 8.12 & Institutional mail relay & Exploits in MIME parsing routines \\
+\texttt{110/tcp} & Qpopper / UW-IMAP & Mail retrieval & Accounts with weak dictionary passwords \\
+\texttt{139, 445/tcp} & Samba smbd & File sharing for Windows clients & Authentication based on LANMAN hashes \\
+\texttt{177/udp} & XDMCP (X Display) & Remote graphical sessions & Unencrypted remote X11 desktop traffic \\
+\texttt{2049/tcp,udp} & NFS (knfsd) & Cross-node \texttt{/home} mounting & Network-level UID trust relationships \\
+\bottomrule
+\end{tabularx}
+\caption{Matrix of active network ports and services on \texttt{helios}.}
+\label{tab:servicios_expuestos}
+\end{table}
+
+With this infrastructure map established and the exposure surface clearly demarcated, the sudden emergence of operational anomalies on \texttt{helios} in mid-April 2004 triggered critical alerts for systems administration. Responding to an incident on a server anchoring the communications, files, and email of an entire institution allows no room for improvised measures: before issuing destructive commands or abruptly shutting down the machine, establishing a rigorous forensic methodology was essential to preserve volatile memory evidence and safeguard chain of custody for magnetic media. This methodical framework is addressed in the following chapter.
+
+\begin{retoforense}[Attack Surface Evaluation]
+Based on the exposed services matrix in Table~\ref{tab:servicios_expuestos}, identify which protocols transmitted credentials in cleartext across the shared Ethernet segment, and deduce what impact this vulnerability posed against an attacker who had gained standard user privileges on any laboratory workstation.
+\end{retoforense}
+
+\begin{perspectiva20}[Technical Perspective \& Lesson: Topology and Perimeter]
+In legacy production environments, it was common practice to connect compute servers directly with public IP addresses without deep packet inspection layers or Zero Trust architectures. Today, a comparable system would operate within a Virtual Private Cloud (VPC), isolated behind secure bastion hosts, load balancers with WAF, micro-perimeter segmentation, and hardened authentication utilizing hardware-backed cryptographic keys (FIDO2/WebAuthn).
+\end{perspectiva20}

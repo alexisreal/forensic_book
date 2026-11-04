@@ -1,0 +1,99 @@
+\chapter{Detection of Trojanized Binaries and Rootkits}
+
+Userland rootkits operated by replacing standard administrative utilities (such as \texttt{ps}, \texttt{ls}, \texttt{netstat}, \texttt{find}, and \texttt{login}) with tampered counterparts that selectively filtered out adversary processes, hid rogue directories, and established covert backdoors guarded by hardcoded credentials.
+
+\section{Heuristic Scanning and Malware Signature Detection}
+
+Numerous executables examined across the storage volume exhibited abnormal header structures and non-standard string sections. To perform an automated signature sweep, the forensic disk clone was scanned using the \texttt{f-prot} antivirus engine for Unix/Linux systems.
+
+Files bearing signatures intended exclusively for Microsoft Windows operating systems were excluded from the forensic report, as they constituted benign non-executable artifacts commonly received through external incoming email. In GNU/Linux production environments, investigative focus centered on detecting worms, backdoors, and infected or trojanized native system binaries.
+
+Listing~\ref{lst:fprot_results} presents a representative excerpt of the findings after auditing 181,711 filesystem objects on the disk image.
+
+\begin{lstlisting}[style=terminal,caption={Excerpt of infections detected by antivirus scanning on the target system.},label={lst:fprot_results}]
+/root/usr/bin/last                        Infection: Unix/RST.A
+/root/usr/bin/strace                      Infection: Unix/RST.A
+/root/sbin/killall5                       Infection: Unix/RST.A
+/root/sbin/sulogin                        Infection: Unix/RST.A
+/root/bin/ps                              Infection: Unix/RST.A
+/root/dev/zqft4/local!                    Infection: Unix/Osf.A
+/home/staff/duende/paw++                  Infection: Unix/RST.B
+/home/staff/duende/prog/c/lc/une          Infection: Unix/RST.B
+/home/staff/duende/prog/c/lc/linfo        Infection: Unix/RST.A
+/home/staff/duende/prog/c/lc/mapea        Infection: Unix/RST.A
+/home/staff/duende/prog/c/lc/particion    Infection: Unix/RST.A
+/home/staff/duende/prog/c/lc/correlacion  Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/cadena      Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/arbol       Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/arboles     Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/repite      Infection: Unix/RST.A
+/home/staff/duende/prog/c/uno/simotu      Infection: Unix/RST.A
+/home/staff/duende/prog/GL/avion          Infection: Unix/RST.A
+/home/staff/duende/prog/bin/une           Infection: Unix/RST.A
+/home/staff/duende/prog/bin/normal        Infection: Unix/RST.A
+/home/staff/duende/prog/gtk/ghello        Infection: Unix/RST.A
+/home/staff/duende/prog/gtk/registro.old  Infection: Unix/RST.A
+/home/staff/duende/kxterm                 Infection: Unix/RST.A
+/home/staff/duende/installer-redhat-70-i386 Infection: Unix/RST.A
+
+============================================================
+Global Antivirus Scan Summary:
+Scanned objects:  181,711
+Infected objects:   1,111
+Suspicious:             4
+Disinfected:            0
+Total scan time:  55 min 33 s
+============================================================
+\end{lstlisting}
+
+This scan revealed that approximately 900 operating system programs and shared libraries were actively infected with the \textit{Unix/RST.A} parasite. This parasitic infector attaches itself to ELF binaries, rewriting the program entry point (\textit{entry point}) to inject rogue networking code and enable covert remote control.
+
+\begin{notaforense}[Anatomy and Behavior of the Unix/RST.A Parasitic Virus]
+Discovered in September 2001, \textbf{Unix/RST.A} was one of the earliest direct parasitic viruses targeting 32-bit Linux ELF binaries. Its core technical operation unfolds as follows:
+\begin{itemize}
+    \item \textbf{ELF Header Patching:} It appends a parasitic code section to the end of the executable and modifies the entry point address (\textit{e\_entry}) in the ELF header to divert initial execution flow into its injected payload.
+    \item \textbf{Local Self-Propagation:} When an infected binary executes under the \texttt{root} account, the virus scans standard binary paths (\texttt{/bin}, \texttt{/sbin}, \texttt{/usr/bin}), systematically infecting every ELF executable to which root holds write permissions.
+    \item \textbf{Covert Raw Socket Backdoor:} It binds a raw socket (\textit{raw socket}) listening for specially structured ICMP or UDP trigger packets, enabling an attacker to spawn a remote root shell without opening any standard listening TCP port on the host.
+\end{itemize}
+\end{notaforense}
+
+Furthermore, 115 infected binaries were discovered within user \texttt{duende}'s personal home directory, located primarily in subfolders disguised as scientific research source code. Crucially, the filesystem modification dates on these binaries pointed to April 24, whereas the surrounding source code files retained timestamps from 2001. The widespread alteration of critical system binaries across \texttt{/bin}, \texttt{/sbin}, and \texttt{/usr/bin} demonstrates intentional manipulation executed with superuser (\texttt{root}) privileges. In contrast, scanning the pristine reference laboratory baseline generated zero infection alerts.
+
+\section{Persistence via Ext2 Immutable Attributes (\texttt{chattr +i})}
+
+Among the most sophisticated evasion techniques observed during the investigation was the exploitation of Linux Ext2 extended file attributes. Auditing the disk with the \texttt{lsattr} command identified eighteen strategic files protected by immutable and append-only flags.
+
+\begin{lstlisting}[style=terminal,caption={Files hardened with immutable (+i) and append-only (+a) attributes.},label={lst:lsattr_output}]
+-u--ia----------- /usr/lib/popclean
+-u--ia----------- /usr/local/lib/dsniff.services
+-u--ia----------- /etc/cron.daily/dnsquery
+-u--ia----------- /var/lib/.identd/libs
+-u--ia----------- /var/lib/.identd/identd
+-u--ia----------- /var/lib/.identd/libdn
+-u--ia----------- /var/lib/.identd/libsnd
+-u--ia----------- /dev/rd/c2d3b2
+-u--ia----------- /dev/rd/c6d0b2
+-u--ia----------- /dev/rd/c6d3b2
+-u--ia----------- /dev/.libn
+-u--ia----------- /dev/.libpt
+-u--ia----------- /dev/.libtr
+-u--ia----------- /dev/.libtp
+-u--ia----------- /dev/.pst
+-u--ia----------- /dev/.nst
+-u--ia----------- /dev/.tree
+-u--ia----------- /dev/.tp
+\end{lstlisting}
+
+Under the Linux Ext2/Ext3 filesystem drivers, the immutable attribute (\texttt{+i}) instructs the kernel to reject any write, truncate, rename, or unlink operation, blocking even direct administrative commands issued by \texttt{root}. To modify or delete an immutable file, an administrator must explicitly strip the attribute using \texttt{chattr -i}.
+
+Meanwhile, the append-only attribute (\texttt{+a}) restricts write operations strictly to appending data to the end of the file, preventing existing contents from being overwritten or zeroed out. The coordinated application of these attributes across credential harvesting suites (such as \texttt{dsniff.services}) and hidden binaries in \texttt{/dev} and \texttt{/var/lib/.identd} reveals a calculated effort to preserve rootkit persistence and defeat conventional administrative cleanup scripts.
+
+Having inventoried the malicious tooling deployed on the server---from Suckit's in-memory syscall hooks and unauthorized SUID binaries to sniffer modules armored with immutable attributes---the investigation turned to the central temporal question: on what exact date and hour did the initial compromise take place, and what was the chronological progression of the intruder's actions? To reconstruct events with second-by-second accuracy independent of scrubbed logs, the team performed timeline analysis across inode metadata (\textit{mactime}), examined in the following chapter.
+
+\begin{retoforense}[Inode Flags in Ext2 Filesystems]
+In Listing~\ref{lst:lsattr_output}, the audited files exhibit the extended attribute string \texttt{-u--ia}. Explain the forensic significance of attribute \texttt{u} (\textit{undeletable}) at the filesystem inode layer, and why a forensic examiner must audit extended filesystem attributes before attempting to move or manipulate evidence on a working copy.
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: Immutability as a Defense Against Ransomware]
+It is a historical irony that the very technique leveraged by attackers in 2004 (\texttt{chattr +i}) to prevent administrators from purging their malware now represents one of the strongest defenses against modern ransomware campaigns. Contemporary immutable backup repositories (such as AWS S3 Object Lock in \textit{Compliance} mode, or ZFS/Ceph storage arrays enforcing Write-Once-Read-Many [WORM] snapshots) cryptographically prohibit compromised administrative accounts from encrypting or deleting backups prior to detonating their extortion payloads.
+\end{perspectiva20}

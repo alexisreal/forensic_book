@@ -1,0 +1,469 @@
+\chapter{Differential Analysis with the Reference Baseline}
+
+The comparative forensic analysis method contrasts the state of the target system against a clean, identical baseline installation deployed in an isolated laboratory environment. In GNU/Linux distributions, utilities such as \texttt{rpm -V} or \texttt{debsums} allow investigators to verify file sizes, modification timestamps, ownership attributes, and MD5 cryptographic checksums against the vendor's official package database.
+
+\section{Binary Benchmarking with chkrootkit and Package Databases}
+
+Investigative priority focused on validating the binaries flagged as trojanized by \texttt{chkrootkit}. In total, 1,999 executables across system paths were systematically audited.
+
+\subsection{Detailed Analysis of Binary \texttt{/bin/ps}}
+
+\noindent\textbf{File path:} \texttt{/bin/ps}
+
+Binary string extraction:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+/lib/ld-linux.so.2
+libc.so.6
+strcpy
+fgets
+system
+feof
+malloc
+__deregister_frame_info
+setgid
+strcmp
+sprintf
+fclose
+fopen
+_IO_stdin_used
+__libc_start_main
+strlen
+setuid
+__register_frame_info
+__gmon_start__
+GLIBC_2.1
+GLIBC_2.0
+PTRh
+$Id: ps.c,v 1.11 2001/09/03  Exp $
+[1;33m%s
+/bin/su -
+/dev/.libpt
+egrep
+%s|%s
+%sps
+%s %s
+/dev/.pst
+%s%s | /bin/egrep -v "%s"
+\end{lstlisting}
+
+\vspace{1em}
+
+These strings reveal that the compromised binary reads the blacklist from \texttt{/dev/.libpt} and executes \texttt{egrep} to censor matching process names dynamically. The binary was trojanized to conceal running malware from system administrators.
+
+\subsection{Detailed Analysis of Binary \texttt{/bin/netstat}}
+
+Similarly, inspecting text strings within \texttt{/bin/netstat} exposed an identical filtering architecture applied to network sockets:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+/bin/su -
+/dev/.libn
+egrep
+%s|%s
+%sps
+%s %s
+/dev/.nst
+%s%s | /bin/egrep -v "%s"
+\end{lstlisting}
+
+\vspace{1em}
+
+This binary parses \texttt{/dev/.libn} and suppresses active network connections from display output.
+
+\texttt{/usr/bin/pstree}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+/bin/su -
+/dev/.libtr
+egrep
+%s|%s
+%sps
+%s %s
+/dev/.tree
+%s%s | /bin/egrep -v "%s"
+\end{lstlisting}
+
+\vspace{1em}
+
+This trojanized wrapper reads \texttt{/dev/.libtr} to conceal process trees.
+
+\texttt{/sbin/init}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+Can't open a tty, all in use ?
+Can't fork subshell, there is no way...
+/dev/zqft4
+/bin/sh
+Can't execve shell!
+BD_Init: Starting backdoor daemon...
+FUCK: Can't allocate raw socket (%d)
+FUCK: Can't fork child (%d)
+Done, pid=%d
+/dev/zqft4/.rc
+use:
+%s <uivfp> [args]
+u       - uninstall
+i       - make pid invisible
+v       - make pid visible
+f [0/1] - toggle file hiding
+p [0/1] - toggle pid hiding
+Detected version: %s
+FUCK: Failed to uninstall (%d)
+Suckit uninstalled sucesfully!
+FUCK: Failed to hide pid %d (%d)
+Pid %d is hidden now!
+FUCK: Failed to unhide pid %d (%d)
+Pid %d is visible now!
+file
+Failed to change %s hiding (%d)!
+%s hiding is now %s!
+kmalloc
+_kmalloc
+__kmalloc
+/dev/zqft4
+/dev/kmem
+FUCK: Can't open %s for read/write (%d)
+RK_Init: idt=0x%08x,
+FUCK: IDT table read failed (offset 0x%08x)
+FUCK: Can't find sys_call_table[]
+sct[]=0x%08x,
+FUCK: Can't find kmalloc()!
+kmalloc()=0x%08x, gfp=0x%x
+FUCK: Can't read syscall %d addr
+Z_Init: Allocating kernel-code memory...
+FUCK: Out of kernel memory!
+Done, %d bytes, base=0x%08x
+/dev/kmem
+/dev/null
+core
+FUCK: Got signal %d while manipulating kernel!
+/sbin/init!
+0123456789abcdefghijklmnopqrstuvwxyz
+0123456789ABCDEFGHIJKLMNOPQRSTUVWXYZ
+<NULL>
+'Yi
+/dev/null
+1.3b
+/dev/zqft4/.sniffer
+/proc/
+/proc/net/
+socket:[
+/sbin/init
+/sbin/init!
+login
+telnet
+rlogin
+rexec
+passwd
+adduser
+mysql
+ssword:
+\end{lstlisting}
+
+\vspace{1em}
+
+Because these strings matched those extracted from \texttt{/dev/zqft4/sk}, cryptographic MD5 hashes were computed for both binaries:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+ 4237949f8b00fc64feb9b575a5f6e1dc  /dev/zqft4/sk
+
+ 4237949f8b00fc64feb9b575a5f6e1dc  /sbin/init
+\end{lstlisting}
+
+\vspace{1em}
+
+The two files are bit-for-bit identical. The matching MD5 hash:
+\begin{center}
+\texttt{4237949f8b00fc64feb9b575a5f6e1dc}
+\end{center}
+proves that the operating system's bootstrap daemon (\texttt{/sbin/init}) was replaced by a copy of the malicious binary \texttt{/dev/zqft4/sk}.
+
+\begin{notaforense}[Dissection of the Suckit v1.3b Rootkit and /dev/kmem Evasion]
+Forensic analysis of binary structures and embedded strings categorizes artifact \texttt{sk} as the notorious \textbf{Suckit Rootkit version 1.3b} (authored by security researcher \textit{sd} and published in \textit{Phrack} \#58 in December 2001).
+
+Unlike traditional contemporary rootkits (such as \textit{Knark} or \textit{Adore}) that relied on Loadable Kernel Modules (\textit{LKM}) and required the kernel to be compiled with \texttt{CONFIG\_MODULES=y}, \textbf{Suckit completely eliminated the need for LKMs}:
+\begin{enumerate}
+    \item \textbf{Direct Physical Memory Injection:} It opens the special character device \texttt{/dev/kmem} in read/write mode with \texttt{root} privileges.
+    \item \textbf{IDT and Syscall Table Resolution:} It reads the Interrupt Descriptor Table (\textit{IDT}) to locate the kernel base address in memory and resolves the \texttt{sys\_call\_table[]} vector.
+    \item \textbf{Kernelspace Memory Allocation:} It resolves the kernel function \texttt{kmalloc()} and executes it directly to allocate persistent memory inside protected kernel address space.
+    \item \textbf{System Call Hooking:} It redirects critical syscalls including \texttt{sys\_getdents64} (directory listing), \texttt{sys\_read}, and \texttt{sys\_kill} to its injected routines.
+    \item \textbf{Exclamation Mark Concealment Rule (\texttt{!})}: Any file, directory, or process whose name ends with an exclamation point (\texttt{!}) is filtered out from kernel responses, rendering it completely invisible to \texttt{ls}, \texttt{find}, \texttt{ps}, and all standard userland utilities.
+    \item \textbf{Boot Persistence:} By replacing \texttt{/sbin/init} (PID 1) and renaming authentic init to \texttt{/sbin/init!}, Suckit ensures that upon every reboot the kernel is repatched in memory before delegating execution to the authentic init.
+\end{enumerate}
+\end{notaforense}
+
+The architecture of Suckit's memory injection and system call interception is illustrated in Figure~\ref{fig:suckit_hooking}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.86,
+    every node/.style={transform shape, font=\sffamily},
+    userbox/.style={draw=secondary, thick, fill=gray!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.2cm},
+    kernelbox/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.2cm},
+    malbox/.style={draw=accent, ultra thick, fill=accent!8, rounded corners=3pt, align=center, minimum width=2.8cm, minimum height=1.2cm},
+    call/.style={draw=secondary, thick, -{Stealth[length=2.5mm]}},
+    hookcall/.style={draw=accent, ultra thick, -{Stealth[length=2.5mm]}},
+    retline/.style={draw=accent, thick, dashed, -{Stealth[length=2.5mm]}}
+]
+
+% Memory Zones
+\draw[draw=secondary!30, fill=gray!3, rounded corners=4pt] (-0.8, 3.3) rectangle (11.8, 5.8);
+\node[font=\bfseries\small\color{secondary}, anchor=north west] at (-0.6, 5.6) {Userland};
+
+\draw[draw=primary!30, fill=blue!2, rounded corners=4pt] (-0.8, -0.7) rectangle (11.8, 2.9);
+\node[font=\bfseries\small\color{primary}, anchor=north west] at (-0.6, 2.7) {Kernelspace};
+
+% Userland Nodes
+\node[userbox] (admin) at (1.3, 4.4) {\textbf{Admin Tools}\\\scriptsize \texttt{ls}, \texttt{ps}, \texttt{netstat}};
+\node[malbox] (skloader) at (9.7, 4.4) {\textbf{Suckit Loader}\\\scriptsize \texttt{/sbin/init} (patched)};
+
+% Kernelspace Nodes
+\node[kernelbox] (idt) at (1.3, 1.3) {\textbf{IDT Table}\\\scriptsize Interrupt Vector};
+\node[kernelbox] (sct) at (5.3, 1.3) {\textbf{sys\_call\_table[]}\\\scriptsize Syscall Pointers};
+\node[malbox] (hook) at (9.7, 1.3) {\textbf{Injected Code}\\\scriptsize Buffer via \texttt{kmalloc()}};
+
+% Attack and Hooking Flow
+\draw[hookcall] (skloader.south) -- (hook.north) node[pos=0.15, right=4pt, font=\tiny\bfseries\color{accent}] {Injection (\texttt{/dev/kmem})};
+\draw[call] (idt.east) -- (sct.west) node[midway, above=2pt, font=\tiny] {Offset};
+\draw[hookcall] (sct.east) -- (hook.west) node[midway, above=3pt, font=\tiny\bfseries\color{accent}] {Hooking};
+
+% Syscall and Filtered Return Flow
+\draw[call] ($(admin.south) + (-0.4, 0)$) -- ($(idt.north) + (-0.4, 0)$) node[pos=0.15, left=2pt, font=\tiny] {Syscall \texttt{int 0x80}};
+\draw[retline] (hook.south) -- ++(0, -0.45) -| ($(admin.south) + (0.4, 0)$) node[pos=0.35, below=2pt, font=\tiny\bfseries\color{accent}] {Filters processes and files with suffix \texttt{!}};
+
+\end{tikzpicture}
+\caption{Physical memory injection mechanism and system call interception by the Suckit v1.3b rootkit.}
+\label{fig:suckit_hooking}
+\end{figure}
+
+Storage media was searched systematically for hidden files employing Suckit's \texttt{!} invisibility suffix, identifying the following assets:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+485151   28 -rwxr-xr-x   1 root     root        27844 Apr  8 11:02 /sbin/init!
+533481   32 -rwxr-xr-x   1 root     root        31707 Apr  8 11:02 /dev/zqft4/bash!
+533491    4 -rw-r--r--   1 root     root           90 Apr 16 11:56 /dev/zqft4/bd!
+533485   28 -rwxr-xr-x   1 1018     1018        25163 Aug  4  2002 /dev/zqft4/local!
+533488   12 -rwxr-xr-x   1 root     root         9602 Apr  8 11:02 /dev/zqft4/clean!
+533490    4 -rwxr-xr-x   1 root     root           90 Apr 16 11:40 /dev/zqft4/smurf!
+\end{lstlisting}
+
+\vspace{1em}
+
+Analyzing these executables:
+
+\texttt{/sbin/init!}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+/sbin/init!: ELF 32-bit LSB executable, Intel 80386, version 1 (SYSV), for GNU/Linux 2.0.30, 
+dynamically linked (uses shared libs), stripped
+\end{lstlisting}
+
+\vspace{1em}
+
+String analysis and cryptographic hash comparison confirmed that \texttt{/sbin/init!} was the legitimate, uncompromised system init binary.
+
+\texttt{/dev/zqft4/bash!}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+ka0sphere.freeftp.org
+ka0sphere.getmyip.com
+ka0sphere.zapto.org
+ka0sphere.sytes.net
+ka0sphere.servequake.com
+ka0sphere.servepics.com
+ka0sphere.servemp3.com
+ka0sphere.serveirc.com
+ka0sphere.servehttp.com
+ka0sphere.servehalflife.com
+ka0sphere.servegame.com
+ka0sphere.serveftp.com
+ka0sphere.servecounterstrike.com
+ka0sphere.servebeer.com
+ka0sphere.redirectme.net
+ka0sphere.no-ip.org
+ka0sphere.no-ip.info
+ka0sphere.no-ip.com
+ka0sphere.no-ip.biz
+ka0sphere.myvnc.com
+ka0sphere.myftp.org
+ka0sphere.myftp.biz
+ka0sphere.hopto.org
+ka0sphere.bounceme.net
+ka0sphere.3utilities.com
+ka0sphere.mine.nu
+ka0sphere.kicks-ass.org
+ka0sphere.is-a-geek.org
+ka0sphere.homeunix.com
+ka0sphere.gotdns.com
+cha0sphere.theroots.la
+cha0sphere.phearnet.org
+cha0sphere.hackerzlair.org
+cha0sphere.flooooooooooooooood.la
+cha0sphere.evilnet.la
+NOTICE %s :Someone needs a miracle
+NOTICE %s :BYSIN <target> <port> <secs>
+NOTICE %s :Packeting %s.
+NOTICE %s :SLICE2 <destination> <lowport> <highport> <secs>
+NOTICE %s :Error in SLICE2: Low > high.
+cant find %s!
+NOTICE %s :PAN <target> <secs>
+NOTICE %s :Panning %s.
+NOTICE %s :MAJIN <target> <secs>
+NOTICE %s :Majin'n %s.
+NOTICE %s :UPDATE <host> <port> <username> <pass> <src:bin>
+NOTICE %s :Unable to create socket (Wierd, you shouldnt get this error and ITS NOT MY FAULT!).
+NOTICE %s :Unable to resolve address.
+NOTICE %s :Unable to connect to dump site.
+220 
+NOTICE %s :Error while logging in to dump: %s
+USER %s
+331 
+PASS %s
+230 
+REST 0
+gcc --help
+Usage
+TYPE I
+200 
+NOTICE %s :GCC not found and cannot create passive binary mode: %s
+PASV
+227 
+NOTICE %s :Error while starting passive to dump: %s
+RETR %s
+NOTICE %s :Unable to create socket.
+NOTICE %s :Unable to connect to streamed dump site.
+NOTICE %s :Receiving update.
+mkdir /tmp
+/tmp/.c
+(gcc -o %s /tmp/.c; rm -rf /tmp/.c; kill -9 %d; kill -9 %d; %s &) > /dev/null
+/tmp/.o
+(mv /tmp/.o %s; chmod 755 %s; kill -9 %d; kill -9 %d; %s &) > /dev/null
+NOTICE %s :UPDATEHTTP <host> <src:bin>
+NOTICE %s :Unable to connect to http.
+GET /%s HTTP/1.0
+Connection: Keep-Alive
+User-Agent: Mozilla/4.75 [en] (X11; U; Linux 2.2.16-3 i686)
+Host: %s:80
+Accept: image/gif, image/x-xbitmap, image/jpeg, image/pjpeg, image/png, */*
+Accept-Encoding: gzip
+Accept-Language: en
+Accept-Charset: iso-8859-1,*,utf-8
+(gcc -o %s /tmp/.c; rm -rf /tmp/.c; kill -9 %d; %s &) > /dev/null 2>&1
+(mv /tmp/.o %s; chmod 755 %s; kill -9 %d; %s &) > /dev/null
+NOTICE %s :GET <host> <save as>
+http://
+NOTICE %s :Receiving file.
+NOTICE %s :Saved as %s
+kill -9 %d;kill -9 0
+NOTICE %s :Killing pid %d.
+KILL
+KILLALL
+VERSION
+SLICE2
+MAJIN
+UPDATE
+UPDATEHTTP
+chrysaor
+kamikaze
+cha0sphere
+eCliPs
+CaRb0nE
+IRC 
+#leming
+PRIVMSG %s :%s
+MODE %s +ix %s
+inside.l3ming
+JOIN %s :%s
+MODE %s +tnmsk %s
+WHO %s
+PONG %s
+NOTICE %s :I'm having a problem resolving my host, someone will have to SPOOFS me manually.
+leming
+NICK %s
+PING
+PRIVMSG
+/etc/rc.d/rc.local
+"%s%s"
+"%s%s"
+Someone needs a miracle
+cr4sh
+NICK %s
+USER %s localhost localhost :%s
+ERROR
+\end{lstlisting}
+
+\vspace{1em}
+
+This was an autonomous IRC DDoS bot and backdoor capable of joining channels (\texttt{\#leming}), executing remote commands, and launching distributed denial-of-service flooding attacks (\texttt{PAN}, \texttt{MAJIN}, \texttt{SLICE2}, \texttt{BYSIN}).
+
+\texttt{/dev/zqft4/local!}:
+
+Executing this binary in an isolated test environment disrupted the boot sequence. It was designed to run in conjunction with auxiliary components rather than standalone.
+
+\texttt{/dev/zqft4/clean!}:
+
+\vspace{1em}
+
+\begin{lstlisting}[style=terminal]
+/var/log/messages
+/var/log/secure
+/var/log/xferlog
+/var/log/maillog
+messages.hm
+secure.hm
+xferlog.hm
+maillog.hm
+HideMe
+Usage: %s <user> <host> <IP>
+/var/run/utmp
+Uh ? utmp target not locked. Getting outta here.
+utmp target processed.
+/var/log/wtmp
+Uh? wtmp target not locked. Getting outta here.
+wtmp.hm
+Damn! Problems targeting wtmp. Getting outta here.
+/bin/mv wtmp.hm /var/log/wtmp
+Ach. Couldn't replace %s .
+/bin/chmod 644 /var/log/wtmp
+wtmp target processed.
+/var/log/lastlog
+Uh? lastlog target not locked. Getting outta here.
+
+lastlog target processed.
+Processing %s
+Hmmm. Couldn't reach var ...
+                DONE.
+mv messages.hm /var/log/messages
+mv secure.hm /var/log/secure
+mv xferlog.hm /var/log/xferlog
+mv maillog.hm /var/log/maillog
+\end{lstlisting}
+
+\vspace{1em}
+
+This was \texttt{HideMe}, a specialized anti-forensic log cleaner. It scrubbed specified usernames, hostnames, and IP addresses from binary logs (\texttt{wtmp}, \texttt{utmp}, \texttt{lastlog}) and text logfiles (\texttt{messages}, \texttt{secure}, \texttt{xferlog}, \texttt{maillog}).
+
+\begin{retoforense}[Forensic Analysis of Log Scrubbers]
+The \texttt{clean!} binary (\textit{HideMe}) parses and rewrites binary accounting records (\texttt{wtmp} and \texttt{utmp}) to excise entries for a specific IP or username. Because it writes modifications to a temporary file (\texttt{wtmp.hm}) and overwrites the active log via \texttt{mv}, which inode metadata timestamps on \texttt{/var/log/wtmp} are anomalously altered, and how do they expose tampering under timeline analysis (\textit{mactime})?
+\end{retoforense}
+
+\begin{perspectiva20}[Contemporary Forensic Perspective: Kernel Hardening and Deprecation of /dev/kmem]
+During the incident period (Linux kernels 2.2 and 2.4), the special character device \texttt{/dev/kmem} allowed any superuser process to write directly to arbitrary physical and virtual kernel addresses. This architectural vulnerability fueled the proliferation of rootkits such as Suckit. In contemporary Linux kernels, this vector has been eliminated: \texttt{CONFIG\_DEVKMEM} is deprecated and disabled, \texttt{CONFIG\_STRICT\_DEVMEM} restricts physical memory access, and modern hardware-software controls such as \textit{Kernel Lockdown Mode}, \textit{Kernel Address Space Layout Randomization (KASLR)}, \textit{Control Flow Integrity (CFI)}, and mandatory module signing prevent unauthorized runtime kernel modification.
+\end{perspectiva20}

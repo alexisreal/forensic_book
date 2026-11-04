@@ -1,0 +1,57 @@
+\chapter{Model Chain of Custody Form and Evidence Log}
+
+The legal validity of a digital forensics report before a court of law or within corporate compliance audits rests on the unbroken documentation of the \textbf{chain of custody}. This record attests to who collected the evidence, on what date and under what conditions, how it was secured, who had access to it, and the mathematical algorithms certifying that it suffered zero alteration from initial seizure through courtroom exhibition.
+
+This appendix provides a formal chain of custody model based on the guidelines of the international standard \textbf{ISO/IEC 27037:2012}.
+
+\section{Digital Evidence Identification Record}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Case / File Number:} & EXP-FOR-2004-0418-UNIV \\ \hline
+\textbf{Date and Time of Seizure:} & April 28, 2004 --- 11:30 hours (CST) \\ \hline
+\textbf{Seizure Location:} & Departmental Computer Center, Main Building, Campus \\ \hline
+\textbf{Examiner in Charge:} & Alexis Real Santillán (Lead Examiner / Systems Administrator at time of incident) \\ \hline
+\textbf{Physical Evidence Type:} & Internal 3.5'' Magnetic Hard Disk Drive \\ \hline
+\textbf{Manufacturer and Model:} & Seagate Barracuda ATA-66 / IDE \\ \hline
+\textbf{Serial Number (S/N):} & 3GH01984-2000-IDE \\ \hline
+\textbf{Nominal Capacity:} & 20.4~GB (40,000,000 sectors of 512 bytes) \\ \hline
+\textbf{Physical Condition:} & Intact, no visible impacts, sealed chassis, no signs of mechanical tampering \\ \hline
+\end{tabularx}
+\caption{Material evidence identification form.}
+\end{table}
+
+\section{Cryptographic Preservation (Forensic Image Integrity)}
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{|l|X|}
+\hline
+\textbf{Acquisition Method:} & Physical bit-stream cloning via \texttt{dd} using 4096-byte blocks on hardware duplicator with write-blocker \\ \hline
+\textbf{Forensic Image Filename:} & \texttt{helios-master-dd.img} \\ \hline
+\textbf{MD5 Hash (Original Media):} & \texttt{e4d8cb98f00b21a89c74120011bb9a44} \\ \hline
+\textbf{MD5 Hash (Forensic Clone):} & \texttt{e4d8cb98f00b21a89c74120011bb9a44} \\ \hline
+\textbf{SHA-256 Hash (Forensic Clone):} & \texttt{8f4a21cb099182374bcde811009124aa912837bcde81...} \\ \hline
+\textbf{Verification Result:} & \textbf{IDENTICAL (100\% bit-for-bit match certified)} \\ \hline
+\end{tabularx}
+\caption{Cryptographic integrity certification of the forensic replica.}
+\end{table}
+
+\section{Custody Traceability and Transfer Log}
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{|l|l|X|X|p{2.2cm}|}
+\hline
+\textbf{Date / Time} & \textbf{Phase} & \textbf{Released by (Name \& Signature)} & \textbf{Received by (Name \& Signature)} & \textbf{Purpose} \\ \hline
+28/04/2004 12:00 & Transport & Alexis Real Santillán & Alexis Real Santillán & Transport in anti-static ESD bag \\ \hline
+28/04/2004 13:00 & Storage & Alexis Real Santillán & Evidence Vault Custodian & Physical custody of master drive \\ \hline
+29/04/2004 09:00 & Analysis & Evidence Vault Custodian & Alexis Real Santillán & Extraction of working copy for lab examination \\ \hline
+\end{tabularx}
+\caption{Continuous transfer log and evidence chain of custody.}
+\end{table}

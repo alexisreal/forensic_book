@@ -1,0 +1,126 @@
+\chapter{Forensic Principles and Chain of Custody}
+
+The legal and technical validity of a digital forensic analysis rests on the strict integrity of physical and logical evidence. When confronted with verified indications of a security breach in a live production environment, the forensic team faces a fundamental dilemma: whether to preserve the volatile state of the running machine or execute a controlled shutdown for static laboratory examination.
+
+\begin{notaforense}[The Golden Rule of Digital Forensics]
+Never investigate directly on original storage media unless strictly unavoidable. Physical bit-stream cloning and cryptographic verification via MD5 and SHA-1 checksums guarantee that the state of the evidence remains unaltered throughout the investigation, ensuring absolute reproducibility of findings.
+\end{notaforense}
+
+\section{Forensic Methodology and Evidence Preservation}
+
+From the moment the first indicators of compromise were uncovered and covert surveillance hooks were deployed, a comprehensive system backup was immediately initiated. Before performing any invasive analytical procedures, exact physical binary replicas (\textit{bit-stream copies}) of the hard drives were generated using the \texttt{dd} utility, configured with fixed block sizes and synchronization parameters to tolerate unreadable magnetic sectors without desynchronizing inode offsets:
+
+\begin{lstlisting}[style=terminal]
+# Physical bit-by-bit acquisition of primary IDE disk (/dev/hda)
+# The conv=noerror,sync parameter pads unreadable sectors with null bytes
+dd if=/dev/hda of=/evidencias/helios-master-dd.img bs=512 conv=noerror,sync
+
+# Immediate cryptographic hash computation for integrity verification
+md5sum /evidencias/helios-master-dd.img > /evidencias/helios-master-dd.img.md5
+sha1sum /evidencias/helios-master-dd.img > /evidencias/helios-master-dd.img.sha1
+
+# Laboratory mounting over loopback device in strict read-only mode
+mount -o ro,loop,noexec /evidencias/helios-master-dd.img /mnt/analisis/
+\end{lstlisting}
+
+Except in rare circumstances where verifying the live behavior of the original hardware or network context was strictly necessary, all analytical operations were conducted exclusively on forensic clones mounted in read-only mode within an isolated analysis lab, guaranteeing that the original storage drives remained sealed under formal chain of custody. The digital evidence lifecycle is illustrated in Figure~\ref{fig:metodologia_forense}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.88,
+    every node/.style={transform shape, font=\sffamily},
+    phase/.style={draw=primary, thick, fill=primary!8, rounded corners=3pt, align=center, minimum width=3.4cm, minimum height=1.3cm},
+    detail/.style={draw=secondary!50, fill=white, rounded corners=2pt, align=center, font=\scriptsize, text width=3.3cm},
+    flowline/.style={draw=primary, ultra thick, -{Stealth[length=3mm]}},
+    dline/.style={draw=secondary, dashed, thick}
+]
+
+% Top nodes
+\node[phase] (p1) at (0, 3.8) {\textbf{1. Isolation}\\\scriptsize Incident Containment};
+\node[phase] (p2) at (4.5, 3.8) {\textbf{2. Acquisition}\\\scriptsize Bit-Stream Cloning};
+\node[phase] (p3) at (9.0, 3.8) {\textbf{3. Verification}\\\scriptsize Cryptographic Integrity};
+
+% Bottom nodes
+\node[phase] (p4) at (9.0, 0.2) {\textbf{4. Custody \& Copying}\\\scriptsize Evidence Management};
+\node[phase] (p5) at (4.5, 0.2) {\textbf{5. Differential Analysis}\\\scriptsize Baseline Reference};
+
+% Flow connections
+\draw[flowline] (p1) -- (p2);
+\draw[flowline] (p2) -- (p3);
+\draw[flowline] (p3) -- (p4);
+\draw[flowline] (p4) -- (p5);
+
+% Explanatory details
+\node[detail, below=0.25cm of p1] {Ethernet cable disconnection, volatile triage, and system state freeze.};
+\node[detail, below=0.25cm of p2] {\texttt{dd conv=noerror,sync} across IDE platter (/dev/hda). 512B blocks.};
+\node[detail, below=0.25cm of p3] {MD5 and SHA-1 computation. Certification of non-alteration.};
+
+\node[detail, below=0.25cm of p4] {Original media sealed. Operation strictly on \texttt{ro,loop,noexec} replicas.};
+\node[detail, below=0.25cm of p5] {Inode differential diffing and binary hash comparisons against pristine Debian Woody.};
+
+\end{tikzpicture}
+\caption{Formal forensic lifecycle of acquisition, custody, and differential analysis.}
+\label{fig:metodologia_forense}
+\end{figure}
+
+\begin{retoforense}[Forensic Image Integrity]
+Why is the \texttt{conv=noerror,sync} option in \texttt{dd} indispensable when imaging a drive containing damaged magnetic sectors? If the \texttt{sync} parameter were omitted, what would happen to the byte offset of all subsequent data blocks, and how would that fatally corrupt filesystem structures and inode table parsing during laboratory examination?
+\end{retoforense}
+
+\section{Laboratory Systems and Reference Environments}
+
+To distinguish illicit attacker alterations from legitimate administrative noise with mathematical certainty, a systematic \textbf{differential analysis} procedure was established. This methodology consisted of benchmarking forensic disk images against clean witness installations (\textit{reference baselines}), built with identical operating system distributions and uncompromised official vendor packages.
+
+The forensic laboratory operated two dedicated computing platforms, summarized in Table~\ref{tab:sistemas_laboratorio}.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} l X X @{}}
+\toprule
+\textbf{Component} & \textbf{Primary Workstation (Desktop)} & \textbf{Mobile Workstation (Laptop)} \\
+\midrule
+Model & Dell Precision 350 & Dell Inspiron 4150 \\
+Processor & Intel Pentium 4 @ 2.8~GHz & Intel Mobile Pentium 4 @ 1.8~GHz \\
+RAM & 512~MB DDR & 256~MB DDR \\
+Hard Drive & 80~GB IDE & 30~GB IDE \\
+Reference Baseline & Debian GNU/Linux 3.0 (\textit{Woody}) & Debian GNU/Linux 3.0 (\textit{Woody}) \\
+Analysis Environment & Debian GNU/Linux 3.1 (\textit{Sarge}) & Debian GNU/Linux 3.1 (\textit{Sarge}) \\
+\bottomrule
+\end{tabularx}
+\caption{Hardware specifications and baseline environments in the forensic laboratory.}
+\label{tab:sistemas_laboratorio}
+\end{table}
+
+\section{Taxonomy of Forensic Tooling}
+
+Digital forensics in that era demanded the methodical orchestration of specialized low-level utilities, categorized in Table~\ref{tab:herramientas_forenses} by analytical capability.
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} p{3.8cm} X @{}}
+\toprule
+\textbf{Forensic Category} & \textbf{Tools and Utilities Deployed} \\
+\midrule
+\textbf{Binary \& Reverse Engineering} & \texttt{strings}, \texttt{strace}, \texttt{ltrace}, \texttt{gdb}, \texttt{readelf}, \texttt{objdump}, \texttt{nm}, \texttt{file}. Disassembly of suspicious binaries, system call tracing, and symbol table inspection. \\
+\addlinespace
+\textbf{Cryptographic Integrity} & \texttt{md5sum}, \texttt{sha1sum}, \texttt{stat}, \texttt{lsattr}. Cryptographic hashing across block devices, inode metadata verification, and Ext2 filesystem attribute audits. \\
+\addlinespace
+\textbf{Specialized Forensic Suites} & \texttt{The Coroner's Toolkit (TCT)} (\textit{grave-robber}, \textit{ils2mac}, \textit{mactime}, \textit{unrm}, \textit{lazarus}) and \texttt{The Sleuth Kit (TSK)} (\textit{fls}, \textit{ils}, \textit{istat}, \textit{icat}, \textit{fsstat}, \textit{dls}, \textit{Autopsy}). Deleted inode carving, slack space recovery, and chronological reconstruction. \\
+\addlinespace
+\textbf{Rootkit \& Malware Detection} & \texttt{chkrootkit}, \texttt{f-prot}, \texttt{ifpromisc}, \texttt{check\_wtmpx}, \texttt{chklastlog}, \texttt{chkwtmp}, \texttt{snif}. Detection of network interfaces in promiscuous mode and audit of log scrubbing tools. \\
+\addlinespace
+\textbf{Live System Triage} & \texttt{lsof}, \texttt{netstat}, \texttt{ps}, \texttt{lastcomm}, \texttt{last}, \texttt{nc}. Monitoring of open file descriptors, network socket connection tables, and active user sessions. \\
+\bottomrule
+\end{tabularx}
+\caption{Taxonomic classification of investigative tooling used in the case.}
+\label{tab:herramientas_forenses}
+\end{table}
+
+With the controlled forensic laboratory operational, analysis workstations primed, and preservation protocols strictly enforced, the investigation faced its first direct operational hurdle: conducting live triage on the running \texttt{helios} server without tipping off the intruder, while capturing transient evidence of compromise. This initial sweep rapidly unearthed an alarming cluster of unauthorized SUID binaries, examined in the next chapter.
+
+\begin{perspectiva20}[Technical Perspective \& Lesson: Volatile Memory Acquisition]
+In early Unix/Linux forensics, live RAM acquisition was still in its infancy. Today, capturing volatile memory using kernel-level modules such as \textit{LiME} (\textit{Linux Memory Extractor}) followed by analysis with advanced frameworks such as \textit{Volatility 3} constitutes the non-negotiable first step in digital incident response, allowing investigators to extract active network sessions, cryptographic keys, injected shellcode, and in-memory rootkits that never touch magnetic disks.
+\end{perspectiva20}

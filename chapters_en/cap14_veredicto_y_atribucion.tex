@@ -1,0 +1,122 @@
+\chapter{Forensic Verdict and Case Synthesis}
+\label{cap:veredicto_y_atribucion}
+
+The culminating phase of any digital forensics investigation consolidates physical evidence, inode metadata timestamps, and network correlation logs into a conclusive evidentiary synthesis that reconstructs incident causation and assesses the infrastructure impact.
+
+\section{Dual Intrusion Vectors and Threat Actor Profiles}
+
+Comprehensive forensic analysis demonstrated with scientific certainty the convergence of \textbf{two independent intrusions displaying distinct technical profiles and operational motivations}, compared in Table~\ref{tab:comparativa_intrusiones}:
+
+\begin{table}[htbp]
+\centering
+\small
+\begin{tabularx}{\textwidth}{@{} l X X @{}}
+\toprule
+\textbf{Dimension} & \textbf{Intrusion 1: External Opportunistic} & \textbf{Intrusion 2: Internal Espionage} \\
+\midrule
+\textbf{Ingress Vector} & FTP brute-force against weak passwords (\texttt{cgarcia}, \texttt{alopez}) & Direct local console access / Exploitation of administrative distraction \\
+\addlinespace
+\textbf{Primary Motive} & Compute and bandwidth appropriation for IRC botnets (\textit{psyBNC}, \textit{Eggdrop}) & Harvesting \texttt{root} credentials, reading email, and establishing nodal dominance \\
+\addlinespace
+\textbf{Tooling} & \texttt{in.ftpd}, \texttt{emech}, \texttt{psybnc}, relay scripts & Suckit rootkit (\texttt{sk}, \texttt{init!}), \texttt{in.telnetd} sniffer, \texttt{clean!} \\
+\addlinespace
+\textbf{Evasion Used} & Hidden dot-directories (\texttt{...}, \texttt{.king}) & Direct kernel patching via \texttt{/dev/kmem}, \texttt{chattr +i}, exclamation suffix \texttt{!} \\
+\addlinespace
+\textbf{Technical Profile} & Automated, opportunistic, geographically distributed worldwide & Local operator with physical lab access, knowledge of topology, operational clumsy errors \\
+\bottomrule
+\end{tabularx}
+\caption{Comparative matrix of the two converging intrusion vectors.}
+\label{tab:comparativa_intrusiones}
+\end{table}
+
+\begin{enumerate}
+    \item \textbf{External Opportunistic Intrusion (Parasitic Services):}
+    The primary initial point of entry was the public FTP daemon, supplemented by automated probing against Samba shares and NFS exports. The underlying vulnerability was poor password hygiene; accounts \texttt{cgarcia}, \texttt{alopez}, and \texttt{jvaldez} were compromised via automated dictionary attacks due to trivial credentials.
+    
+    The sole objective of this external threat actor was deploying clandestine IRC bouncers and bots to consume compute and bandwidth. This class of attacker strives to remain unnoticed, neither attempting data exfiltration nor sabotaging core operating system services.
+
+    \item \textbf{Internal Espionage and Administrative Surveillance:}
+    Artifacts identified within the \texttt{/dev} hierarchy document a secondary, chronologically distinct intrusion that occurred subsequent to the IRC staging. The primary motive behind this second event was seizing total administrative control, capturing \texttt{root} passwords whenever changed by systems staff, and monitoring private user traffic via local terminal sniffers.
+\end{enumerate}
+
+The temporal concurrence and methodological divergence between both attacks are depicted in Figure~\ref{fig:doble_vector_ataque}.
+
+\begin{figure}[htbp]
+\centering
+\begin{tikzpicture}[
+    scale=0.82,
+    every node/.style={transform shape, font=\sffamily},
+    extstep/.style={draw=secondary, thick, fill=secondary!10, rounded corners=3pt, align=center, font=\scriptsize, text width=2.2cm, minimum height=1.2cm},
+    intstep/.style={draw=accent, thick, fill=accent!10, rounded corners=3pt, align=center, font=\scriptsize, text width=2.2cm, minimum height=1.2cm},
+    flow/.style={draw=secondary, ultra thick, -{Stealth[length=2.5mm]}},
+    intflow/.style={draw=accent, ultra thick, -{Stealth[length=2.5mm]}}
+]
+
+% Vector 1: External Opportunistic
+\node[extstep] (e1) at (0.2, 3.2) {\textbf{FTP Brute Force}\\\tiny Weak accounts};
+\node[extstep] (e2) at (3.8, 3.2) {\textbf{IRC Staging}\\\tiny \texttt{psybnc}, \texttt{emech}};
+\node[extstep] (e3) at (7.4, 3.2) {\textbf{C2 Channel}\\\tiny UnderNET 6667};
+\node[extstep] (e4) at (11.0, 3.2) {\textbf{Objective}\\\tiny CPU/Bandwidth parasite};
+
+\draw[flow] (e1.east) -- (e2.west);
+\draw[flow] (e2.east) -- (e3.west);
+\draw[flow] (e3.east) -- (e4.west);
+
+% Vector 2: Internal Espionage
+\node[intstep] (i1) at (0.2, 0.4) {\textbf{Local Console}\\\tiny Direct physical access};
+\node[intstep] (i2) at (3.8, 0.4) {\textbf{Suckit Rootkit}\\\tiny Patching \texttt{/dev/kmem}};
+\node[intstep] (i3) at (7.4, 0.4) {\textbf{Terminal Sniffer}\\\tiny Hook in \texttt{telnetd}};
+\node[intstep] (i4) at (11.0, 0.4) {\textbf{Objective}\\\tiny \texttt{root} keys and email};
+
+\draw[intflow] (i1.east) -- (i2.west);
+\draw[intflow] (i2.east) -- (i3.west);
+\draw[intflow] (i3.east) -- (i4.west);
+
+% Labels
+\node[font=\bfseries\small\color{secondary}, anchor=south west] at (-0.8, 4.0) {Vector 1: External opportunistic intrusion (IRC bots)};
+\node[font=\bfseries\small\color{accent}, anchor=south west] at (-0.8, 1.2) {Vector 2: Internal targeted espionage (credential capture)};
+
+% Divider line
+\draw[draw=gray!40, dashed, thick] (-0.8, 2.1) -- (12.2, 2.1) node[pos=0.5, above=2pt, font=\tiny\itshape\color{gray}] {Concurrent independent activity on the same host (\texttt{helios})};
+
+\end{tikzpicture}
+\caption{Forensic schematic of the two independent attack lifecycles identified in the investigation.}
+\label{fig:doble_vector_ataque}
+\end{figure}
+
+The inception of this second vector correlated with the preventive rotation of administrative passwords across departmental systems. Immediately following that rotation, local network sniffing artifacts emerged. Evidence suggests that the discovery of the external IRC services encouraged an opportunistic local insider to initiate their own malicious activities under the cover of the confusion caused by the external breach.
+
+Technical clumsy errors in rootkit deployment---manifested in flawed attempts to set immutable flags and the oversight of leaving original non-root ownership on files within \texttt{/dev}---suggest an operator with basic cracking knowledge, lacking the sophistication of seasoned threat actors.
+
+\section{Responsibility Evaluation and Local Attribution}
+
+Investigating systems across the department confirmed that adversary focus remained confined strictly to \texttt{helios}, \texttt{atlas}, and \texttt{io}, the core departmental servers. The adversary possessed detailed, granular knowledge of the hardware architecture, operational dependencies, and physical server locations within the building:
+\begin{itemize}
+    \item Network switch and subnet audits confirmed zero anomalous traffic targeting hosts outside the departmental facility.
+    \item A remote external adversary could not have deduced the physical configuration and functional trust relationships tying these specific hosts together.
+\end{itemize}
+
+Session patterns recorded on account \texttt{duende} demonstrated direct awareness of system compromise and possession of the offensive tooling deployed in the attack. Executing these binaries, unauthorized snooping of mail accounts on \texttt{io}, and the calculated attempt to alter file ownership from \texttt{duende} to \texttt{root} to obscure evidence establish the direct responsibility of this account.
+
+\begin{notaforense}[Legal Attribution Standards: Digital Account vs. Physical Individual]
+In criminal procedure and courtroom testimony, a strict legal distinction exists between attributing an action to a \textbf{digital account} and proving culpability against a \textbf{physical individual}:
+\begin{itemize}
+    \item Technical evidence on \texttt{helios}, \texttt{atlas}, and \texttt{io} proved directly and incontrovertibly that malicious actions were executed under account \texttt{duende} from IP pools assigned to residential connections in Morelia.
+    \item In judicial proceedings, transitioning attribution from an account to an individual requires \textit{corroborating circumstantial evidence}: physical presence logs in the laboratory, ISP subscriber records subpoenaed under court order, witness statements, and confirming the absence of malware or remote hijacking on the suspect's personal equipment.
+\end{itemize}
+\end{notaforense}
+
+\section{Containment, Remediation, and Case Conclusion}
+
+As part of the containment and remediation strategy:
+\begin{itemize}
+    \item Compromised servers were permanently decommissioned from production and replaced with fresh hardware at the onset of static analysis. Following this replacement, unauthorized connection attempts ceased entirely---a pattern wholly inconsistent with uncoordinated internet-wide bot scanning.
+    \item Forensic honeypots were deployed to monitor for recurrence without endangering institutional data.
+    \item External universities and networks harboring compromised hosts utilized as IRC relays were formally notified via their respective Computer Emergency Response Teams (CERTs).
+\end{itemize}
+
+With this forensic report, systems administration concluded formal incident investigations and delivered the final technical dossier to university leadership, culminating over 180 hours of live triage, bit-stream analysis, and documentary examination.
+
+\begin{retoforense}[Defending the Forensic Finding in Court]
+If defense counsel in a judicial proceeding argued that an unknown external hacker hijacked account \texttt{duende} via a trojan to frame the user (\textit{the Trojan Horse defense}), what technical findings established in this report (local ISP correlation, Midnight Commander session histories, flawed immutable attribute commands, and simultaneous interactive logins) scientifically refute that claim?
+\end{retoforense}

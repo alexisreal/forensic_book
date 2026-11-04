@@ -1,0 +1,28 @@
+\chapter*{Preface}
+\addcontentsline{toc}{chapter}{Preface}
+
+Security incidents on production systems rarely adhere to the sterile, orderly scenarios described in theoretical textbooks. In a real-world breach, the systems administrator faces ambiguity, multiple concurrent anomalies, and the urgent mandate to determine with absolute precision what transpired, how the perimeter was compromised, and what impact was sustained by core data and services.
+
+The origin of this work traces back to an exhaustive forensic investigation triggered by unauthorized activity on central production servers. At that moment, institutional leadership demanded immediate answers. The accidental discovery of anomalous binaries bearing superuser privileges hidden within system paths catalyzed a meticulous process of evidence preservation and analysis: compiling forensic tools directly from source code, interrogating low-level inode structures, and reconstructing the adversary's actions from tampered logs and disk timestamps.
+
+This book is the technical and methodological adaptation of the formal expert report delivered to university authorities. Its mission is to share the lessons and methodology of that investigation with students, defensive analysts, and systems administrators seeking to understand the anatomy of a genuine breach. Across these pages, we document the granular chronology of events: from the initial opportunistic entry and the planting of hidden services, to the injection of an in-memory kernel rootkit, the deployment of credential sniffers, and the patient correlation of forensic artifacts across multiple servers.
+
+\section*{The Enduring Relevance of Foundational Unix/Linux Concepts}
+
+Faced with a forensic case documented using foundational tools, contemporary readers naturally ask: \textit{What is the relevance of these methods in today's cybersecurity landscape?}
+
+The answer lies in the extraordinary resilience, conceptual maturity, and architectural consistency of Unix and Linux operating systems. While consumer platforms and commercial security suites periodically reinvent their interfaces and transient formats, the foundational Unix model has remained virtually unchanged for decades: the core abstraction that ``everything is a file'', the Virtual File System (\textit{VFS}), the semantics of inodes and file descriptors, process hierarchies, and the kernel state exposed through virtual pseudo-filesystems such as \texttt{/proc}.
+
+The foundational tools employed in this investigation --- from orphan inode recovery with TCT and The Sleuth Kit to inspection via \texttt{lsof}, \texttt{strace}, \texttt{strings}, \texttt{gdb}, and differential package verification against clean distribution baselines --- are far from museum pieces. On the contrary: they represent the bedrock upon which modern digital forensics and incident response (DFIR) is built. Contemporary Endpoint Detection and Response (\textit{EDR}) agents and advanced forensic frameworks ultimately query and validate these exact same native operating system data structures.
+
+Learning digital forensics solely through automated, single-click commercial tools breeds a dangerous illusion of competence. When a skilled adversary alters environment binaries, manipulates kernel tables, or deploys anti-forensic techniques, automated parsers stumble or yield misleading summaries. In those critical moments, the investigator must abandon vendor abstractions and descend to first principles: interrogating filesystem timestamps directly, auditing live process memory for trojanized daemons, and painstakingly reconstructing the causal chain of events.
+
+The methodologies documented in this volume are timeless because they teach one to think in terms of operating system architecture. Mastering how this live intrusion was dissected equips the reader with the analytical foundation required to audit, defend, and investigate any modern Unix or Linux infrastructure.
+
+\vspace{1.5em}
+\noindent\begin{minipage}{\linewidth}
+\raggedleft
+\textbf{Alexis Real Santillán}\\[3pt]
+\textit{Infrastructure and Cybersecurity Consultant}\\[2pt]
+\textit{CTO at Linux Open Source de México}
+\end{minipage}

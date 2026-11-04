@@ -1,21 +1,177 @@
-\chapter{Transcripción y compendio de bitácoras}
+\chapter{Transcripción y compendio de bitácoras periciales}
+\label{apendice:bitacoras}
 
-A lo largo de la investigación forense se procesaron decenas de miles de líneas de registros de auditoría. Para mantener la legibilidad y el ritmo pedagógico de la obra, los capítulos principales incluyen únicamente los extractos y discrepancias fundamentales.
+A lo largo de la investigación pericial se procesaron decenas de miles de líneas de registros de auditoría provenientes de múltiples subsistemas de autenticación, transferencia de archivos, contabilidad de procesos y servicios de red en los servidores \texttt{helios}, \texttt{atlas} e \texttt{io}.
 
-En este apéndice se preserva la estructura de los registros más representativos para fines de análisis comparativo y práctica pericial.
+Para preservar el ritmo pedagógico y la fluidez analítica de la obra, los capítulos precedentes concentraron su exposición en los fragmentos con valor probatorio directo. Este apéndice reúne y analiza sistemáticamente la estructura de los registros más representativos, proporcionando un catálogo de referencia para el cotejo forense y la formación pericial.
 
-\section{Estructura de registros de autenticación (\texttt{wtmp} / \texttt{last})}
-Los registros de conexión revelan la alternancia entre sesiones legítimas del usuario y accesos clandestinos a través de direcciones de acceso conmutado y DSL:
+\section{Registros de autenticación y control de acceso (\texttt{auth.log} y \texttt{wtmp})}
+
+La bitácora \texttt{auth.log} (gestionada por el subsistema \texttt{syslogd} a través de la infraestructura PAM, \textit{Pluggable Authentication Modules}) constituye la fuente primaria para verificar la validez de las credenciales, el origen geográfico o de red de las sesiones y los intentos de elevación de privilegios.
+
+\subsection{Registro de accesos concurrentes y sesiones clandestinas}
+
+El siguiente extracto ilustra la secuencia temporal en que se produjeron los primeros accesos no autorizados mediante conexiones conmutadas y enlaces DSL, combinando sesiones interactivas con transferencias de datos:
+
 \begin{lstlisting}[style=terminal]
-duende   pts/2        198.51.100.61    Mon Apr 12 18:34 - 19:12  (00:38)
-duende   pts/1        198.51.100.98    Mon Apr 12 19:45 - 20:22  (00:37)
-duende   ftp          203.0.113.124    Tue Apr 13 02:11 - 02:15  (00:04)
-duende   pts/0        198.51.100.156   Tue Apr 13 02:16 - 03:40  (01:24)
+# Extracto cronologico consolidado de /var/log/auth.log y wtmp en helios
+Apr  8 05:30:22 helios login[1234]: FAILED LOGIN (1) on `pts/2' from `200-161-199-225.dsl.telesp.net.br'
+Apr  8 05:30:29 helios PAM_unix[1234]: (login) session opened for user proa by (uid=0)
+Apr  8 05:33:02 helios PAM_unix[1262]: (login) session opened for user proa by (uid=0)
+Apr  8 05:36:23 helios PAM_unix[4402]: (login) session opened for user proa by (uid=0)
+Apr  8 05:36:51 helios su[4404]: - pts/5 proa-irc
+Apr  8 05:38:01 helios PAM_unix[4430]: (cron) session opened for user mail by (uid=0)
+Apr  8 05:43:05 helios PAM_unix[4588]: (login) session opened for user proa by (uid=0)
+Apr  8 10:04:22 helios PAM_unix[7098]: (login) session opened for user apached by (uid=0)
+Apr  8 10:04:34 helios su[7099]: - pts/11 apached-smtpd
+Apr  8 10:07:23 helios PAM-securetty[7123]: access denied: tty 'pts/7' is not secure!
+Apr  8 10:07:27 helios login[7123]: FAILED LOGIN (1) on `pts/7' from `198.18.1.45' FOR `smtpd'
+Apr  8 10:08:36 helios PAM_unix[7207]: (login) session opened for user apached by (uid=0)
+Apr  8 10:08:39 helios su[7208]: + pts/7 apached-smtpd
+Apr  8 10:08:39 helios PAM_unix[7208]: (su) session opened for user smtpd by apached(uid=1)
+Apr  8 14:08:44 helios PAM_unix[9147]: (login) session opened for user zopilote by (uid=0)
+Apr  8 14:11:36 helios PAM_unix[9228]: (ssh) session opened for user root by (uid=0)
+Apr  8 14:13:02 helios PAM_unix[9228]: (ssh) session closed for user root
+Apr  8 14:33:15 helios PAM_unix[9372]: (ftp) session opened for user proa by (uid=0)
 \end{lstlisting}
+
+\begin{notaforense}[Interpretación pericial de las marcas de auditoría PAM]
+\begin{itemize}
+    \item La línea \texttt{su[4404]: - pts/5 proa-irc} indica un intento fallido de cambio de usuario (\texttt{-}) de \texttt{proa} hacia la cuenta del sistema \texttt{irc}.
+    \item Por el contrario, la línea \texttt{su[7208]: + pts/7 apached-smtpd} con el signo positivo (\texttt{+}) demuestra una escalada de identidad exitosa hacia el usuario \texttt{smtpd}.
+    \item La presencia reiterada de \texttt{PAM-securetty: access denied} constata que el atacante intentó iniciar sesión directamente como superusuario a través de pseudoterminales de red (\texttt{pts/X}), política bloqueada por el archivo de seguridad \texttt{/etc/securetty}, obligándolo a utilizar cuentas señuelo para escalar internamente.
+\end{itemize}
+\end{notaforense}
 
 \section{Registros de transferencia FTP (\texttt{xferlog})}
-El servicio FTP fue el vector primordial de descarga de paquetes comprimidos (\texttt{.tar.gz}) que contenían el código fuente de los servidores IRC y los scripts de compilación automática.
+
+El servicio FTP (\texttt{wu-ftpd} / \texttt{in.ftpd}) operó como el vector primordial de descarga de los paquetes comprimidos que contenían el código fuente de los servidores clandestinos y scripts de compilación. El formato estándar del archivo \texttt{/var/log/xferlog} se descompone técnicamente en 14 campos posicionales obligatorios, resumidos en el Cuadro~\ref{tab:xferlog_estructura}.
+
+\begin{table}[htbp]
+\centering
+\scriptsize
+\begin{tabularx}{\textwidth}{@{} r l X @{}}
+\toprule
+\textbf{Campo} & \textbf{Denominación} & \textbf{Significado y valores representativos} \\
+\midrule
+1--5 & Fecha y hora & Registro cronológico en formato \texttt{DDD MMM dd hh:mm:ss YYYY}. \\
+6 & Duración (\textit{transfer-time}) & Tiempo total de la transferencia expresado en segundos. \\
+7 & Host remoto & Dirección IP o nombre FQDN resuelto de la máquina cliente. \\
+8 & Tamaño en bytes & Volumen total de datos transferidos a través del socket. \\
+9 & Nombre de archivo & Ruta absoluta o relativa del objeto almacenado o descargado. \\
+10 & Tipo de transferencia & \texttt{a} (modo ASCII) o \texttt{b} (modo binario). \\
+11 & Bandera de acción especial & \texttt{C} (comprimido), \texttt{U} (descomprimido), \texttt{T} (\textit{tarred}), \texttt{\_} (ninguna). \\
+12 & Dirección del flujo & \texttt{o} (\textit{outgoing}, descarga hacia cliente) o \texttt{i} (\textit{incoming}, subida al servidor). \\
+13 & Modo de acceso & \texttt{a} (anónimo), \texttt{g} (\textit{guest}), \texttt{r} (usuario local autenticado). \\
+14 & Nombre de usuario & Identificador de cuenta utilizado en la autenticación. \\
+15 & Servicio & Nombre del protocolo invocado (usualmente \texttt{ftp}). \\
+16 & Método de autenticación & \texttt{0} (sin autenticación especial) o \texttt{1} (identificación RFC 931). \\
+17 & Usuario autenticado & ID de usuario remoto si fue verificado vía \textit{identd}, o \texttt{*}. \\
+18 & Estado de finalización & \texttt{c} (\textit{complete}, exitoso) o \texttt{i} (\textit{incomplete}, abortado). \\
+\bottomrule
+\end{tabularx}
+\caption{Estructura técnica de los campos posicionales del registro \texttt{xferlog}.}
+\label{tab:xferlog_estructura}
+\end{table}
+
+\subsection{Transcripción pericial de la descarga de artefactos maliciosos}
+
+A continuación se reproduce el segmento de transferencias donde se constata la subida deliberada de los módulos del bot IRC y los kits de encubrimiento hacia el directorio del usuario \texttt{duende}:
+
 \begin{lstlisting}[style=terminal]
+# Transcripcion de transferencias entrantes (incoming) hacia el sistema de archivos
 Tue Apr 13 02:12:04 2004 1 203.0.113.124 152841 /home/duende/b.tar.gz b _ i r duende ftp 0 * c
 Tue Apr 13 02:14:18 2004 1 203.0.113.124 845201 /home/duende/psy.tar.gz b _ i r duende ftp 0 * c
+Tue Apr 13 02:18:55 2004 2 203.0.113.124  42109 /home/duende/popclean.c b _ i r duende ftp 0 * c
+Tue Apr 13 02:22:10 2004 1 203.0.113.124 312048 /home/duende/.sxp/sk.tar.gz b _ i r duende ftp 0 * c
+Wed Apr 14 03:05:12 2004 1 198.51.100.98  12850 /home/proa/emech.tar.gz b _ i r proa ftp 0 * c
+Wed Apr 14 03:11:40 2004 3 198.51.100.98 948202 /home/proa/.../bot.tar.gz b _ i r proa ftp 0 * c
 \end{lstlisting}
+
+La correlación entre las marcas de tiempo de \texttt{xferlog} y los tiempos de creación (\textit{crtime/ctime}) obtenidos posteriormente mediante el análisis de inodos con \texttt{fls} confirmó que los archivos fueron descomprimidos y compilados inmediatamente después de concluir su transferencia.
+
+\section{Registros de contabilidad de procesos (Process Accounting - \texttt{acct})}
+
+Una de las contribuciones probatorias más concluyentes del peritaje fue la activación encubierta del subsistema de contabilidad de procesos (\texttt{acct}). A diferencia del archivo de historial del shell (\texttt{.bash\_history}), el cual puede ser desactivado fijando \texttt{unset HISTFILE} o vaciado mediante redirección (\texttt{> .bash\_history}), los registros generados por \texttt{acct} se escriben directamente desde las estructuras internas de terminación de procesos del kernel (\texttt{do\_exit()}), resultando inmunes a los esfuerzos de antiforense en espacio de usuario.
+
+\subsection{Trazabilidad irrefutable de comandos con \texttt{lastcomm}}
+
+Al consultar el archivo binario de contabilidad mediante la herramienta \texttt{lastcomm}, se obtuvo el registro exhaustivo de las acciones ejecutadas por el sospechoso bajo el UID 500 (\texttt{duende}), desarticulando toda alegación de inactividad:
+
+\begin{lstlisting}[style=terminal]
+# Salida de lastcomm filtrada por UID 500 (duende) tras la reconexion del sistema
+sshd              SF    duende   pts/2      0.75 secs Sat Apr 26 18:20
+tcsh                    duende   pts/2      0.12 secs Sat Apr 26 18:20
+hostname           F    duende   pts/2      0.00 secs Sat Apr 26 18:24
+cons.saver        S     duende   pts/2      0.00 secs Sat Apr 26 18:24
+mc                 F    duende   pts/2      0.00 secs Sat Apr 26 18:24
+last                    duende   pts/2      0.03 secs Sat Apr 26 18:24
+ls                 F    duende   pts/2      0.00 secs Sat Apr 26 18:26
+ld                      duende   pts/2      0.02 secs Sat Apr 26 18:26
+lynx                    duende   pts/2      0.20 secs Sat Apr 26 18:30
+w                  F    duende   pts/2      0.00 secs Sat Apr 26 18:30
+finger                  duende   pts/2      0.00 secs Sat Apr 26 18:30
+df                 F    duende   pts/2      0.00 secs Sat Apr 26 18:32
+ping              S     duende   pts/2      0.00 secs Sat Apr 26 18:32
+less                    duende   pts/2      0.04 secs Sat Apr 26 18:37
+last                  X duende   pts/2      0.02 secs Sat Apr 26 18:37
+ssh                     duende   pts/2      0.16 secs Sat Apr 26 18:38
+gcc                     duende   pts/2      1.45 secs Sat Apr 26 18:42
+as                      duende   pts/2      0.28 secs Sat Apr 26 18:42
+collect2                duende   pts/2      0.11 secs Sat Apr 26 18:42
+chattr             F    duende   pts/2      0.00 secs Sat Apr 26 18:45
+rm                 F    duende   pts/2      0.00 secs Sat Apr 26 18:46
+\end{lstlisting}
+
+\begin{notaforense}[Banderas de ejecucion del subsistema acct]
+En la segunda columna de la salida de \texttt{lastcomm}:
+\begin{itemize}
+    \item \textbf{S:} El proceso fue ejecutado por el superusuario (\textit{setuid} o usuario \texttt{root}).
+    \item \textbf{F:} El proceso completó su ciclo tras una bifurcación exitosa (\textit{fork}) sin invocar subsiguientemente a \texttt{exec}.
+    \item \textbf{X:} El proceso terminó abruptamente por la recepción de una señal fatal del sistema operativo (p. ej., \texttt{SIGTERM} o \texttt{SIGSEGV}).
+\end{itemize}
+Obsérvese la invocación concatenada de \texttt{gcc}, \texttt{as} (ensamblador), \texttt{collect2} (enlazador) y finalmente la ejecución de \texttt{chattr} y \texttt{rm}, evidenciando la compilación en caliente, la fijación de atributos de inmutabilidad y el borrado inmediato del código fuente intermediario.
+\end{notaforense}
+
+\section{Registros de acceso al portal de correo web (\texttt{openwebmail.log})}
+
+El servidor de correo departamental (\texttt{io.ifm.lab.edu.mx}) albergaba el aplicativo webmail \textit{OpenWebMail}. La bitácora en \texttt{/var/log/openwebmail.log} permitió demostrar que el atacante no solo poseía contraseñas sustraídas, sino que accedió de forma ilegítima a la correspondencia privada de otros miembros del departamento:
+
+\begin{lstlisting}[style=terminal]
+# Transcripcion anotada de transacciones CGI en openwebmail.log
+2004-04-18 22:40:15 - [198.51.100.131] - duende - login - session=duende-session-0.269443440091894
+2004-04-18 22:42:01 - [198.51.100.131] - duende - readmsg - folder=INBOX - msgid=<200404151201.i3FC12a09121@ifm.lab.edu.mx>
+2004-04-18 22:44:33 - [198.51.100.131] - duende - movemsg - source=INBOX - dest=mail-trash - msgid=<200404151201.i3FC12a09121@ifm.lab.edu.mx>
+2004-04-18 22:45:10 - [198.51.100.131] - duende - emptytrash - folder=mail-trash
+2004-04-18 22:48:20 - [198.51.100.131] - duende - logout - session=duende-session-0.269443440091894
+\end{lstlisting}
+
+Esta transcripción acredita judicialmente el ciclo completo de espionaje: autenticación desde la dirección IP de Prodigy (\texttt{198.51.100.131}), apertura y lectura del mensaje (\texttt{readmsg}), traslado del mensaje a la papelera (\texttt{movemsg}) y posterior purgado definitivo (\texttt{emptytrash}) con la intención de destruir la evidencia de que la correspondencia había sido interceptada.
+
+\section{Extracto pericial del registro encubierto del sniffer (\texttt{/dev/rd/c2d3b2})}
+
+Como se documentó en el Capítulo~\ref{cap:siembra_servicios_malware}, el binario del demonio de red \texttt{in.telnetd} fue troyanizado para capturar el flujo de caracteres transmitido en claro durante el procedimiento de identificación de terminal. Las credenciales interceptadas eran canalizadas hacia un archivo oculto bajo la jerarquía de dispositivos: \texttt{/dev/rd/c2d3b2}.
+
+A continuación se reproduce el formato pericial del archivo capturado, evidenciando cómo el sniffer registraba el host de origen, la fecha de intercepción y el par ordenado de usuario y clave secreta:
+
+\begin{lstlisting}[style=terminal]
+----------------------------------------------------------------------
+[TELNET-SNIFFER-RECORD]
+TIMESTAMP: 2004-04-21 09:14:02 CST
+REMOTE-HOST: 192.0.2.10 (helios.ifm.lab.edu.mx) -> 192.0.2.20 (atlas)
+TERMINAL: pts/3
+LOGIN: root
+PASSWORD: [CONTRASENA-ADMIN-NUEVA-INTERCEPTADA]
+STATUS: SUCCESSFUL-AUTH
+----------------------------------------------------------------------
+[TELNET-SNIFFER-RECORD]
+TIMESTAMP: 2004-04-21 11:22:18 CST
+REMOTE-HOST: 192.0.2.10 (helios.ifm.lab.edu.mx) -> 192.0.2.30 (io)
+TERMINAL: pts/1
+LOGIN: mherrera
+PASSWORD: [CLAVE-CORREO-INTERCEPTADA]
+STATUS: SUCCESSFUL-AUTH
+----------------------------------------------------------------------
+\end{lstlisting}
+
+Este artefacto constituyó la prueba pericial irrefutable de que la intrusión interna perseguía el espionaje sistemático de credenciales administrativas, demostrando el mecanismo exacto mediante el cual el adversario local obtuvo la nueva contraseña de \texttt{root} inmediatamente después de haber sido modificada por los administradores legítimos del centro de cómputo.
