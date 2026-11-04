@@ -7,9 +7,19 @@ El origen de esta obra se remonta a una investigación pericial exhaustiva reali
 
 Este libro es la adaptación técnica y metodológica del informe entregado formalmente a las autoridades de la institución. Su propósito es compartir las lecciones y la metodología de aquella investigación con estudiantes, analistas defensivos y administradores de sistemas que buscan comprender la anatomía de un ataque real. A través de sus páginas se documenta la cronología detallada de los hechos: desde la intrusión oportunista inicial y la siembra de procesos ocultos, hasta la implantación de un rootkit a nivel de núcleo, el despliegue de sniffers de contraseñas y la paciente correlación de eventos entre múltiples servidores.
 
-Más allá de la evolución de las herramientas tecnológicas, los fundamentos periciales demostrados en este caso mantienen plena vigencia: el valor irremplazable de la evidencia en memoria, el rigor en la cadena de custodia, la disciplina en el contraste de hipótesis y la comprensión profunda del comportamiento de quien opera al otro lado del teclado.
+\section*{La vigencia y pertinencia de esta obra en la actualidad}
 
-\vspace{1.2em}
+Frente a un caso pericial documentado a partir de herramientas fundacionales, surge una reflexión indispensable para el lector contemporáneo: \textit{?`cuál es la vigencia de estos métodos en el panorama actual de la ciberseguridad?}
+
+La respuesta reside en la extraordinaria robustez, madurez conceptual y consistencia arquitectónica de los sistemas operativos Unix y Linux. Mientras que las plataformas de consumo y las herramientas comerciales mutan periódicamente sus interfaces y formatos superficiales, el modelo fundacional de Unix permanece esencialmente inalterado desde hace décadas: la abstracción de que <<todo es un archivo>>, el sistema de ficheros virtual (\textit{VFS}), la semántica de inodos y descriptores de archivos, la jerarquía de procesos y la exposición del estado del núcleo a través de sistemas virtuales como \texttt{/proc}.
+
+Las herramientas básicas empleadas en esta investigación ---desde el análisis de inodos huérfanos con TCT y The Sleuth Kit, hasta la inspección con \texttt{lsof}, \texttt{strace}, \texttt{strings}, \texttt{gdb} y el cotejo de integridad de paquetes contra la base de referencia del sistema--- no constituyen piezas de museo. Al contrario: representan los bloques fundamentales sobre los cuales se construye toda la disciplina forense moderna. Las soluciones actuales de detección y respuesta en el punto final (\textit{EDR}) y los agentes forenses contemporáneos operan, en última instancia, consultando y verificando estas mismas estructuras nativas del sistema operativo.
+
+El aprendizaje pericial basado exclusivamente en herramientas automatizadas de un solo clic engendra una peligrosa ilusión de entendimiento. Cuando un intruso sofisticado manipula las utilidades del entorno, altera los módulos del núcleo o despliega tácticas de antiforense, los analizadores automáticos fallan o entregan reportes incompletos. En esos instantes críticos, el investigador debe saber prescindir de abstracciones comerciales y descender a los fundamentos: interrogar directamente las marcas temporales en disco, examinar la memoria viva en busca de daemons troyanizados y reconstruir minuciosamente la cadena causal de eventos.
+
+Las técnicas documentadas en esta obra son atemporales porque enseñan a pensar con el rigor de la arquitectura del sistema. Comprender a fondo cómo se diseccionó esta intrusión real provee al lector del criterio técnico definitivo para auditar, defender e investigar cualquier infraestructura Unix/Linux actual.
+
+\vspace{1.5em}
 \noindent\begin{minipage}{\linewidth}
 \raggedleft
 \textbf{Alexis Real Santillán}\\[3pt]

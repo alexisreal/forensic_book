@@ -13,46 +13,56 @@
     % Fondo continuo a sangre completa
     \fill[coverdark] (current page.south west) rectangle (current page.north east);
 
-    % Filete superior continuo de marca editorial
-    \fill[coveraccent] (current page.north west) rectangle ($(current page.north east) + (0, -5mm)$);
+    % Filete superior continuo de acento carmesí
+    \fill[coveraccent] (current page.north west) rectangle ($(current page.north east) + (0, -4.5mm)$);
 
     % Etiqueta superior de disciplina técnica (retícula izquierda alineada a 18mm)
     \node[anchor=north west, text=white!60, font=\fontsize{7.5}{10}\selectfont\sffamily\bfseries] 
-        at ($(current page.north west) + (18mm, -16mm)$) {
-        SEGURIDAD DEFENSIVA \quad$\cdot$\quad ANÁLISIS FORENSE \quad$\cdot$\quad SEGUNDA EDICIÓN
+        at ($(current page.north west) + (18mm, -15mm)$) {
+        SISTEMAS UNIX / LINUX \quad$\cdot$\quad ANÁLISIS FORENSE DIGITAL \quad$\cdot$\quad SEGUNDA EDICIÓN
     };
 
     % Título monumental con alineación tipográfica arquitectónica
-    \node (covertitle) [anchor=north west, align=left, text=white, font=\fontsize{26}{32}\selectfont\sffamily\bfseries] 
-        at ($(current page.north west) + (18mm, -25mm)$) {
-        ANATOMÍA FORENSE\\[6pt]
+    \node (covertitle) [anchor=north west, align=left, text=white, font=\fontsize{26}{31}\selectfont\sffamily\bfseries] 
+        at ($(current page.north west) + (18mm, -24mm)$) {
+        ANATOMÍA FORENSE\\[5pt]
         DE UNA INTRUSIÓN
     };
 
     % Filete de acento carmesí pericial con separación perfecta
     \draw[line width=2.5pt, draw=coveraccent] 
-        ($(covertitle.south west) + (0, -5mm)$) -- ++(50mm, 0);
+        ($(covertitle.south west) + (0, -5mm)$) -- ++(48mm, 0);
 
-    % Subtítulo descriptivo con jerarquía clara y tipografía limpia
-    \node (coversubtitle) [anchor=north west, align=left, text width=140mm, text=white!85, font=\fontsize{9.5}{14}\selectfont\sffamily] 
+    % Subtítulo descriptivo y pertinencia atemporal
+    \node (coversubtitle) [anchor=north west, align=left, text width=144mm, text=white!90, font=\fontsize{9}{13}\selectfont\sffamily] 
         at ($(covertitle.south west) + (0, -11mm)$) {
-        Disección pericial de un ataque a servidores de producción en tiempo real:\\[3pt]
-        {\color{white!60}\fontsize{8.5}{12}\selectfont Evidencia en disco y memoria, reconstrucción cronológica y análisis de malware}
+        Disección pericial de un ataque a servidores de producción en tiempo real\\[3pt]
+        {\color{white!65}\fontsize{8.5}{12}\selectfont La vigencia de los fundamentos Unix y la atemporalidad de las técnicas periciales}
     };
 
-    % Obra visual central prominente (encuadre amplio integrado a la retícula)
-    \node[anchor=north west, inner sep=0pt, draw=white!18, line width=0.4pt, fill=black] 
-        at ($(coversubtitle.south west) + (0, -7mm)$) {
-        \includegraphics[width=14.0cm, height=9.8cm, keepaspectratio]{figures/portada_forense.jpg}
+    % Obra visual central moderna (Disección isométrica de capas sin tropos anticuados)
+    \node (artnode) [anchor=center, inner sep=0pt] 
+        at ($(current page.center) + (0, -10mm)$) {
+        \includegraphics[width=12.2cm, height=12.2cm, keepaspectratio]{figures/portada_moderna.jpg}
     };
 
-    % Bloque de autoría principal y edición (Alexis Real Santillán como autor único)
+    % Bloque de autoría principal (Alexis Real Santillán como autor único)
     \node[anchor=north west, align=left] 
-        at ($(current page.north west) + (18mm, -195mm)$) {
-        {\fontsize{14}{17}\selectfont\sffamily\bfseries\color{white} Alexis Real Santillán}\\[5pt]
-        {\fontsize{9.5}{13}\selectfont\sffamily\color{white!75} Administrador de Sistemas de Cómputo}\\[4pt]
-        {\fontsize{8.5}{12}\selectfont\sffamily\bfseries\color{coveraccent} SEGUNDA EDICIÓN}\\[2pt]
+        at ($(current page.north west) + (18mm, -212mm)$) {
+        {\fontsize{13.5}{16}\selectfont\sffamily\bfseries\color{white} Alexis Real Santillán}\\[4pt]
+        {\fontsize{9.5}{13}\selectfont\sffamily\color{white!80} Administrador de Sistemas de Cómputo}\\[3pt]
         {\fontsize{8}{11}\selectfont\sffamily\color{white!45} Informe pericial y metodológico de respuesta a incidentes}
+    };
+
+    % Badge minimalista contemporáneo de Segunda Edición
+    \node[anchor=north east, align=right] 
+        at ($(current page.north east) + (-18mm, -212mm)$) {
+        \begin{tikzpicture}
+            \node[draw=coveraccent!70, fill=coverdark, rounded corners=3pt, inner sep=5pt, align=center] {
+                {\fontsize{8}{10}\selectfont\sffamily\bfseries\color{white} SEGUNDA EDICIÓN}\\[2pt]
+                {\fontsize{6.5}{8}\selectfont\sffamily\bfseries\color{coveraccent} CASO REAL // FUNDAMENTOS ATEMPORALES}
+            };
+        \end{tikzpicture}
     };
 
 \end{tikzpicture}
@@ -75,7 +85,9 @@
     {\fontsize{20}{24}\selectfont\sffamily\bfseries\color{primary} DE UNA INTRUSIÓN}\\[0.8cm]
 
     {\large\textsf{Disección pericial de un ataque a servidores de producción en sistemas Unix/Linux}}\\[0.3cm]
-    {\normalsize\textsf{Adaptación del informe técnico pericial entregado a las autoridades de la institución}}\\[1.2cm]
+    {\normalsize\textsf{Adaptación del informe técnico pericial entregado a las autoridades de la institución}}\\[0.8cm]
+
+    {\small\textsf{\textit{La vigencia y madurez de las herramientas fundacionales de Unix/Linux frente a incidentes modernos}}}\\[1.2cm]
 
     {\large\textsf{\textbf{Segunda edición}}}\\[1.4cm]
 
