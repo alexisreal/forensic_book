@@ -48,7 +48,7 @@ Tiempo total:       55 min 33 s
 
 A partir de esta prospección pericial, se constató que cerca de 900 programas y bibliotecas del sistema operativo se encontraban infectados con el gusano \textit{Unix/RST.A}, un parásito binario que infecta ejecutables ELF inyectando código en el punto de entrada (\textit{entry point}) para abrir conexiones de red encubiertas y habilitar el control remoto del equipo. 
 
-\begin{notaforense}[Anatomía y Comportamiento del Virus Parásito Unix/RST.A]
+\begin{notaforense}[Anatomía y comportamiento del virus parásito Unix/RST.A]
 Descubierto originalmente en septiembre de 2001, \textbf{Unix/RST.A} representó uno de los primeros virus parásitos directos para arquitecturas Linux ELF de 32 bits. Su funcionamiento técnico se desglosa en:
 \begin{itemize}
     \item \textbf{Infección de la cabecera ELF:} Agrega una sección parasitaria al final del ejecutable y modifica el punto de entrada (\textit{e\_entry}) de la cabecera ELF para desviar la ejecución inicial hacia su propio código inyectado.
@@ -90,10 +90,10 @@ Por su parte, el atributo \texttt{+a} restringe la apertura del archivo únicame
 
 Habiendo identificado el arsenal malicioso sembrado en el servidor ---desde las rutinas de memoria de Suckit y los ejecutables con privilegios SUID indebidos, hasta los interceptores de contraseñas blindados con atributos de inmutabilidad---, la investigación debió responder a la interrogante cronológica central del caso: ?`en qué fecha y hora exacta penetró el atacante y cuál fue la secuencia precisa de sus acciones? Para reconstruir los hechos con rigor de segundos y sin depender de bitácoras potencialmente manipuladas, se procedió a interrogar las estructuras de inodos mediante un análisis temporal integral de marcas MAC (\textit{mactime}), abordado en el siguiente capítulo.
 
-\begin{retoforense}[Banderas de Inodo en Sistemas de Archivos Ext2]
+\begin{retoforense}[Banderas de inodo en sistemas de archivos Ext2]
 En el listado del Cuadro~\ref{lst:lsattr_output}, los archivos presentan la combinación de atributos extendidos \texttt{-u--ia}. Explique qué efecto pericial tiene el atributo \texttt{u} (\textit{undeletable}) a nivel de inodo y por qué un perito forense debe auditar las banderas extendidas antes de intentar eliminar o trasladar archivos sospechosos en una copia de trabajo.
 \end{retoforense}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: Inmutabilidad como Defensa ante Ransomware]
+\begin{perspectiva20}[Perspectiva forense contemporánea: inmutabilidad como defensa ante ransomware]
 Resulta una ironía histórica que la misma técnica utilizada por los atacantes en 2004 (\texttt{chattr +i}) para impedir que los administradores borraran su malware sea hoy una de las defensas más sólidas frente a los ataques de \textit{ransomware}. Los repositorios modernos de respaldos inmutables (como AWS S3 Object Lock en modo \textit{Compliance}, o sistemas ZFS/Ceph con instantáneas WORM: \textit{Write Once, Read Many}) impiden criptográficamente que un actor hostil con credenciales de administrador pueda encriptar o destruir los respaldos antes de detonar su carga destructiva.
 \end{perspectiva20}

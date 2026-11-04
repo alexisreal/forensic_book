@@ -2,7 +2,7 @@
 
 La reconstrucción temporal de eventos constituye la columna vertebral del análisis pericial. El sistema de archivos almacena marcas de tiempo críticas para cada inodo que permiten reconstruir la secuencia causal de los hechos. Utilizando la herramienta \texttt{mactime} de \textit{The Coroner's Toolkit} (TCT) y \textit{The Sleuth Kit} (TSK), fue posible correlacionar con precisión de segundos cada acción ejecutada en el disco magnético.
 
-\begin{notaforense}[Marcas Temporales Forenses: Desmitificando el ctime en Unix/Linux]
+\begin{notaforense}[Marcas temporales forenses: desmitificando el ctime en Unix/Linux]
 Uno de los errores más comunes entre analistas noveles consiste en interpretar la marca \texttt{ctime} como la fecha de creación del archivo (\textit{creation time}). En los sistemas de archivos clásicos de Unix (UFS, Ext2, Ext3), la fecha de creación (\textit{birth time} o \textit{crtime}) simplemente no existe; fue introducida posteriormente en Ext4 y NTFS:
 \begin{itemize}
     \item \textbf{mtime (Modification Time):} Instante en que se modificó el contenido de los bloques de datos del archivo (por ejemplo, al guardar cambios con un editor o escribir con \texttt{write()}).
@@ -314,11 +314,11 @@ están entre los programas modificados/creados y se muestran arriba.
 
 La fijación incontrovertible de la <<hora cero>> del ataque (domingo 11 de abril de 2004 a partir de las 20:55:02) brindó la coordenada pericial indispensable para orientar la siguiente fase: cruzar esta ventana crítica contra los registros de auditoría del sistema operativo. A pesar de los intentos del intruso por purgar las bitácoras con utilidades como \texttt{clean!}, el análisis minucioso de las bitácoras de autenticación (\texttt{auth.log}), los registros binarios de sesión (\texttt{wtmp}) y las transferencias de archivos (\texttt{xferlog}) permitió determinar con qué credenciales se accedió y qué archivos se descargaron en ese instante.
 
-\begin{retoforense}[Detección de Falsificación Temporal (Timestomping)]
+\begin{retoforense}[Detección de falsificación temporal (timestomping)]
 Si un intruso ejecuta \texttt{touch -r /bin/sh /dev/zqft4/bash!} para clonar las marcas \texttt{mtime} y \texttt{atime} del shell legítimo, ?`por qué el comando \texttt{mactime} continúa reportando la fecha real de la implantación en la columna \texttt{c} (\textit{ctime}) y cómo puede un perito explotar esta discrepancia para refutar coartadas temporales?
 \end{retoforense}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: De mactime a Super-Timelines con Plaso]
+\begin{perspectiva20}[Perspectiva forense contemporánea: de mactime a super-timelines con Plaso]
 En 2004, la suite \textit{The Coroner's Toolkit} (TCT) y \textit{The Sleuth Kit} (TSK) con \texttt{mactime} representaban la cúspide de la reconstrucción cronológica en discos magnéticos. Actualmente, el análisis pericial contemporáneo emplea herramientas como \textit{Plaso / log2timeline}, capaces de consolidar en una única super-línea de tiempo (\textit{super-timeline}) no solo metadatos de inodos, sino historiales de navegación web, registros de eventos de Windows (EVTX), artefactos de ejecución prefetch, bitácoras en la nube de AWS CloudTrail / Azure y transacciones de bases de datos, procesando cientos de millones de eventos mediante motores de búsqueda indexados como Elasticsearch / Kibana (Timesketch).
 \end{perspectiva20}
 

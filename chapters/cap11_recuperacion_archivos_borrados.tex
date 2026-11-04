@@ -2,7 +2,7 @@
 
 Cuando un intruso advierte la posibilidad de ser detectado o concluye una fase de su ataque, suele ejecutar comandos de borrado (\texttt{rm -rf}) para suprimir sus herramientas y bitácoras intermedias. Sin embargo, en el sistema de archivos Ext2/Ext3, la eliminación de un archivo desasocia el inodo del directorio pero mantiene intactos los bloques de datos en el disco magnético hasta que son reutilizados por nuevas operaciones de escritura.
 
-\begin{notaforense}[Mecánica Forense de Eliminación en Ext2: Inodos Huérfanos y Carving]
+\begin{notaforense}[Mecánica forense de eliminación en Ext2: inodos huérfanos y carving]
 Cuando en un sistema Linux Ext2 se ejecuta la llamada al sistema \texttt{unlink()}:
 \begin{enumerate}
     \item La entrada de directorio (\textit{dentry}) desasocia el nombre del archivo y el inodo.
@@ -149,11 +149,11 @@ recuperados pericialmente para esta investigación.
 
 La recuperación de estos archivos borrados cerró el cerco probatorio sobre la autoría material en \texttt{helios}. No obstante, subsistía una incógnita angular para la investigación: la totalidad de las sesiones de \texttt{duende} documentadas en los registros de auditoría y en los procesos en memoria provenían de la dirección IP interna \texttt{192.0.2.20}, perteneciente al servidor de cómputo \texttt{atlas}. ?`Por qué el atacante triangulaba sus accesos a través de un segundo nodo interno si no tenía restricciones para ingresar directamente desde el exterior? ?`Había sido \texttt{atlas} igualmente vulnerado para servir como trampolín encubierto? Para esclarecer esta maniobra y documentar el movimiento lateral del intruso, la investigación pericial se extendió formalmente hacia el servidor \texttt{atlas}, como se detalla en el Capítulo~\ref{cap:correlacion_multisistema}.
 
-\begin{retoforense}[Recuperación de Archivos Temporales de Aplicaciones]
+\begin{retoforense}[Recuperación de archivos temporales de aplicaciones]
 El archivo \texttt{mc.pipe.12891} documentó la lista de procesos simulados del malware. ?`Por qué utilidades interactivas de consola como \texttt{mc}, \texttt{screen} o editores como \texttt{vim} dejan artefactos residuales en \texttt{/tmp} o \texttt{/var/tmp} y de qué manera un perito forense puede utilizarlos para reconstruir la interacción del usuario cuando el atacante ha eliminado su archivo \texttt{.bash\_history}?
 \end{retoforense}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: File Carving en Discos SSD Modernos y TRIM]
+\begin{perspectiva20}[Perspectiva forense contemporánea: recuperación de archivos en discos SSD modernos y TRIM]
 En 2004, la recuperación de archivos borrados sobre discos magnéticos IDE/SCSI era una técnica pericial con altísima tasa de éxito, debido a que los bloques permanecían físicamente intactos hasta su sobreescritura accidental. En la actualidad, con el predominio absoluto de las unidades de estado sólido (SSD NVMe) y el comando \textit{TRIM / Deallocate}, cuando el sistema operativo borra un archivo, el controlador del SSD pone a cero inmediatamente los bloques lógicos para optimizar los ciclos de escritura. En dispositivos modernos con TRIM activo, el \textit{file carving} estático devuelve únicamente ceros (\texttt{0x00}), obligando a la disciplina forense contemporánea a priorizar la captura de memoria RAM volátil y copias de seguridad en la nube.
 \end{perspectiva20}
 

@@ -3,7 +3,7 @@
 
 La seguridad de un sistema de cómputo multiusuario es tan sólida como el eslabón más débil de su cadena de credenciales. El análisis forense de los directorios personales de los usuarios afectados reveló el mecanismo de acceso inicial y el depósito de herramientas auxiliares que permitieron la consolidación de la presencia no autorizada.
 
-\begin{notaforense}[Forense de Directorios de Usuario y Persistencia por Llaves SSH]
+\begin{notaforense}[Forense de directorios de usuario y persistencia por llaves SSH]
 Al inspeccionar las carpetas personales (\texttt{/home/<usuario>}), el perito busca evidencias de persistencia y artefactos de ejecución:
 \begin{itemize}
     \item \textbf{Directorios ocultos (\textit{dot-directories}):} Creación de carpetas como \texttt{...} (tres puntos), \texttt{.king} o \texttt{psybnc} para disimular código frente a comandos convencionales como \texttt{ls}.
@@ -592,11 +592,11 @@ directo con la intrusión y sustracción de información confidencial.
 
 La inspección de estas cuentas personales reveló además que el intruso había ejecutado órdenes sistemáticas de borrado (\texttt{rm -rf}) para suprimir scripts intermedios, bitácoras de compilación y archivos temporales, buscando encubrir la autoría material del ataque. Sin embargo, en la arquitectura de Linux Ext2, la supresión lógica no destruye físicamente los bloques magnéticos de datos. Para rescatar esta evidencia indispensable que el atacante pretendió hacer desaparecer, el procedimiento pericial recurrió a la interrogación de inodos huérfanos y al tallado forense de estructuras desasociadas (\textit{file carving}), como se documenta en el siguiente capítulo.
 
-\begin{retoforense}[Detección de Bots y Procesos Ocultos en Espacio de Usuario]
+\begin{retoforense}[Detección de bots y procesos ocultos en espacio de usuario]
 En el directorio de \texttt{proa} se localizaron ejecutables \texttt{in.ftpd} y \texttt{psybnc}. Si el intruso no posee privilegios de \texttt{root} para enlazar puertos privilegiados ($< 1024$), ?`en qué rangos de puertos efímeros suelen operar estos servicios y qué comando de red (\texttt{netstat -tlpn} o \texttt{ss}) permite identificar qué sockets están asociados a un UID específico?
 \end{retoforense}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: Gestión de Identidades y Autenticación FIDO2]
+\begin{perspectiva20}[Perspectiva forense contemporánea: gestión de identidades y autenticación FIDO2]
 En 2004, la seguridad de las cuentas de usuario dependía exclusivamente de contraseñas Unix almacenadas como hashes DES o MD5 en \texttt{/etc/shadow}, fácilmente vulnerables mediante ataques de diccionario fuera de línea (\textit{offline cracking} con \textit{John the Ripper}). Dos décadas después, la industria ha migrado hacia la autenticación resistente al phishing: llaves criptográficas de hardware basadas en estándares FIDO2 / WebAuthn, políticas de acceso condicional (\textit{Conditional Access}), autenticación multifactor obligatoria (MFA) y rotación automatizada de credenciales mediante plataformas de gestión de accesos privilegiados (PAM).
 \end{perspectiva20}
 

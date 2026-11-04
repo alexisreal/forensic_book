@@ -107,7 +107,7 @@
 \lstset{style=terminal}
 
 % Cajas de texto destacadas (Callouts editoriales)
-\newtcolorbox{notaforense}[1][Nota Pericial]{
+\newtcolorbox{notaforense}[1][Nota pericial]{
     enhanced,
     colback=notablue,
     colframe=notablueborder,
@@ -122,7 +122,7 @@
     before skip=4mm, after skip=4mm
 }
 
-\newtcolorbox{perspectiva20}[1][Perspectiva y Lección Técnica]{
+\newtcolorbox{perspectiva20}[1][Perspectiva y lección técnica]{
     enhanced,
     colback=perspectivabg,
     colframe=perspectivaborder,
@@ -137,7 +137,7 @@
     before skip=4mm, after skip=4mm
 }
 
-\newtcolorbox{advertencia}[1][Alerta de Integridad]{
+\newtcolorbox{advertencia}[1][Alerta de integridad]{
     enhanced,
     colback=red!5,
     colframe=accent,
@@ -152,7 +152,7 @@
     before skip=4mm, after skip=4mm
 }
 
-\newtcolorbox{retoforense}[1][Reto de Investigación Pericial]{
+\newtcolorbox{retoforense}[1][Reto de investigación pericial]{
     enhanced,
     colback=retobg,
     colframe=retoborder,
@@ -183,24 +183,31 @@
     \renewcommand{\headrulewidth}{0pt}
 }
 
-% Formato de títulos de partes y capítulos
+% Formato de títulos de partes y capítulos (sin guiones de corte de palabra)
+\titleformat{\part}[display]
+    {\normalfont\sffamily\Huge\bfseries\color{primary}\centering\hyphenpenalty=10000\exhyphenpenalty=10000}
+    {\LARGE\color{secondary}\partname\ \thepart}
+    {2ex}
+    {\titlerule[2pt]\vspace{2ex}}
+    [\vspace{2ex}\titlerule]
+
 \titleformat{\chapter}[display]
-    {\normalfont\sffamily\huge\bfseries\color{primary}\raggedright}
+    {\normalfont\sffamily\huge\bfseries\color{primary}\raggedright\hyphenpenalty=10000\exhyphenpenalty=10000}
     {\flushright\LARGE\color{secondary}Capítulo \thechapter}
     {1ex}
     {\titlerule[1.5pt]\vspace{2ex}\raggedright}
     [\vspace{1ex}\titlerule]
 
 \titleformat{\section}
-    {\raggedright\normalfont\sffamily\Large\bfseries\color{primary}}
+    {\raggedright\normalfont\sffamily\Large\bfseries\color{primary}\hyphenpenalty=10000\exhyphenpenalty=10000}
     {\thesection}{1em}{}
 
 \titleformat{\subsection}
-    {\raggedright\normalfont\sffamily\large\bfseries\color{secondary}}
+    {\raggedright\normalfont\sffamily\large\bfseries\color{secondary}\hyphenpenalty=10000\exhyphenpenalty=10000}
     {\thesubsection}{1em}{}
 
 \titleformat{\subsubsection}
-    {\raggedright\normalfont\sffamily\normalsize\bfseries}
+    {\raggedright\normalfont\sffamily\normalsize\bfseries\hyphenpenalty=10000\exhyphenpenalty=10000}
     {\thesubsubsection}{1em}{}
 
 % Hipervínculos e índice

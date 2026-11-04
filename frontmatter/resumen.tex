@@ -1,5 +1,5 @@
 \chapter*{Resumen ejecutivo}
-\addcontentsline{toc}{chapter}{Resumen Ejecutivo}
+\addcontentsline{toc}{chapter}{Resumen ejecutivo}
 
 El presente documento expone los resultados de una investigación forense digital exhaustiva realizada sobre un servidor departamental de producción (\nolinkurl{helios.ifm.lab.edu.mx}) perteneciente a una institución académica, tras el descubrimiento de actividades no autorizadas y la implantación de software malicioso con privilegios administrativos.
 
@@ -9,7 +9,7 @@ La investigación abarcó dos fases metodológicas complementarias:
     \item \textbf{Análisis forense \textit{post-mortem}:} Conducción de exámenes minuciosos sobre imágenes binarias bit a bit de los discos duros en estaciones de trabajo de control y referencia (\textit{Dell Precision 350}). Esta fase comprendió el análisis de integridad de paquetes del sistema operativo (RPM), escaneo heurístico de malware, reconstrucción cronológica mediante líneas de tiempo de inodos (\textit{timeline analysis} con tiempos MAC), minería de bitácoras del sistema (\texttt{syslog}, \texttt{wtmp}, \texttt{xferlog}), recuperación de archivos eliminados (\textit{file carving}) y correlación multisistema con servidores de correo y autenticación web (\textit{OpenWebMail}).
 \end{enumerate}
 
-\begin{notaforense}[Hallazgo Principal de la Investigación]
+\begin{notaforense}[Hallazgo principal de la investigación]
 La evidencia pericial recabada demostró concluyentemente la convergencia de \textbf{dos intrusiones independientes}:
 \begin{itemize}
     \item Un \textbf{ataque externo oportunista}, originado a través de credenciales débiles en el servicio FTP, cuyo propósito principal consistió en utilizar la infraestructura del servidor como plataforma parásita para alojar servicios IRC, bots de relevo y depósitos de archivos.

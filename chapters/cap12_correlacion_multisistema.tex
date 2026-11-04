@@ -3,7 +3,7 @@
 
 Una intrusión rara vez permanece confinada a un único servidor cuando los sistemas comparten redes locales, montajes remotos NFS o esquemas de confianza entre cuentas de usuario. La correlación pericial con otros servidores del departamento permitió reconstruir la propagación lateral y confirmar la hipótesis sobre el origen de los accesos.
 
-\begin{notaforense}[El Vector de Pivoteo Lateral (\textit{Lateral Movement})]
+\begin{notaforense}[El vector de pivoteo lateral (\textit{lateral movement})]
 El pivoteo (\textit{pivoting}) consiste en utilizar un equipo secundario comprometido como pasarela de salto para atacar o administrar de forma encubierta otros servidores dentro del mismo segmento de red interna. Al saltar desde \texttt{atlas} hacia \texttt{helios}, el intruso logra dos ventajas operativas:
 \begin{enumerate}
     \item \textbf{Evasión de cortafuegos perimetrales:} Las conexiones entre \texttt{atlas} y \texttt{helios} provienen de la subred interna de confianza (\texttt{192.0.2.0/24}), eludiendo cualquier regla que restrinja accesos SSH o Telnet desde direcciones IP de Internet.
@@ -232,11 +232,11 @@ una conexión dsl de prodigy infinitum.
 
 Con el pivoteo interno desde \texttt{atlas} plenamente documentado y vinculado a conexiones residenciales de proveedores locales en Morelia, un flanco de extrema gravedad requería confirmación pericial: el servidor departamental de correspondencia electrónica (\texttt{io.ifm.lab.edu.mx}). Si el atacante había cosechado contraseñas mediante el sniffer troyanizado en \texttt{helios}, ?`había accedido a los buzones privados de los usuarios de la institución? ?`Empleó el portal de correo web (\textit{OpenWebMail}) para espiar comunicaciones o enviar mensajes en nombre de terceros? Para esclarecer el alcance de esta amenaza, la investigación auditó las bitácoras de transporte MTA y sesiones CGI en \texttt{io}, tal como se examina en el Capítulo~\ref{cap:servidor_correo_webmail}.
 
-\begin{retoforense}[Trazabilidad de Saltos Múltiples (Pivoting)]
+\begin{retoforense}[Trazabilidad de saltos múltiples (pivoting)]
 A partir de las bitácoras de \texttt{atlas} y \texttt{helios}, reconstruya la cadena completa de conexión: ?`cuál fue la dirección IP del proveedor externo de acceso conmutado/DSL y en qué puertos se establecieron las sesiones sucesivas? ?`Qué información adicional requeriría solicitar judicialmente al ISP para identificar al titular de la línea telefónica?
 \end{retoforense}
 
-\begin{perspectiva20}[Perspectiva 20 Años Después: Zero Trust y Microsegmentación]
+\begin{perspectiva20}[Perspectiva forense contemporánea: Zero Trust y microsegmentación]
 El modelo tradicional de seguridad perimetral de 2004 asumía que todo tráfico originado dentro de la red del campus era confiable por defecto, permitiendo que una máquina comprometida como \texttt{atlas} atacara libremente a sus vecinos. Dos décadas después, el paradigma imperante es \textit{Zero Trust} (<<nunca confíes, siempre verifica>>): la red interna se microsegmenta impidiendo la comunicación este-oeste entre servidores a menos que esté explícitamente autorizada, y cada sesión individual debe autenticarse criptográficamente mediante mTLS y políticas de acceso dinámicas evaluadas por riesgo.
 \end{perspectiva20}
 

@@ -2,7 +2,7 @@
 
 La detección inicial de una intrusión suele manifestarse a través de discrepancias sutiles en la operación cotidiana del sistema. A mediados de abril de 2004, la administración de cómputo identificó la presencia de archivos con permisos especiales y propietarios no autorizados en ubicaciones reservadas al sistema. Este capítulo documenta las primeras acciones de respuesta en vivo y el inventario preliminar de artefactos anómalos.
 
-\begin{notaforense}[Uso de /dev como Ocultamiento Tradicional]
+\begin{notaforense}[Uso de /dev como ocultamiento tradicional]
 El directorio \texttt{/dev} fue históricamente el refugio predilecto de los intrusos en sistemas Unix/Linux. Dado que alberga cientos de archivos especiales de bloques y caracteres, los atacantes solían crear subdirectorios camuflados con nombres de dispositivos virtuales (como \texttt{/dev/ptyp} o \texttt{/dev/...}) para almacenar herramientas de compilación, \textit{sniffers} y ejecutables con bit SUID activado.
 \end{notaforense}
 
