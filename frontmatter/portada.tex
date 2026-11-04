@@ -8,16 +8,15 @@
 \begin{tikzpicture}[remember picture, overlay]
     % Paleta editorial de alta jerarquía
     \definecolor{coverred}{RGB}{185, 28, 28}       % Rojo editorial clásico de serie técnica
-    \definecolor{coveraccent}{RGB}{225, 29, 72}    % Carmesí pericial
     \definecolor{covergray}{RGB}{75, 85, 99}       % Gris neutro para subtítulos y metadatos
-    \definecolor{coverborder}{RGB}{209, 213, 219}  % Gris sutil para marcos
+    \definecolor{coverborder}{RGB}{229, 231, 235}  % Gris sutil para delimitadores
     \definecolor{ribbonbg}{RGB}{243, 244, 246}     % Fondo claro para la cinta diagonal
 
     % Fondo continuo blanco inmaculado editorial
     \fill[white] (current page.south west) rectangle (current page.north east);
 
     % Filete superior rojo de serie pericial a sangre completa
-    \fill[coverred] (current page.north west) rectangle ($(current page.north east) + (0, -5mm)$);
+    \fill[coverred] (current page.north west) rectangle ($(current page.north east) + (0, -4.5mm)$);
 
     % --------------------------------------------------------------------------
     % CINTA DIAGONAL DE "SEGUNDA EDICIÓN" (ESQUINA SUPERIOR DERECHA)
@@ -34,71 +33,48 @@
 
     % Cintillo superior izquierdo de serie pericial
     \node[anchor=north west, align=left] 
-        at ($(current page.north west) + (20mm, -14mm)$) {
-        {\fontsize{9.5}{12}\selectfont\sffamily\bfseries\color{coverred} SEGURIDAD DEFENSIVA} \quad
-        {\fontsize{9}{11}\selectfont\sffamily\color{black!40} $\vert$} \quad
-        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{black!70} ANÁLISIS FORENSE DIGITAL}
+        at ($(current page.north west) + (20mm, -13mm)$) {
+        {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{coverred} CASO REAL DE PRODUCCIÓN} \quad
+        {\fontsize{9}{11}\selectfont\sffamily\color{black!30} $\vert$} \quad
+        {\fontsize{8.5}{11}\selectfont\sffamily\color{covergray} ANÁLISIS FORENSE EN LINUX}
     };
 
     % --------------------------------------------------------------------------
     % BLOQUE DE TÍTULO Y SUBTÍTULO
     % --------------------------------------------------------------------------
-    \node (covertitle) [anchor=north west, align=left, text=black, font=\fontsize{30}{36}\selectfont\sffamily\bfseries] 
-        at ($(current page.north west) + (20mm, -28mm)$) {
-        Linux Forensics:\\[4pt]
+    \node (covertitle) [anchor=north west, align=left, text=black, font=\fontsize{29}{35}\selectfont\sffamily\bfseries] 
+        at ($(current page.north west) + (20mm, -25mm)$) {
+        Linux Forensics:\\[3pt]
         Caso Real
     };
 
-    % Filete de separación pericial
+    % Filete de separación pericial carmesí
     \draw[line width=2.0pt, draw=coverred] 
-        ($(covertitle.south west) + (0, -4mm)$) -- ++(36mm, 0);
+        ($(covertitle.south west) + (0, -4mm)$) -- ++(32mm, 0);
 
     % Subtítulo comercial y pericial
-    \node (coversubtitle) [anchor=north west, align=left, text width=142mm, text=black!90, font=\fontsize{11}{16}\selectfont\sffamily] 
-        at ($(covertitle.south west) + (0, -11mm)$) {
-        \textbf{Autopsia de un ciberataque a servidores de producción en tiempo real}\\[3.5pt]
-        {\fontsize{9.5}{13.5}\selectfont\color{covergray} Respuesta a incidentes, memoria viva y correlación pericial de eventos}
+    \node (coversubtitle) [anchor=north west, align=left, text width=142mm, text=black!90, font=\fontsize{10.5}{15}\selectfont\sffamily] 
+        at ($(covertitle.south west) + (0, -9mm)$) {
+        \textbf{Autopsia de un ciberataque a servidores de producción en tiempo real}\\[2.5pt]
+        {\fontsize{9}{13}\selectfont\color{covergray} Fundamentos atemporales de Unix/Linux, memoria viva y correlación pericial}
     };
 
     % --------------------------------------------------------------------------
-    % ÁREA CENTRAL: MARCO EDITORIAL Y GRABADO DEL SABUESO
+    % ÁREA CENTRAL: GRABADO DEL SABUESO A COLOR (LIBRE DE MARCOS Y PUNTOS)
     % --------------------------------------------------------------------------
-    \coordinate (boxcenter) at ($(current page.center) + (0, -16mm)$);
-
-    % Marco ornamental sutil con doble filete clásico
-    \draw[coverborder, line width=0.5pt, rounded corners=3pt] 
-        ($(boxcenter) + (-68mm, -52mm)$) rectangle ($(boxcenter) + (68mm, 52mm)$);
-    \draw[black!10, line width=0.25pt, rounded corners=2pt] 
-        ($(boxcenter) + (-66.5mm, -50.5mm)$) rectangle ($(boxcenter) + (66.5mm, 50.5mm)$);
-
-    % Marcadores de esquina de laboratorio pericial
-    \foreach \x/\y in {-68mm/-52mm, 68mm/-52mm, -68mm/52mm, 68mm/52mm} {
-        \fill[coverred] ($(boxcenter) + (\x, \y)$) circle (1.2pt);
-    }
-
-    % Ilustración central del Sabueso en grabado naturalista a todo color
     \node (artnode) [anchor=center, inner sep=0pt] 
-        at (boxcenter) {
-        \includegraphics[width=12.6cm, height=12.6cm, keepaspectratio]{figures/sabueso_color.jpg}
+        at ($(current page.center) + (0, -14mm)$) {
+        \includegraphics[width=13.0cm, height=13.0cm, keepaspectratio]{figures/sabueso_color.jpg}
     };
 
     % --------------------------------------------------------------------------
-    % PIE DE PORTADA: DOBLE FILETE Y AUTORÍA
+    % PIE DE PORTADA: AUTORÍA INDEPENDIENTE EN ESQUINA DERECHA (ESTILO EDITORIAL)
     % --------------------------------------------------------------------------
-    % Doble filete editorial (Oxford rule)
-    \draw[black!80, line width=1.0pt] 
-        ($(current page.south west) + (20mm, 28mm)$) -- ($(current page.south east) + (-20mm, 28mm)$);
-    \draw[coverborder, line width=0.4pt] 
-        ($(current page.south west) + (20mm, 26.5mm)$) -- ($(current page.south east) + (-20mm, 26.5mm)$);
+    % Filete sutil de base
+    \draw[coverborder, line width=0.6pt] 
+        ($(current page.south west) + (20mm, 26mm)$) -- ($(current page.south east) + (-20mm, 26mm)$);
 
-    % Pie izquierdo: carácter del caso y atemporalidad
-    \node[anchor=south west, align=left] 
-        at ($(current page.south west) + (20mm, 12mm)$) {
-        {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{coverred} CASO REAL DE PRODUCCIÓN}\\[2.5pt]
-        {\fontsize{8}{10.5}\selectfont\sffamily\color{covergray} La vigencia y atemporalidad de los fundamentos Unix/Linux}
-    };
-
-    % Pie derecho: autoría destacada
+    % Bloque de autoría (exclusivo en la esquina inferior derecha, sin interferencias)
     \node[anchor=south east, align=right] 
         at ($(current page.south east) + (-20mm, 12mm)$) {
         {\fontsize{13.5}{16}\selectfont\sffamily\bfseries\color{black} Alexis Real Santillán}\\[3pt]
