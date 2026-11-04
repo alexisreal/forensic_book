@@ -1,68 +1,71 @@
 % ==============================================================================
-% PORTADA EXTERIOR EDITORIAL MODERNA (ESTILO SUIZO / STRIPE PRESS / TRADE EDITION)
-% "Anatomía Forense de una Intrusión" - Alexis Real Santillán
+% PORTADA EXTERIOR EDITORIAL (ESTILO CLÁSICO DE REFERENCIA TÉCNICA / WOODCUT ETCHING)
+% "Linux Forensics: Caso Real" - Alexis Real Santillán
 % ==============================================================================
 \begin{titlepage}
 \thispagestyle{empty}
 
 \begin{tikzpicture}[remember picture, overlay]
-    % Paleta de color editorial moderna (Obsidiana / Grafito profundo)
-    \definecolor{coverdark}{RGB}{10, 14, 23}
-    \definecolor{coveraccent}{RGB}{225, 29, 72}
+    % Paleta editorial de referencia clásica
+    \definecolor{coverred}{RGB}{185, 28, 28}      % Rojo editorial clásico de serie técnica
+    \definecolor{covergray}{RGB}{75, 85, 99}      % Gris neutro para subtítulos y metadatos
+    \definecolor{coverborder}{RGB}{229, 231, 235} % Gris sutil para delimitadores
 
-    % Fondo continuo a sangre completa
-    \fill[coverdark] (current page.south west) rectangle (current page.north east);
+    % Fondo continuo blanco inmaculado editorial
+    \fill[white] (current page.south west) rectangle (current page.north east);
 
-    % Filete superior continuo de acento carmesí
-    \fill[coveraccent] (current page.north west) rectangle ($(current page.north east) + (0, -4.5mm)$);
+    % Filete superior rojo de serie pericial
+    \fill[coverred] (current page.north west) rectangle ($(current page.north east) + (0, -4.5mm)$);
 
-    % Etiqueta superior de disciplina técnica (retícula izquierda alineada a 18mm)
-    \node[anchor=north west, text=white!60, font=\fontsize{7.5}{10}\selectfont\sffamily\bfseries] 
-        at ($(current page.north west) + (18mm, -15mm)$) {
-        SISTEMAS UNIX / LINUX \quad$\cdot$\quad ANÁLISIS FORENSE DIGITAL \quad$\cdot$\quad SEGUNDA EDICIÓN
-    };
-
-    % Título monumental con alineación tipográfica arquitectónica
-    \node (covertitle) [anchor=north west, align=left, text=white, font=\fontsize{26}{31}\selectfont\sffamily\bfseries] 
-        at ($(current page.north west) + (18mm, -24mm)$) {
-        ANATOMÍA FORENSE\\[5pt]
-        DE UNA INTRUSIÓN
-    };
-
-    % Filete de acento carmesí pericial con separación perfecta
-    \draw[line width=2.5pt, draw=coveraccent] 
-        ($(covertitle.south west) + (0, -5mm)$) -- ++(48mm, 0);
-
-    % Subtítulo descriptivo y pertinencia atemporal
-    \node (coversubtitle) [anchor=north west, align=left, text width=144mm, text=white!90, font=\fontsize{9}{13}\selectfont\sffamily] 
-        at ($(covertitle.south west) + (0, -11mm)$) {
-        Disección pericial de un ataque a servidores de producción en tiempo real\\[3pt]
-        {\color{white!65}\fontsize{8.5}{12}\selectfont La vigencia de los fundamentos Unix y la atemporalidad de las técnicas periciales}
-    };
-
-    % Obra visual central moderna (Disección isométrica de capas sin tropos anticuados)
-    \node (artnode) [anchor=center, inner sep=0pt] 
-        at ($(current page.center) + (0, -10mm)$) {
-        \includegraphics[width=12.2cm, height=12.2cm, keepaspectratio]{figures/portada_moderna.jpg}
-    };
-
-    % Bloque de autoría principal (Alexis Real Santillán como autor único)
+    % Cintillo superior izquierdo de disciplina / serie técnica
     \node[anchor=north west, align=left] 
-        at ($(current page.north west) + (18mm, -212mm)$) {
-        {\fontsize{13.5}{16}\selectfont\sffamily\bfseries\color{white} Alexis Real Santillán}\\[4pt]
-        {\fontsize{9.5}{13}\selectfont\sffamily\color{white!80} Administrador de Sistemas de Cómputo}\\[3pt]
-        {\fontsize{8}{11}\selectfont\sffamily\color{white!45} Informe pericial y metodológico de respuesta a incidentes}
+        at ($(current page.north west) + (20mm, -13mm)$) {
+        {\fontsize{9}{11}\selectfont\sffamily\bfseries\color{coverred} SEGURIDAD DEFENSIVA} \quad
+        {\fontsize{8}{10}\selectfont\sffamily\color{covergray} $\cdot$\quad ANÁLISIS FORENSE DIGITAL}
     };
 
-    % Badge minimalista contemporáneo de Segunda Edición
-    \node[anchor=north east, align=right] 
-        at ($(current page.north east) + (-18mm, -212mm)$) {
-        \begin{tikzpicture}
-            \node[draw=coveraccent!70, fill=coverdark, rounded corners=3pt, inner sep=5pt, align=center] {
-                {\fontsize{8}{10}\selectfont\sffamily\bfseries\color{white} SEGUNDA EDICIÓN}\\[2pt]
-                {\fontsize{6.5}{8}\selectfont\sffamily\bfseries\color{coveraccent} CASO REAL // FUNDAMENTOS ATEMPORALES}
-            };
-        \end{tikzpicture}
+    % Etiqueta diagonal de Segunda Edición en la esquina superior derecha
+    \begin{scope}[shift={($(current page.north east) + (-20mm, -13mm)$)}]
+        \node[anchor=north east, draw=coverred!80, fill=coverred!8, rounded corners=2pt, inner sep=3.5pt] {
+            {\fontsize{7.5}{9.5}\selectfont\sffamily\bfseries\color{coverred} SEGUNDA EDICIÓN}
+        };
+    \end{scope}
+
+    % Título monumental con tipografía grotesca limpia y contundente
+    \node (covertitle) [anchor=north west, align=left, text=black, font=\fontsize{28}{34}\selectfont\sffamily\bfseries] 
+        at ($(current page.north west) + (20mm, -25mm)$) {
+        Linux Forensics:\\[3pt]
+        Caso Real
+    };
+
+    % Subtítulo comercial y pericial de alto impacto
+    \node (coversubtitle) [anchor=north west, align=left, text width=142mm, text=black!85, font=\fontsize{10.5}{15}\selectfont\sffamily] 
+        at ($(covertitle.south west) + (0, -7mm)$) {
+        \textbf{Autopsia de un ciberataque a servidores de producción en tiempo real}\\[2.5pt]
+        {\fontsize{9}{13}\selectfont\color{covergray} Respuesta a incidentes, memoria viva y correlación pericial de eventos}
+    };
+
+    % Grabado central del Sabueso (Bloodhound) en técnica de aguafuerte / xilografía clásica
+    \node (artnode) [anchor=center, inner sep=0pt] 
+        at ($(current page.center) + (0, -20mm)$) {
+        \includegraphics[width=12.2cm, height=12.2cm, keepaspectratio]{figures/sabueso_grabado.jpg}
+    };
+
+    % Filete inferior sutil de separación
+    \draw[coverborder, line width=0.6pt] 
+        ($(current page.south west) + (20mm, 26mm)$) -- ($(current page.south east) + (-20mm, 26mm)$);
+
+    % Bloque de autoría (alineado a la derecha, estilo clásico de libros de referencia)
+    \node[anchor=south east, align=right] 
+        at ($(current page.south east) + (-20mm, 12mm)$) {
+        {\fontsize{13.5}{16}\selectfont\sffamily\bfseries\color{black} Alexis Real Santillán}\\[3pt]
+        {\fontsize{9}{12}\selectfont\sffamily\color{covergray} Administrador de Sistemas de Cómputo}
+    };
+
+    % Leyenda inferior izquierda sobre fundamentos
+    \node[anchor=south west, align=left] 
+        at ($(current page.south west) + (20mm, 13mm)$) {
+        {\fontsize{8}{10}\selectfont\sffamily\color{covergray} La vigencia y atemporalidad de los fundamentos Unix/Linux}
     };
 
 \end{tikzpicture}
@@ -81,11 +84,11 @@
 
     {\fontsize{8.5}{11}\selectfont\sffamily\bfseries\color{secondary} INFORME Y METODOLOGÍA PERICIAL DE RESPUESTA A INCIDENTES}\\[0.8cm]
 
-    {\fontsize{24}{28}\selectfont\sffamily\bfseries\color{primary} ANATOMÍA FORENSE}\\[0.3cm]
-    {\fontsize{20}{24}\selectfont\sffamily\bfseries\color{primary} DE UNA INTRUSIÓN}\\[0.8cm]
+    {\fontsize{26}{30}\selectfont\sffamily\bfseries\color{primary} LINUX FORENSICS:}\\[0.3cm]
+    {\fontsize{22}{26}\selectfont\sffamily\bfseries\color{primary} CASO REAL}\\[0.8cm]
 
-    {\large\textsf{Disección pericial de un ataque a servidores de producción en sistemas Unix/Linux}}\\[0.3cm]
-    {\normalsize\textsf{Adaptación del informe técnico pericial entregado a las autoridades de la institución}}\\[0.8cm]
+    {\large\textsf{\textbf{Autopsia de un ciberataque a servidores de producción en tiempo real}}}\\[0.4cm]
+    {\normalsize\textsf{Respuesta a incidentes, memoria viva y correlación pericial de eventos}}\\[0.8cm]
 
     {\small\textsf{\textit{La vigencia y madurez de las herramientas fundacionales de Unix/Linux frente a incidentes modernos}}}\\[1.2cm]
 
