@@ -93,7 +93,7 @@ forensic_book/
 ├── biblio/
 │   ├── bibliografia.tex                # Spanish bibliography
 │   └── bibliografia_en.tex             # English bibliography
-└── img/                                # Figures and illustrations (sabueso_color.jpg)
+└── figures/                            # High-resolution figures, engraving & book artwork
 ```
 
 ---

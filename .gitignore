@@ -22,3 +22,25 @@
 # OS files
 .DS_Store
 Thumbs.db
+
+# Toolbox and automation scripts
+scripts/
+*.py
+__pycache__/
+*.py[cod]
+*$py.class
+.venv/
+venv/
+ENV/
+env/
+.pytest_cache/
+.coverage
+
+# Editor and temporary files
+scratch/
+tmp/
+*.swp
+*.swo
+*~
+.vscode/
+.idea/
