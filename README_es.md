@@ -7,26 +7,26 @@
 [![Linux Open Source de México](https://img.shields.io/badge/Linux%20Open%20Source%20de%20M%C3%A9xico-linuxopensource.org-0078d7?style=for-the-badge&logo=linux)](https://linuxopensource.org)
 [![Licencia: CC BY-SA 4.0](https://img.shields.io/badge/Licencia-CC_BY--SA_4.0-lightgrey.svg?style=for-the-badge)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-> 🌐 [English Version (README.md)](README.md) | **Versión en Español**
+> [English Version (README.md)](README.md) | **Versión en Español**
 
 ---
 
-### 👤 Autor y Dirección Técnica
+### Autor y Dirección Técnica
 
 * **Autor:** **Alexis Real Santillán**  
   *Consultor en Ciberseguridad, Arquitectura Cloud e Infraestructura Crítica.*
-* **💼 Dirección Técnica:** CTO en [**Linux Open Source de México**](https://linuxopensource.org) ([linuxopensource.org](https://linuxopensource.org))
-* **📄 Curriculum Vitae y Portafolio:** [**https://alexisreal.github.io/cv/**](https://alexisreal.github.io/cv/)
-* **✉️ Contacto directo:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
-* **🏛️ Contexto institucional:** Basado en la investigación pericial dirigida durante su periodo como Administrador de Sistemas en el Instituto de Física y Matemáticas (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
-* **⚖️ Licencia de publicación:** [Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Publicación digital abierta, sin registro ISBN comercial).
+* **Dirección Técnica:** CTO en [**Linux Open Source de México**](https://linuxopensource.org) ([linuxopensource.org](https://linuxopensource.org))
+* **Curriculum Vitae y Portafolio:** [**https://alexisreal.github.io/cv/**](https://alexisreal.github.io/cv/)
+* **Contacto directo:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
+* **Contexto institucional:** Basado en la investigación pericial dirigida durante su periodo como Administrador de Sistemas en el Instituto de Física y Matemáticas (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
+* **Licencia de publicación:** [Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Publicación digital abierta, sin registro ISBN comercial).
 
 ---
 
-## 📚 Descarga Directa de Libros en PDF
+## Descarga Directa de Libros en PDF
 
-* 📘 **[PDF Edición en Español (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
-* 📕 **[PDF English Edition (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
+* **[PDF Edición en Español (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
+* **[PDF English Edition (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
 
 ---
 

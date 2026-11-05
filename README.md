@@ -7,26 +7,26 @@
 [![Linux Open Source de México](https://img.shields.io/badge/Linux%20Open%20Source%20de%20M%C3%A9xico-linuxopensource.org-0078d7?style=for-the-badge&logo=linux)](https://linuxopensource.org)
 [![License: CC BY-SA 4.0](https://img.shields.io/badge/License-CC_BY--SA_4.0-lightgrey.svg?style=for-the-badge)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-> 🌐 **Language navigation:** **English (Primary)** | [Saltar a la Versión en Español ↓](#versión-en-español-anatomía-forense-de-una-intrusión)
+> **Language navigation:** **English (Primary)** | [Saltar a la Versión en Español ↓](#versión-en-español-anatomía-forense-de-una-intrusión)
 
 ---
 
-### 👤 Author & Technical Leadership
+### Author & Technical Leadership
 
 * **Author:** **Alexis Real Santillán**  
   *Consultant in Cybersecurity, Cloud Architecture, and Critical Infrastructure.*
-* **💼 Technical Leadership:** CTO at [**Linux Open Source de México**](https://linuxopensource.org) ([linuxopensource.org](https://linuxopensource.org))
-* **📄 Curriculum Vitae & Portfolio:** [**https://alexisreal.github.io/cv/**](https://alexisreal.github.io/cv/)
-* **✉️ Direct Contact:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
-* **🏛️ Investigation Background:** Based on the forensic investigation directed by the author during his tenure as Computer Systems Administrator at the Institute of Physics and Mathematics (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
-* **⚖️ License:** [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Open digital edition, published without commercial ISBN).
+* **Technical Leadership:** CTO at [**Linux Open Source de México**](https://linuxopensource.org) ([linuxopensource.org](https://linuxopensource.org))
+* **Curriculum Vitae & Portfolio:** [**https://alexisreal.github.io/cv/**](https://alexisreal.github.io/cv/)
+* **Direct Contact:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
+* **Investigation Background:** Based on the forensic investigation directed by the author during his tenure as Computer Systems Administrator at the Institute of Physics and Mathematics (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
+* **License:** [Creative Commons Attribution-ShareAlike 4.0 International (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Open digital edition, published without commercial ISBN).
 
 ---
 
-## 📚 Direct PDF Downloads
+## Direct PDF Downloads
 
-* 📕 **[English Edition PDF (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 pages, complete English translation, translated TikZ diagrams, full logs, and coordinated back cover.
-* 📘 **[Spanish Edition PDF (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 pages, original Spanish text, complete technical apparatus, and forensic study guide.
+* **[English Edition PDF (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 pages, complete English translation, translated TikZ diagrams, full logs, and coordinated back cover.
+* **[Spanish Edition PDF (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 pages, original Spanish text, complete technical apparatus, and forensic study guide.
 
 ---
 
@@ -161,26 +161,26 @@ This work is licensed under the **[Creative Commons Attribution-ShareAlike 4.0 I
 [![Linux Open Source de México](https://img.shields.io/badge/Linux%20Open%20Source%20de%20M%C3%A9xico-linuxopensource.org-0078d7?style=for-the-badge&logo=linux)](https://linuxopensource.org)
 [![Licencia: CC BY-SA 4.0](https://img.shields.io/badge/Licencia-CC_BY--SA_4.0-lightgrey.svg?style=for-the-badge)](https://creativecommons.org/licenses/by-sa/4.0/)
 
-> 🌐 [Volver a la versión principal en inglés ↑](#linux-forensics-a-real-case)
+> [Volver a la versión principal en inglés ↑](#linux-forensics-a-real-case)
 
 ---
 
-### 👤 Autor y Dirección Técnica
+### Autor y Dirección Técnica
 
 * **Autor:** **Alexis Real Santillán**  
   *Consultor en Ciberseguridad, Arquitectura Cloud e Infraestructura Crítica.*
-* **💼 Dirección Técnica:** CTO en [**Linux Open Source de México**](https://linuxopensource.org) ([linuxopensource.org](https://linuxopensource.org))
-* **📄 Curriculum Vitae y Portafolio:** [**https://alexisreal.github.io/cv/**](https://alexisreal.github.io/cv/)
-* **✉️ Contacto directo:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
-* **🏛️ Contexto institucional:** Basado en la investigación pericial dirigida durante su periodo como Administrador de Sistemas en el Instituto de Física y Matemáticas (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
-* **⚖️ Licencia de publicación:** [Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Publicación digital abierta, sin registro ISBN comercial).
+* **Dirección Técnica:** CTO en [**Linux Open Source de México**](https://linuxopensource.org) ([linuxopensource.org](https://linuxopensource.org))
+* **Curriculum Vitae y Portafolio:** [**https://alexisreal.github.io/cv/**](https://alexisreal.github.io/cv/)
+* **Contacto directo:** [alexisreal@gmail.com](mailto:alexisreal@gmail.com)
+* **Contexto institucional:** Basado en la investigación pericial dirigida durante su periodo como Administrador de Sistemas en el Instituto de Física y Matemáticas (IFM), Universidad Michoacana de San Nicolás de Hidalgo (UMSNH).
+* **Licencia de publicación:** [Creative Commons Atribución-CompartirIgual 4.0 Internacional (CC BY-SA 4.0)](https://creativecommons.org/licenses/by-sa/4.0/) (Publicación digital abierta, sin registro ISBN comercial).
 
 ---
 
-## 📚 Descarga Directa de Libros en PDF
+## Descarga Directa de Libros en PDF
 
-* 📘 **[PDF Edición en Español (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
-* 📕 **[PDF English Edition (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
+* **[PDF Edición en Español (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
+* **[PDF English Edition (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
 
 ---
 
