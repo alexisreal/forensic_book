@@ -25,8 +25,8 @@
 
 ## 📚 Descarga Directa de Libros en PDF
 
-* 📘 **[PDF Edición en Español (main.pdf)](main.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
-* 📕 **[PDF English Edition (main_en.pdf)](main_en.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
+* 📘 **[PDF Edición en Español (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
+* 📕 **[PDF English Edition (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
 
 ---
 
@@ -42,10 +42,10 @@ El libro se alinea formalmente con las directrices de los estándares internacio
 
 ```bash
 # Compilar edición en español:
-tectonic main.tex
+tectonic linux-forensics-caso-real.tex
 
 # Compilar edición en inglés:
-tectonic main_en.tex
+tectonic linux-forensics-a-real-case.tex
 ```
 
 ---

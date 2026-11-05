@@ -25,8 +25,8 @@
 
 ## 📚 Direct PDF Downloads
 
-* 📕 **[English Edition PDF (main_en.pdf)](main_en.pdf)** — 173 pages, complete English translation, translated TikZ diagrams, full logs, and coordinated back cover.
-* 📘 **[Spanish Edition PDF (main.pdf)](main.pdf)** — 181 pages, original Spanish text, complete technical apparatus, and forensic study guide.
+* 📕 **[English Edition PDF (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 pages, complete English translation, translated TikZ diagrams, full logs, and coordinated back cover.
+* 📘 **[Spanish Edition PDF (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 pages, original Spanish text, complete technical apparatus, and forensic study guide.
 
 ---
 
@@ -46,10 +46,10 @@ The repository maintains two parallel, fully consistent editions:
 
 ```
 forensic_book/
-├── main.tex                            # Master LaTeX document (Spanish Edition)
-├── main_en.tex                         # Master LaTeX document (English Edition)
-├── main.pdf                            # Compiled Spanish book (181 pages)
-├── main_en.pdf                         # Compiled English book (173 pages)
+├── linux-forensics-caso-real.tex       # Master LaTeX document (Spanish Edition)
+├── linux-forensics-a-real-case.tex     # Master LaTeX document (English Edition)
+├── linux-forensics-caso-real.pdf       # Compiled Spanish book (181 pages)
+├── linux-forensics-a-real-case.pdf     # Compiled English book (173 pages)
 ├── README.md                           # Dual-language repository documentation
 ├── README_es.md                        # Documentación complementaria en español
 │
@@ -107,18 +107,18 @@ The book compiles with modern TeX engines. We recommend **Tectonic** for its zer
 brew install tectonic
 
 # Build the English edition:
-tectonic main_en.tex
+tectonic linux-forensics-a-real-case.tex
 
 # Build the Spanish edition:
-tectonic main.tex
+tectonic linux-forensics-caso-real.tex
 ```
 
 Alternatively, you can compile using `pdflatex` or `xelatex`:
 
 ```bash
 # Two passes are required to resolve cross-references and the table of contents:
-pdflatex main_en.tex
-pdflatex main_en.tex
+pdflatex linux-forensics-a-real-case.tex
+pdflatex linux-forensics-a-real-case.tex
 ```
 
 ---
@@ -179,8 +179,8 @@ This work is licensed under the **[Creative Commons Attribution-ShareAlike 4.0 I
 
 ## 📚 Descarga Directa de Libros en PDF
 
-* 📘 **[PDF Edición en Español (main.pdf)](main.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
-* 📕 **[PDF English Edition (main_en.pdf)](main_en.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
+* 📘 **[PDF Edición en Español (linux-forensics-caso-real.pdf)](linux-forensics-caso-real.pdf)** — 181 páginas, texto original en español, aparato pericial completo y guía de estudio.
+* 📕 **[PDF English Edition (linux-forensics-a-real-case.pdf)](linux-forensics-a-real-case.pdf)** — 173 páginas, traducción íntegra al inglés con diagramas TikZ y contraportada coordinada.
 
 ---
 
@@ -201,10 +201,10 @@ El proyecto compila directamente con el motor moderno **Tectonic** o con `pdflat
 
 ```bash
 # Compilar edición en español:
-tectonic main.tex
+tectonic linux-forensics-caso-real.tex
 
 # Compilar edición en inglés:
-tectonic main_en.tex
+tectonic linux-forensics-a-real-case.tex
 ```
 
 ---
